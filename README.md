@@ -2,6 +2,8 @@
 
 Interactive LED path optimization for 3D polyhedra. Finds optimal electrical paths that minimize endpoints while maximizing edge coverage.
 
+![screenshot](screenshot.png)
+
 ## Installation
 
 Requires Python 3.10+
