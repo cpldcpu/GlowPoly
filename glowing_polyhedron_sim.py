@@ -1181,8 +1181,103 @@ def create_main_window():
     return root
 
 
+def render_markdown_to_text(text_widget, markdown_content):
+    """Render basic Markdown formatting in a Text widget."""
+    import re
+    
+    # Define text tags for formatting
+    text_widget.tag_configure("h1", font=("Arial", 16, "bold"), spacing1=20, spacing3=10, foreground="#2c3e50")
+    text_widget.tag_configure("h2", font=("Arial", 14, "bold"), spacing1=15, spacing3=8, foreground="#34495e")
+    text_widget.tag_configure("h3", font=("Arial", 12, "bold"), spacing1=10, spacing3=5, foreground="#7f8c8d")
+    text_widget.tag_configure("bold", font=("Arial", 10, "bold"))
+    text_widget.tag_configure("italic", font=("Arial", 10, "italic"))
+    text_widget.tag_configure("code", font=("Consolas", 9), background="#f1f2f6", relief="solid", borderwidth=1)
+    text_widget.tag_configure("code_block", font=("Consolas", 9), background="#f8f9fa", relief="solid", borderwidth=1, lmargin1=20, lmargin2=20)
+    text_widget.tag_configure("normal", font=("Arial", 10))
+    text_widget.tag_configure("bullet", lmargin1=20, lmargin2=40)
+    
+    lines = markdown_content.split('\n')
+    i = 0
+    
+    while i < len(lines):
+        line = lines[i]
+        
+        # Handle code blocks
+        if line.strip().startswith('```'):
+            i += 1
+            code_content = []
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                code_content.append(lines[i])
+                i += 1
+            if code_content:
+                text_widget.insert(tk.END, '\n'.join(code_content) + '\n\n', "code_block")
+            i += 1
+            continue
+        
+        # Handle headers
+        if line.startswith('# '):
+            text_widget.insert(tk.END, line[2:] + '\n', "h1")
+        elif line.startswith('## '):
+            text_widget.insert(tk.END, line[3:] + '\n', "h2")
+        elif line.startswith('### '):
+            text_widget.insert(tk.END, line[4:] + '\n', "h3")
+        else:
+            # Handle inline formatting
+            if line.strip():
+                formatted_line = line
+                
+                # Handle bullet points
+                if line.strip().startswith('- ') or line.strip().startswith('* '):
+                    bullet_text = line.strip()[2:]
+                    text_widget.insert(tk.END, f"• {bullet_text}\n", "bullet")
+                else:
+                    # Process inline formatting (bold, italic, code)
+                    # Use a more careful approach to preserve spaces
+                    remaining_text = formatted_line
+                    
+                    # Process formatting in order of priority (bold first, then italic, then code)
+                    # Bold text: **text**
+                    remaining_text = re.sub(r'\*\*(.*?)\*\*', lambda m: f'\x00BOLD_START\x00{m.group(1)}\x00BOLD_END\x00', remaining_text)
+                    # Italic text: *text* (but not if it's part of bold markers)
+                    remaining_text = re.sub(r'(?<!\*)\*([^*]+?)\*(?!\*)', lambda m: f'\x00ITALIC_START\x00{m.group(1)}\x00ITALIC_END\x00', remaining_text)
+                    # Code text: `text`
+                    remaining_text = re.sub(r'`([^`]+)`', lambda m: f'\x00CODE_START\x00{m.group(1)}\x00CODE_END\x00', remaining_text)
+                    
+                    # Split by our markers and insert with appropriate tags
+                    parts = re.split(r'\x00(BOLD_START|BOLD_END|ITALIC_START|ITALIC_END|CODE_START|CODE_END)\x00', remaining_text)
+                    
+                    current_tag = "normal"
+                    tag_stack = []
+                    
+                    for part in parts:
+                        if part == "BOLD_START":
+                            tag_stack.append(current_tag)
+                            current_tag = "bold"
+                        elif part == "BOLD_END":
+                            current_tag = tag_stack.pop() if tag_stack else "normal"
+                        elif part == "ITALIC_START":
+                            tag_stack.append(current_tag)
+                            current_tag = "italic"
+                        elif part == "ITALIC_END":
+                            current_tag = tag_stack.pop() if tag_stack else "normal"
+                        elif part == "CODE_START":
+                            tag_stack.append(current_tag)
+                            current_tag = "code"
+                        elif part == "CODE_END":
+                            current_tag = tag_stack.pop() if tag_stack else "normal"
+                        elif part:  # Regular text content
+                            text_widget.insert(tk.END, part, current_tag)
+                    
+                    text_widget.insert(tk.END, '\n', "normal")
+            else:
+                # Empty line
+                text_widget.insert(tk.END, '\n', "normal")
+        
+        i += 1
+
+
 def create_help_tab(help_frame):
-    """Create the help tab with HELP.md content."""
+    """Create the help tab with rendered Markdown content."""
     # Create scrollable text widget for help content
     help_text_frame = ttk.Frame(help_frame)
     help_text_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
@@ -1190,9 +1285,9 @@ def create_help_tab(help_frame):
     help_frame.rowconfigure(0, weight=1)
     
     # Create text widget with scrollbar
-    help_text = tk.Text(help_text_frame, wrap=tk.WORD, font=("Consolas", 10), 
-                       state=tk.DISABLED, bg='#f8f8f8', relief=tk.FLAT, 
-                       padx=15, pady=15)
+    help_text = tk.Text(help_text_frame, wrap=tk.WORD, font=("Arial", 10), 
+                       state=tk.DISABLED, bg='white', relief=tk.FLAT, 
+                       padx=20, pady=20)
     scrollbar = ttk.Scrollbar(help_text_frame, orient=tk.VERTICAL, command=help_text.yview)
     help_text.config(yscrollcommand=scrollbar.set)
     
@@ -1201,21 +1296,22 @@ def create_help_tab(help_frame):
     help_text_frame.columnconfigure(0, weight=1)
     help_text_frame.rowconfigure(0, weight=1)
     
-    # Load and display HELP.md content
+    # Load and display HELP.md content with Markdown rendering
     try:
         with open('HELP.md', 'r', encoding='utf-8') as f:
             help_content = f.read()
         
         help_text.config(state=tk.NORMAL)
-        help_text.insert(tk.END, help_content)
+        render_markdown_to_text(help_text, help_content)
         help_text.config(state=tk.DISABLED)
+        help_text.see(tk.INSERT)  # Scroll to top
     except FileNotFoundError:
         help_text.config(state=tk.NORMAL)
-        help_text.insert(tk.END, "Help file (HELP.md) not found in the current directory.")
+        help_text.insert(tk.END, "Help file (HELP.md) not found in the current directory.", "normal")
         help_text.config(state=tk.DISABLED)
     except Exception as e:
         help_text.config(state=tk.NORMAL)
-        help_text.insert(tk.END, f"Error loading help file: {str(e)}")
+        help_text.insert(tk.END, f"Error loading help file: {str(e)}", "normal")
         help_text.config(state=tk.DISABLED)
 
 
@@ -1397,7 +1493,7 @@ def create_status_and_buttons(main_frame, controls):
     button_frame = ttk.Frame(controls)
     button_frame.grid(row=5, column=0, columnspan=4, pady=(12,0))
     
-    run_button = ttk.Button(button_frame, text="Run Simulation")
+    run_button = ttk.Button(button_frame, text="Run Solver")
     run_button.grid(row=0, column=0, padx=(0, 8))
     
     # Cancellation event for stopping the solver
@@ -1501,7 +1597,7 @@ def main():
     button_frame = ttk.Frame(controls)
     button_frame.grid(row=5, column=0, columnspan=4, pady=(12,0))
     
-    run_button = ttk.Button(button_frame, text="Run Simulation")
+    run_button = ttk.Button(button_frame, text="Run Solver")
     run_button.grid(row=0, column=0, padx=(0, 8))
     
     stop_button = ttk.Button(button_frame, text="Stop", state="disabled", command=stop_solver)
