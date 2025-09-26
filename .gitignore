@@ -28,6 +28,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+~*
+
 # PyInstaller
 *.manifest
 *.spec
