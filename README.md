@@ -1,6 +1,6 @@
 # GlowPoly
 
-Interactive LED path optimization for 3D polyhedra. Finds optimal electrical paths that minimize endpoints while maximizing edge coverage.
+Interactive LED path optimization for 3D polyhedra. Finds optimal electrical paths that minimize endpoints (vertices that have to be connected to a power supply) while maximizing edge coverage.
 
 ![screenshot](screenshot.png)
 
