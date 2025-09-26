@@ -295,7 +295,7 @@ POLYHEDRA = {
     "Icosahedron": PolyhedronGenerators.undirected_icosahedron,                # 30 edges
     "Stellated Cube": PolyhedronGenerators.undirected_stellated_cube,          # 36 edges
     "Stellated Octahedron": PolyhedronGenerators.undirected_stellated_octahedron,  # 36 edges
-    "Rhombicuboctahedron": PolyhedronGenerators.undirected_rhombicuboctahedron, # 56 edges
+    # "Rhombicuboctahedron": PolyhedronGenerators.undirected_rhombicuboctahedron, # 56 edges
     # "Snub Cube": PolyhedronGenerators.undirected_snub_cube,                    # 60 edges
     # "Rhombicosidodecahedron": PolyhedronGenerators.undirected_rhombicosidodecahedron, # 78 edges
 }
@@ -1181,18 +1181,61 @@ def create_main_window():
     return root
 
 
+def create_help_tab(help_frame):
+    """Create the help tab with HELP.md content."""
+    # Create scrollable text widget for help content
+    help_text_frame = ttk.Frame(help_frame)
+    help_text_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+    help_frame.columnconfigure(0, weight=1)
+    help_frame.rowconfigure(0, weight=1)
+    
+    # Create text widget with scrollbar
+    help_text = tk.Text(help_text_frame, wrap=tk.WORD, font=("Consolas", 10), 
+                       state=tk.DISABLED, bg='#f8f8f8', relief=tk.FLAT, 
+                       padx=15, pady=15)
+    scrollbar = ttk.Scrollbar(help_text_frame, orient=tk.VERTICAL, command=help_text.yview)
+    help_text.config(yscrollcommand=scrollbar.set)
+    
+    help_text.grid(row=0, column=0, sticky="nsew")
+    scrollbar.grid(row=0, column=1, sticky="ns")
+    help_text_frame.columnconfigure(0, weight=1)
+    help_text_frame.rowconfigure(0, weight=1)
+    
+    # Load and display HELP.md content
+    try:
+        with open('HELP.md', 'r', encoding='utf-8') as f:
+            help_content = f.read()
+        
+        help_text.config(state=tk.NORMAL)
+        help_text.insert(tk.END, help_content)
+        help_text.config(state=tk.DISABLED)
+    except FileNotFoundError:
+        help_text.config(state=tk.NORMAL)
+        help_text.insert(tk.END, "Help file (HELP.md) not found in the current directory.")
+        help_text.config(state=tk.DISABLED)
+    except Exception as e:
+        help_text.config(state=tk.NORMAL)
+        help_text.insert(tk.END, f"Error loading help file: {str(e)}")
+        help_text.config(state=tk.DISABLED)
+
+
 def create_notebook_layout(root):
-    """Create the main notebook layout with simulator and output tabs."""
+    """Create the main notebook layout with simulator, output, and help tabs."""
     notebook = ttk.Notebook(root)
     notebook.grid(row=0, column=0, sticky="nsew")
     
     main_frame = ttk.Frame(notebook, padding=12)
     output_frame = ttk.Frame(notebook, padding=12)
+    help_frame = ttk.Frame(notebook, padding=12)
     
     # Configure main frame columns
     main_frame.columnconfigure(1, weight=1)
     notebook.add(main_frame, text="Simulator")
     notebook.add(output_frame, text="Detailed Output")
+    notebook.add(help_frame, text="Help")
+    
+    # Set up the help tab
+    create_help_tab(help_frame)
     
     return notebook, main_frame, output_frame
 
