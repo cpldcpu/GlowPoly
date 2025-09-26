@@ -274,6 +274,8 @@ VIEW_MODES = {
     "Isometric": (ISO_Y, ISO_X),
     "Axis-Aligned": (0.0, 0.0),
     "Top-Tilt": (math.radians(20), math.radians(60)),
+    "Diagonal": (math.radians(30), math.radians(135)),
+    "Low-Angle": (math.radians(70), math.radians(25)),
 }
 
 POLYHEDRA = {
@@ -913,7 +915,12 @@ def solve_mixed_path_exact_cover(V, undirected_edges, dir_edges, constraints):
         return None
     
     # Solve exact cover with all path lengths allowed
+    # Use more aggressive limits for mixed path as it's much more expensive
     solver = ExactCoverMinRows(m, row_masks)
+    if len(row_masks) > 100:  # If too many paths, use very tight limit
+        solver.max_search_calls = 50000  # Very restrictive for complex cases
+    elif len(row_masks) > 50:
+        solver.max_search_calls = 200000  # Moderately restrictive
     sol = solver.solve()
     if sol is None:
         return None
@@ -1007,6 +1014,9 @@ def run_mixed_path_solver(name, builder, iters, cancel_event, dc_only=False, sne
         if cancel_event.is_set():
             break
             
+        # Early termination if individual iterations are taking too long
+        iteration_start = time.time()
+        
         if len(E) <= 12:
             # Exhaustive for small graphs
             mask = iteration
@@ -1020,6 +1030,11 @@ def run_mixed_path_solver(name, builder, iters, cancel_event, dc_only=False, sne
         
         # Try mixed-length exact cover solver
         res = solve_mixed_path_exact_cover(V, E, dir_edges, constraints)
+        
+        # Check if this iteration took too long
+        iteration_time = time.time() - iteration_start
+        if iteration_time > 5.0:  # If single iteration takes more than 5 seconds
+            print(f"Warning: Mixed path iteration {iteration} took {iteration_time:.1f}s, may need early termination")
         
         if res is not None:
             # Calculate coverage for this solution

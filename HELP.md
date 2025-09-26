@@ -57,30 +57,7 @@ The Detailed Output tab provides comprehensive analysis including path details, 
 
 **Driving Scheme Analysis** specifies required Anode (A), Cathode (C), and Tristate (Z) assignments in the format "Path 1: 0 -> 2 | 0=A 1=Z 2=C # avoids sneak: 1->2". This identifies potential sneak paths that need blocking and determines whether bipolar or ternary driving is needed.
 
-## Optimization Strategies
-
-**For Maximum Coverage:** Use Mixed lengths mode for ultimate flexibility. Enable Equal current only if brightness uniformity is critical. Start with unconstrained search, then add constraints as needed.
-
-**For Hardware Constraints:** Use DC only for simple driver circuits. Enable Bipolar driving scheme to avoid tristate drivers. Use Fixed endpoints if connection points are predetermined.
-
-**For Performance:** Small polyhedra (<12 edges) automatically use exhaustive search in all modes. For large polyhedra, increase iterations for better solutions. Use the Stop button for early results if the solver takes too long.
-
-## Troubleshooting
-
-**No solution found:** Try relaxing constraints by unchecking some options. For Fixed L mode, try different path lengths. For Fixed endpoints mode, reduce the number of required endpoints.
-
-**Long computation times:** Use the Stop button to get partial results. Reduce sampling iterations for faster but potentially suboptimal results. Consider switching from Mixed lengths to Variable L mode for better performance.
-
-**Unexpected results:** Check constraint combinations since some are mutually exclusive. Verify the polyhedron selection matches your intended geometry. Review detailed output for constraint violation explanations.
-
-## Example Workflows
-
-**Basic LED Design:** Select a polyhedron like Cube, choose Variable L mode, leave constraints unchecked initially, run the simulation, then review results and add constraints as needed.
-
-**Hardware-Constrained Design:** Select your target polyhedron, choose Fixed L mode with desired path length, enable DC only constraint, enable Bipolar driving scheme, set Fixed endpoints to match available connections, then run the simulation.
-
-**Maximum Performance Design:** Select the polyhedron, choose Mixed lengths mode, enable Equal current for uniform brightness, increase sampling iterations to 5000+, then run the simulation (this may take longer but provides optimal results).
 
 ## Technical Notes
 
-The solver uses exact cover algorithms for optimal solutions. Constraint checking is performed after path generation. The 3D visualization updates automatically with results. All algorithms preserve polyhedron connectivity, and current flow analysis assumes unit current injection. The program consists of three main files: the GUI application, core optimization algorithms, and 3D polyhedron generators.
+The solver uses exact cover algorithms for optimal solutions. Constraint checking is performed after path generation. The 3D visualization updates automatically with results. All algorithms preserve polyhedron connectivity, and current flow analysis assumes unit current injection. 

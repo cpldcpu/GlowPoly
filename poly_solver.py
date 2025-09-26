@@ -105,6 +105,8 @@ class ExactCoverMinRows:
                 m &= m-1
         self.best_solution = None
         self.best_len = float('inf')
+        self.search_calls = 0
+        self.max_search_calls = 1000000  # Limit to prevent infinite recursion
     def _choose_column(self, remaining_cols):
         best_c, best_count = None, float('inf')
         m = remaining_cols
@@ -121,10 +123,15 @@ class ExactCoverMinRows:
         return best_c, best_count
     def solve(self, ub=float('inf')):
         self.best_solution, self.best_len = None, float('inf')
+        self.search_calls = 0
         all_cols = (1 << self.N) - 1
         self._search(all_cols, [], ub)
         return self.best_solution
     def _search(self, remaining_cols, partial, ub):
+        self.search_calls += 1
+        # Prevent infinite recursion by limiting search calls
+        if self.search_calls > self.max_search_calls:
+            return
         if len(partial) >= min(self.best_len, ub): return
         if remaining_cols == 0:
             self.best_len = len(partial)
