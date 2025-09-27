@@ -2,6 +2,11 @@
 
 PCB design files and documentation for the GlowPoly LED driver board.
 
+<div align="center">
+  <img src="driver_pcb_render.png" width="40%" >
+  <img src="pcbtopdown.png" width="40%">
+</div>
+
 ## Files
 
 - `GlowPoly_Schematic_2025-09-27.pdf` - Circuit schematic
