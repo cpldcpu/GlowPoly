@@ -3,8 +3,8 @@
 PCB design files and documentation for the GlowPoly LED driver board.
 
 <div align="center">
-  <img src="driver_pcb_render.png" width="40%" >
-  <img src="pcbtopdown.png" width="40%">
+  <img src="driver_pcb_render.png" height="300px">
+  <img src="pcbtopdown.png" height="300px">
 </div>
 
 ## Files
