@@ -127,3 +127,5 @@ profile.txt
 # Temporary files
 *.tmp
 *.temp
+
+photos_tmp/
