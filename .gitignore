@@ -2,6 +2,10 @@
 backup*/
 nackup*/
 
+# Node / frontend
+node_modules/
+.vite/
+
 # Python cache files
 __pycache__/
 *.py[cod]
