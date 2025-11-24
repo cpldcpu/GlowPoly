@@ -581,13 +581,16 @@ export default function GeometricExplorer() {
     setFeedingStats({ count: bestSet.size, balance: stats, phases: stats.phases });
 
     // 3. Filter visualization if cycling
-    if (isCycling && currentPhaseIdx >= 0 && stats.phases.length > 0) {
-        const phase = stats.phases[currentPhaseIdx];
+    const hasPhases = Array.isArray(stats.phases) && stats.phases.length > 0;
+    const phaseIdx = hasPhases && currentPhaseIdx >= 0 ? currentPhaseIdx % stats.phases.length : -1;
+    const activePhase = hasPhases && phaseIdx >= 0 ? stats.phases[phaseIdx] : null;
+
+    if (activePhase) {
         // Show only the pair
-        pointsToShow.add(phase.pair[0]);
-        pointsToShow.add(phase.pair[1]);
+        pointsToShow.add(activePhase.pair[0]);
+        pointsToShow.add(activePhase.pair[1]);
         // Show only the loops driven by this pair
-        loopsToShow = activeLoopsList.filter((_, idx) => phase.loops.includes(idx));
+        loopsToShow = activeLoopsList.filter((_, idx) => activePhase.loops.includes(idx));
     } else {
         // Show all
         pointsToShow = bestSet;
