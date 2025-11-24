@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { RefreshCw, Layers, Box, Hexagon, Circle, Zap, Scale, Play, Pause } from 'lucide-react';
+import { RefreshCw, Layers, Box, Hexagon, Circle, Zap, Scale, Play, Pause, Github } from 'lucide-react';
 
 // --- GEOMETRY GENERATORS ---
 
@@ -638,6 +638,17 @@ export default function GeometricExplorer() {
         <div className="absolute top-4 left-4 pointer-events-none">
             <h1 className="text-2xl font-bold text-white drop-shadow-md">Eulerian Decomposition</h1>
             <p className="text-gray-400 text-sm capitalize">{shape.replace(/_/g, ' ')} | Diode Analysis</p>
+            <div className="mt-2 pointer-events-auto">
+              <a
+                href="https://github.com/cpldcpu/GlowPoly"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-2 bg-gray-800 bg-opacity-80 border border-gray-700 rounded hover:bg-gray-700 transition-colors text-sm font-semibold text-gray-100"
+              >
+                <Github size={16} />
+                <span>View on GitHub</span>
+              </a>
+            </div>
         </div>
         {showFeeding && (
             <div className="absolute bottom-4 left-4 bg-gray-900 bg-opacity-80 p-3 rounded-lg border border-gray-700 w-64">
