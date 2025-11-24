@@ -226,6 +226,44 @@ class PolyhedronGenerators:
         return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
 
     @staticmethod
+    def _undirected_antiprism(sides: int, return_coords: bool = False):
+        """Build an n-gonal antiprism made of two offset polygons."""
+        if sides < 3:
+            raise ValueError("Antiprism requires at least 3 sides")
+
+        from math import cos, sin, pi
+
+        coords = []
+        top_z, bottom_z = 1.0, -1.0
+        for i in range(sides):
+            angle = 2 * pi * i / sides
+            coords.append((cos(angle), sin(angle), top_z))
+        for i in range(sides):
+            angle = 2 * pi * i / sides + pi / sides  # rotate bottom by half-step
+            coords.append((cos(angle), sin(angle), bottom_z))
+
+        vertices = list(range(2 * sides))
+        edges = set()
+        for i in range(sides):
+            edges.add((i, (i + 1) % sides))  # top ring
+            edges.add((sides + i, sides + ((i + 1) % sides)))  # bottom ring
+            edges.add((i, sides + i))  # lateral triangle edge
+            edges.add((i, sides + ((i - 1) % sides)))  # lateral triangle edge
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
+    def undirected_square_antiprism(return_coords: bool = False):
+        return PolyhedronGenerators._undirected_antiprism(4, return_coords)
+
+    @staticmethod
+    def undirected_pentagonal_antiprism(return_coords: bool = False):
+        return PolyhedronGenerators._undirected_antiprism(5, return_coords)
+
+    @staticmethod
+    def undirected_hexagonal_antiprism(return_coords: bool = False):
+        return PolyhedronGenerators._undirected_antiprism(6, return_coords)
+
+    @staticmethod
     def undirected_rhombicuboctahedron(return_coords: bool = False):
         # Rhombicuboctahedron coordinates: (±1, ±1, ±(1+√2)) and permutations
         s = 1 + sqrt(2)

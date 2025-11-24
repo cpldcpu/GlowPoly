@@ -7,7 +7,7 @@ This interactive tool optimizes LED path planning on 3D polyhedra. It finds opti
 ## Controls
 
 ### Polyhedron Selection
-Choose from 14 different polyhedra sorted by complexity, from simple shapes like Tetrahedron (6 edges) and Triangular Prism (9 edges) to complex ones like Dodecahedron and Icosahedron (30 edges each). The most advanced option is Rhombicuboctahedron with 56 edges. Each option displays vertex count (V) and edge count (E) for reference.
+Choose from 18 different polyhedra sorted by complexity, from simple shapes like Tetrahedron (6 edges) and Triangular Prism (9 edges) to richer forms like Pentagonal Prism (15 edges), the new family of antiprisms (16–24 edges), and the larger Dodecahedron/Icosahedron (30 edges each). The most advanced available options are Stellated Cube and Stellated Octahedron at 36 edges. Each option displays vertex count (V) and edge count (E) for reference.
 
 ### View Controls
 Adjust the 3D visualization angle using Isometric (classic technical drawing), Axis-Aligned (straight-on coordinate view), or Top-Tilt (default slightly tilted view).

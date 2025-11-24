@@ -7,6 +7,7 @@ import random
 import threading
 import time
 import tkinter as tk
+from collections import Counter
 from tkinter import ttk
 
 from polyhedra import PolyhedronGenerators
@@ -285,9 +286,12 @@ POLYHEDRA = {
     "Cube": PolyhedronGenerators.undirected_cube,                              # 12 edges
     "Octahedron": PolyhedronGenerators.undirected_octahedron,                  # 12 edges
     "Pentagonal Prism": PolyhedronGenerators.undirected_pentagonal_prism,      # 15 edges
+    "Square Antiprism": PolyhedronGenerators.undirected_square_antiprism,      # 16 edges
     "Truncated Tetrahedron": PolyhedronGenerators.undirected_truncated_tetrahedron, # 18 edges
     "Stellated Tetrahedron": PolyhedronGenerators.undirected_stellated_tetrahedron, # 18 edges
     "Hexagonal Prism": PolyhedronGenerators.undirected_hexagonal_prism,        # 18 edges
+    "Pentagonal Antiprism": PolyhedronGenerators.undirected_pentagonal_antiprism, # 20 edges
+    "Hexagonal Antiprism": PolyhedronGenerators.undirected_hexagonal_antiprism,   # 24 edges
     "Cuboctahedron": PolyhedronGenerators.undirected_cuboctahedron,            # 24 edges
     "Rhombic Dodecahedron": PolyhedronGenerators.undirected_rhombic_dodecahedron, # 24 edges
     "Stellated Triangular Prism": PolyhedronGenerators.undirected_stellated_triangular_prism,  # 27 edges
@@ -1344,7 +1348,17 @@ def create_polyhedron_selector(main_frame):
     poly_values = []
     for name, builder in POLYHEDRA.items():
         V, E = builder()
-        poly_values.append(f"{name} ({len(V)}V, {len(E)}E)")
+        deg_map = Counter()
+        for u, v in E:
+            deg_map[u] += 1
+            deg_map[v] += 1
+        deg_counts = Counter(deg_map.values())
+        if len(deg_counts) == 1:
+            degree_desc = f"{next(iter(deg_counts))}-regular"
+        else:
+            degree_desc = ", ".join(f"{count}x{deg}" for deg, count in sorted(deg_counts.items()))
+
+        poly_values.append(f"{name} ({len(V)}V, {len(E)}E | deg cfg: {degree_desc})")
     
     poly_combo = ttk.Combobox(main_frame, values=poly_values, state="readonly")
     poly_combo.grid(row=0, column=1, padx=(8, 0), sticky="ew")
