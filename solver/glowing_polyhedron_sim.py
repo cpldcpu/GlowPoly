@@ -260,6 +260,8 @@ VIEW_MODES = {
     "Top-Tilt": (math.radians(20), math.radians(60)),
     "Diagonal": (math.radians(30), math.radians(135)),
     "Low-Angle": (math.radians(70), math.radians(25)),
+    "Graph": "graph",  # Special case: 2D force-directed layout
+    "Schlegel": "schlegel",  # Special case: Schlegel diagram (planar embedding)
 }
 
 POLYHEDRA = {
@@ -287,6 +289,221 @@ POLYHEDRA = {
     # "Snub Cube": PolyhedronGenerators.undirected_snub_cube,                    # 60 edges
     # "Rhombicosidodecahedron": PolyhedronGenerators.undirected_rhombicosidodecahedron, # 78 edges
 }
+
+
+def compute_graph_layout(vertices, edges, iterations=100):
+    """
+    Compute a 2D force-directed layout for the graph.
+    Uses Fruchterman-Reingold-style forces.
+    """
+    import random
+    random.seed(42)  # Deterministic layout
+
+    n = len(vertices)
+    if n == 0:
+        return []
+
+    # Initialize positions randomly
+    pos = [(random.uniform(0.1, 0.9), random.uniform(0.1, 0.9)) for _ in range(n)]
+
+    # Build adjacency for quick lookup
+    adj = [set() for _ in range(n)]
+    for u, v in edges:
+        adj[u].add(v)
+        adj[v].add(u)
+
+    # Ideal spring length
+    k = 1.0 / math.sqrt(n)
+    temperature = 0.1
+
+    for iteration in range(iterations):
+        # Calculate repulsive forces (all pairs)
+        disp = [(0.0, 0.0) for _ in range(n)]
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                dx = pos[i][0] - pos[j][0]
+                dy = pos[i][1] - pos[j][1]
+                dist = math.sqrt(dx * dx + dy * dy) + 0.001
+                # Repulsive force
+                force = (k * k) / dist
+                fx, fy = (dx / dist) * force, (dy / dist) * force
+                disp[i] = (disp[i][0] + fx, disp[i][1] + fy)
+                disp[j] = (disp[j][0] - fx, disp[j][1] - fy)
+
+        # Calculate attractive forces (edges only)
+        for u, v in edges:
+            dx = pos[u][0] - pos[v][0]
+            dy = pos[u][1] - pos[v][1]
+            dist = math.sqrt(dx * dx + dy * dy) + 0.001
+            # Attractive force
+            force = (dist * dist) / k
+            fx, fy = (dx / dist) * force, (dy / dist) * force
+            disp[u] = (disp[u][0] - fx, disp[u][1] - fy)
+            disp[v] = (disp[v][0] + fx, disp[v][1] + fy)
+
+        # Apply displacements with temperature limiting
+        for i in range(n):
+            dx, dy = disp[i]
+            dist = math.sqrt(dx * dx + dy * dy) + 0.001
+            scale = min(dist, temperature) / dist
+            new_x = pos[i][0] + dx * scale
+            new_y = pos[i][1] + dy * scale
+            # Keep within bounds
+            new_x = max(0.05, min(0.95, new_x))
+            new_y = max(0.05, min(0.95, new_y))
+            pos[i] = (new_x, new_y)
+
+        # Cool down
+        temperature *= 0.95
+
+    # Normalize positions to fill the canvas
+    xs = [p[0] for p in pos]
+    ys = [p[1] for p in pos]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+
+    # Avoid division by zero for single-vertex or collinear layouts
+    range_x = max(max_x - min_x, 0.001)
+    range_y = max(max_y - min_y, 0.001)
+
+    # Use uniform scaling to preserve aspect ratio
+    scale = min((CANVAS_SIZE - 2 * MARGIN) / range_x, (CANVAS_SIZE - 2 * MARGIN) / range_y)
+
+    # Center the layout
+    center_x = (min_x + max_x) / 2
+    center_y = (min_y + max_y) / 2
+    canvas_center = CANVAS_SIZE / 2
+
+    result = []
+    for x, y in pos:
+        px = canvas_center + (x - center_x) * scale
+        py = canvas_center + (y - center_y) * scale
+        result.append((px, py, 0))  # z=0 for 2D layout
+
+    return result
+
+
+def find_outer_face(vertices, edges, coords):
+    """
+    Find a good outer face for the Schlegel diagram.
+    Uses the face closest to the viewer (highest average z after rotation).
+    """
+    # Build adjacency list
+    n = len(vertices)
+    adj = [set() for _ in range(n)]
+    for u, v in edges:
+        adj[u].add(v)
+        adj[v].add(u)
+
+    # Find all triangular and quadrilateral faces using cycle detection
+    faces = []
+
+    # Find triangular faces
+    for u in range(n):
+        for v in adj[u]:
+            if v > u:
+                for w in adj[u] & adj[v]:
+                    if w > v:
+                        faces.append([u, v, w])
+
+    # Find quadrilateral faces (4-cycles that aren't just two triangles)
+    for u in range(n):
+        for v in adj[u]:
+            if v > u:
+                for w in adj[v]:
+                    if w != u and w > u:
+                        for x in adj[w] & adj[u]:
+                            if x > v and x != v and x not in adj[v]:
+                                faces.append([u, v, w, x])
+
+    if not faces:
+        # Fallback: use vertices with highest degree as outer face
+        degrees = [(len(adj[v]), v) for v in range(n)]
+        degrees.sort(reverse=True)
+        return [d[1] for d in degrees[:min(4, n)]]
+
+    # Choose the face with highest average z-coordinate (closest to viewer)
+    best_face = faces[0]
+    best_z = sum(coords[v][2] for v in faces[0]) / len(faces[0])
+
+    for face in faces[1:]:
+        avg_z = sum(coords[v][2] for v in face) / len(face)
+        if avg_z > best_z:
+            best_z = avg_z
+            best_face = face
+
+    return best_face
+
+
+def compute_schlegel_layout(vertices, edges, coords):
+    """
+    Compute a Schlegel diagram layout using Tutte embedding.
+    The outer face vertices are placed on a circle, and interior vertices
+    are placed at the barycenter of their neighbors.
+    """
+    n = len(vertices)
+    if n == 0:
+        return []
+
+    # Build adjacency list
+    adj = [set() for _ in range(n)]
+    for u, v in edges:
+        adj[u].add(v)
+        adj[v].add(u)
+
+    # Find the outer face
+    outer_face = find_outer_face(vertices, edges, coords)
+    outer_set = set(outer_face)
+    interior = [v for v in vertices if v not in outer_set]
+
+    # Place outer face vertices on a circle
+    pos = [None] * n
+    num_outer = len(outer_face)
+    for i, v in enumerate(outer_face):
+        angle = 2 * math.pi * i / num_outer - math.pi / 2  # Start from top
+        pos[v] = (0.5 + 0.45 * math.cos(angle), 0.5 + 0.45 * math.sin(angle))
+
+    # Initialize interior vertices at center
+    for v in interior:
+        pos[v] = (0.5, 0.5)
+
+    # Tutte embedding: iteratively move interior vertices to barycenter of neighbors
+    for _ in range(100):
+        max_move = 0
+        for v in interior:
+            neighbors = adj[v]
+            if neighbors:
+                avg_x = sum(pos[u][0] for u in neighbors) / len(neighbors)
+                avg_y = sum(pos[u][1] for u in neighbors) / len(neighbors)
+                dx = avg_x - pos[v][0]
+                dy = avg_y - pos[v][1]
+                max_move = max(max_move, abs(dx), abs(dy))
+                pos[v] = (avg_x, avg_y)
+        if max_move < 0.0001:
+            break
+
+    # Scale to canvas coordinates
+    xs = [p[0] for p in pos]
+    ys = [p[1] for p in pos]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+
+    range_x = max(max_x - min_x, 0.001)
+    range_y = max(max_y - min_y, 0.001)
+    scale = min((CANVAS_SIZE - 2 * MARGIN) / range_x, (CANVAS_SIZE - 2 * MARGIN) / range_y)
+
+    center_x = (min_x + max_x) / 2
+    center_y = (min_y + max_y) / 2
+    canvas_center = CANVAS_SIZE / 2
+
+    result = []
+    for x, y in pos:
+        px = canvas_center + (x - center_x) * scale
+        py = canvas_center + (y - center_y) * scale
+        result.append((px, py, 0))
+
+    return result
 
 
 def rotate_point(point, yaw, pitch):
@@ -357,8 +574,21 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
     canvas.delete("all")
     canvas.create_rectangle(0, 0, CANVAS_SIZE, CANVAS_SIZE, fill=BACKGROUND, outline=BACKGROUND)
 
-    _, edges, coords = builder(return_coords=True)
-    projected = project_points(coords, *active_view)
+    vertices, edges, coords = builder(return_coords=True)
+
+    # Check if this is a special 2D view or 3D projection
+    if active_view == "graph":
+        # Graph view: use force-directed 2D layout
+        projected = compute_graph_layout(vertices, edges)
+        is_2d_view = True
+    elif active_view == "schlegel":
+        # Schlegel diagram: planar embedding with outer face on boundary
+        projected = compute_schlegel_layout(vertices, edges, coords)
+        is_2d_view = True
+    else:
+        projected = project_points(coords, *active_view)
+        is_2d_view = False
+
     z_vals = [p[2] for p in projected]
     z_min, z_max = min(z_vals), max(z_vals)
     depth_threshold = sum(z_vals) / len(z_vals)
@@ -384,74 +614,102 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
         max_current = max(data['current'] for data in current_data.values()) if current_data else 0
 
     sorted_edges = sorted(edges, key=edge_depth)
-    for u, v in sorted_edges:
-        x1, y1, z1 = projected[u]
-        x2, y2, z2 = projected[v]
-        depth = (z1 + z2) / 2
-        
-        # Determine edge color based on current flow
-        edge_key = (u, v)
-        if current_data and edge_key in current_data:
-            current = current_data[edge_key]['current']
-            edge_color = current_to_color(current, max_current)
-        elif current_data and (v, u) in current_data:
-            current = current_data[(v, u)]['current']
-            edge_color = current_to_color(current, max_current)
-        else:
-            # No current data or edge not in solution
-            edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
-        
-        if depth > depth_threshold:
-            canvas.create_line(x1, y1, x2, y2, fill=edge_color, dash=(6, 4), width=2)
 
-    for u, v in sorted_edges:
-        x1, y1, z1 = projected[u]
-        x2, y2, z2 = projected[v]
-        depth = (z1 + z2) / 2
-        
-        # Determine edge color based on current flow
-        edge_key = (u, v)
-        if current_data and edge_key in current_data:
-            current = current_data[edge_key]['current']
-            edge_color = current_to_color(current, max_current)
-        elif current_data and (v, u) in current_data:
-            current = current_data[(v, u)]['current']
-            edge_color = current_to_color(current, max_current)
-        else:
-            # No current data or edge not in solution
-            edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
-        
-        if depth <= depth_threshold:
+    # In 2D views, draw all edges in a single pass (no depth-based hiding)
+    if is_2d_view:
+        for u, v in sorted_edges:
+            x1, y1, _ = projected[u]
+            x2, y2, _ = projected[v]
+
+            # Determine edge color based on current flow
+            edge_key = (u, v)
+            if current_data and edge_key in current_data:
+                current = current_data[edge_key]['current']
+                edge_color = current_to_color(current, max_current)
+            elif current_data and (v, u) in current_data:
+                current = current_data[(v, u)]['current']
+                edge_color = current_to_color(current, max_current)
+            else:
+                edge_color = EDGE_COLOR
+
             canvas.create_line(x1, y1, x2, y2, fill=edge_color, width=3, capstyle=tk.ROUND)
+    else:
+        # 3D view: draw hidden edges first (dashed), then visible edges
+        for u, v in sorted_edges:
+            x1, y1, z1 = projected[u]
+            x2, y2, z2 = projected[v]
+            depth = (z1 + z2) / 2
+
+            # Determine edge color based on current flow
+            edge_key = (u, v)
+            if current_data and edge_key in current_data:
+                current = current_data[edge_key]['current']
+                edge_color = current_to_color(current, max_current)
+            elif current_data and (v, u) in current_data:
+                current = current_data[(v, u)]['current']
+                edge_color = current_to_color(current, max_current)
+            else:
+                # No current data or edge not in solution
+                edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
+
+            if depth > depth_threshold:
+                canvas.create_line(x1, y1, x2, y2, fill=edge_color, dash=(6, 4), width=2)
+
+        for u, v in sorted_edges:
+            x1, y1, z1 = projected[u]
+            x2, y2, z2 = projected[v]
+            depth = (z1 + z2) / 2
+
+            # Determine edge color based on current flow
+            edge_key = (u, v)
+            if current_data and edge_key in current_data:
+                current = current_data[edge_key]['current']
+                edge_color = current_to_color(current, max_current)
+            elif current_data and (v, u) in current_data:
+                current = current_data[(v, u)]['current']
+                edge_color = current_to_color(current, max_current)
+            else:
+                # No current data or edge not in solution
+                edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
+
+            if depth <= depth_threshold:
+                canvas.create_line(x1, y1, x2, y2, fill=edge_color, width=3, capstyle=tk.ROUND)
 
     # Draw arrows for all edges that have an orientation
     for u, v in edges:
         edge_key = (u, v)
         has_current = (current_data and edge_key in current_data) or (current_data and (v, u) in current_data)
         key = tuple(sorted((u, v)))
-        
+
         # Use complete orientation map to show arrows on all edges
         orient = complete_orientation_map.get(key)
-        
+
         if orient:
             x_start, y_start = projected[orient[0]][0], projected[orient[0]][1]
             x_end, y_end = projected[orient[1]][0], projected[orient[1]][1]
-            
-            # Use different arrow properties based on current flow and depth
-            depth = (projected[u][2] + projected[v][2]) / 2
-            arrow_size = 16 if depth <= depth_threshold else 14
-            
+
+            # In 2D views, use consistent arrow size; in 3D view, vary by depth
+            if is_2d_view:
+                arrow_size = 16
+            else:
+                depth = (projected[u][2] + projected[v][2]) / 2
+                arrow_size = 16 if depth <= depth_threshold else 14
+
             # Different arrow colors: red for current-carrying, gray for non-current
             if has_current:
                 arrow_color = ARROW_FOREGROUND_COLOR  # Red for current-carrying edges
             else:
                 arrow_color = "#888888"  # Gray for non-current edges
-                
+
             draw_arrowhead(canvas, x_start, y_start, x_end, y_end, color=arrow_color, size=arrow_size)
 
     radius = 6
     for idx, (x, y, z) in enumerate(projected):
-        fill = ENDPOINT_FILL if idx in endpoint_indices else depth_to_color(z, z_min, z_max)
+        # In 2D views, use consistent vertex color; in 3D view, vary by depth
+        if is_2d_view:
+            fill = ENDPOINT_FILL if idx in endpoint_indices else VERTEX_FILL_NEAR
+        else:
+            fill = ENDPOINT_FILL if idx in endpoint_indices else depth_to_color(z, z_min, z_max)
         canvas.create_oval(
             x - radius,
             y - radius,
