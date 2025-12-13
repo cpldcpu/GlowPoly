@@ -132,51 +132,34 @@ def analyze_driving_schemes(chosen_paths, dir_edges, endpoints, vertices):
 
 def find_driving_scheme(target_path, target_edges, start_vertex, end_vertex, endpoints, vertices, all_dir_edges):
     """
-    Find a driving scheme for a specific path that minimizes unwanted LED activation.
-    
+    Find a driving scheme for a specific path that drives only this path.
+
+    For single-path driving:
+    - Start vertex = Anode (A)
+    - End vertex = Cathode (C)
+    - All other endpoints = High impedance (Z)
+
     Returns a dictionary with scheme feasibility and assignments.
     """
-    # Start with the assumption: start_vertex = Anode, end_vertex = Cathode
+    # For single-path driving, the scheme is simple:
+    # - Path start = A, path end = C, all other endpoints = Z
     other_endpoints = [ep for ep in endpoints if ep not in (start_vertex, end_vertex)]
-    
-    # Try all combinations of A/C/Z assignments for other endpoints
-    from itertools import product
-    
-    best_scheme = None
-    min_conflicts = float('inf')
-    
-    # Try all possible assignments for other endpoints (A, C, or Z)
-    for assignments in product(['A', 'C', 'Z'], repeat=len(other_endpoints)):
-        # Create full assignment map
-        full_assignment = {start_vertex: 'A', end_vertex: 'C'}
-        for ep, assignment in zip(other_endpoints, assignments):
-            full_assignment[ep] = assignment
-        
-        # Check this assignment scheme
-        conflicts, blocked_paths = evaluate_scheme(
-            full_assignment, target_edges, all_dir_edges, vertices
-        )
-        
-        if len(conflicts) < min_conflicts:
-            min_conflicts = len(conflicts)
-            best_scheme = {
-                'feasible': len(conflicts) == 0,
-                'assignments': full_assignment.copy(),
-                'conflicts': conflicts,
-                'blocked_paths': blocked_paths,
-                'required_disconnections': [ep for ep, assignment in full_assignment.items() 
-                                          if assignment == 'Z' and ep in endpoints]
-            }
-            
-            # If we found a perfect scheme, stop searching
-            if len(conflicts) == 0:
-                break
-    
-    return best_scheme or {
-        'feasible': False,
-        'assignments': {start_vertex: 'A', end_vertex: 'C'},
-        'conflicts': [],
-        'blocked_paths': [],
+
+    # Create the single-path assignment
+    full_assignment = {start_vertex: 'A', end_vertex: 'C'}
+    for ep in other_endpoints:
+        full_assignment[ep] = 'Z'
+
+    # Check this assignment scheme for conflicts
+    conflicts, blocked_paths = evaluate_scheme(
+        full_assignment, target_edges, all_dir_edges, vertices
+    )
+
+    return {
+        'feasible': len(conflicts) == 0,
+        'assignments': full_assignment,
+        'conflicts': conflicts,
+        'blocked_paths': blocked_paths,
         'required_disconnections': other_endpoints
     }
 
@@ -292,6 +275,7 @@ POLYHEDRA = {
     "Hexagonal Prism": PolyhedronGenerators.undirected_hexagonal_prism,        # 18 edges
     "Pentagonal Antiprism": PolyhedronGenerators.undirected_pentagonal_antiprism, # 20 edges
     "Hexagonal Antiprism": PolyhedronGenerators.undirected_hexagonal_antiprism,   # 24 edges
+    "Triangular Orthobicupola": PolyhedronGenerators.undirected_triangular_orthobicupola,  # 24 edges
     "Cuboctahedron": PolyhedronGenerators.undirected_cuboctahedron,            # 24 edges
     "Rhombic Dodecahedron": PolyhedronGenerators.undirected_rhombic_dodecahedron, # 24 edges
     "Stellated Triangular Prism": PolyhedronGenerators.undirected_stellated_triangular_prism,  # 27 edges
@@ -675,7 +659,9 @@ def format_sneak_path_analysis(chosen_paths, dir_edges, vertex_classifications) 
 def format_driving_scheme_analysis(chosen_paths, dir_edges, endpoints) -> list:
     """Format driving scheme analysis section."""
     lines = ["", "=== Driving Scheme Analysis ==="]
-    
+    lines.append("Each path is driven individually: start=A (anode), end=C (cathode), others=Z (high-Z)")
+    lines.append("")
+
     # Derive vertices from paths and edges
     all_vertices = set()
     for path in chosen_paths:
@@ -684,60 +670,37 @@ def format_driving_scheme_analysis(chosen_paths, dir_edges, endpoints) -> list:
         all_vertices.add(u)
         all_vertices.add(v)
     vertices_list = sorted(list(all_vertices))
-    
+
     driving_analysis = analyze_driving_schemes(chosen_paths, dir_edges, endpoints, vertices_list)
-    
+
     for i, path_analysis in enumerate(driving_analysis, 1):
         path = path_analysis['path']
         scheme = path_analysis['scheme']
-        
-        # Create compact endpoint assignment string
-        all_endpoints_sorted = sorted(endpoints)
-        assignments = []
-        z_endpoints = []
-        for ep in all_endpoints_sorted:
-            assignment = scheme['assignments'].get(ep, 'Z')
-            assignments.append(f"{ep}={assignment}")
-            if assignment == 'Z':
-                z_endpoints.append(ep)
-        
-        endpoint_str = ' '.join(assignments)
-        
-        # Determine result status and identify sneak paths avoided by Z assignments
+
+        # Show only the active endpoints (A and C) for this path
+        start_vertex = path[0]
+        end_vertex = path[-1]
+        endpoint_str = f"{start_vertex}=A {end_vertex}=C"
+
+        # Check for conflicts (unwanted LED activation)
         if scheme['feasible']:
-            if z_endpoints:
-                # Find sneak paths that would be created if Z endpoints were connected
-                sneak_paths = find_sneak_paths_avoided(path, z_endpoints, dir_edges)
-                if sneak_paths:
-                    sneak_comment = f" # avoids sneak: {' '.join(f'{u}->{v}' for u, v in sneak_paths[:2])}"
-                    if len(sneak_paths) > 2:
-                        sneak_comment += f" +{len(sneak_paths)-2} more"
-                else:
-                    sneak_comment = ""
-                result_str = sneak_comment
-            else:
-                result_str = ""  # Nothing if proper configuration found
-        elif any(assignment.endswith('=Z') for assignment in assignments):
-            result_str = " - Tristate required"
+            result_str = ""
         else:
-            result_str = " - Impossible"
-        
+            conflict_count = len(scheme['conflicts'])
+            result_str = f" - {conflict_count} conflict(s): {scheme['conflicts'][:3]}"
+
         lines.append(f"Path {i}: {' -> '.join(map(str, path))} | {endpoint_str}{result_str}")
-    
-    # Add final conclusion about driving scheme type
+
+    # Add final conclusion
     lines.append("")
-    has_tristate = any('Z' in analysis['scheme']['assignments'].values() for analysis in driving_analysis)
-    has_feasible = any(analysis['scheme']['feasible'] for analysis in driving_analysis)
-    all_infeasible = all(not analysis['scheme']['feasible'] for analysis in driving_analysis)
-    
-    if all_infeasible:
-        conclusion = "No driving scheme found"
-    elif has_tristate:
-        conclusion = "Ternary driving scheme found"
+    all_feasible = all(analysis['scheme']['feasible'] for analysis in driving_analysis)
+    feasible_count = sum(1 for analysis in driving_analysis if analysis['scheme']['feasible'])
+
+    if all_feasible:
+        lines.append(f"All {len(driving_analysis)} paths can be driven without conflicts")
     else:
-        conclusion = "Bipolar driving scheme found"
-    
-    lines.append(conclusion)
+        lines.append(f"{feasible_count}/{len(driving_analysis)} paths can be driven without conflicts")
+
     return lines
 
 

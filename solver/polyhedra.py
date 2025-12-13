@@ -264,6 +264,50 @@ class PolyhedronGenerators:
         return PolyhedronGenerators._undirected_antiprism(6, return_coords)
 
     @staticmethod
+    def undirected_triangular_orthobicupola(return_coords: bool = False):
+        """Triangular orthobicupola (J27): 12 vertices, 24 edges.
+
+        Unlike the cuboctahedron (triangular gyrobicupola) where the two triangles
+        are rotated 60° from each other, in the orthobicupola the triangles are
+        in the SAME orientation (aligned).
+        """
+        from math import cos, sin, pi, sqrt
+
+        # Two triangular cupolas joined at hexagonal bases WITHOUT rotation
+        r = 1 / sqrt(3)  # Triangle circumradius for unit edge
+        h = sqrt(2 / 3)  # Height of triangle above/below hexagon
+
+        coords = []
+
+        # Top triangle (z = h), at angles 30°, 150°, 270°
+        for k in range(3):
+            angle = pi / 6 + 2 * pi * k / 3
+            coords.append((r * cos(angle), r * sin(angle), h))
+
+        # Middle hexagon (z = 0), at angles 0°, 60°, 120°, 180°, 240°, 300°
+        for k in range(6):
+            angle = pi * k / 3
+            coords.append((cos(angle), sin(angle), 0))
+
+        # Bottom triangle (z = -h), SAME orientation as top (ortho = aligned)
+        for k in range(3):
+            angle = pi / 6 + 2 * pi * k / 3  # Same angles as top triangle
+            coords.append((r * cos(angle), r * sin(angle), -h))
+
+        vertices = list(range(12))
+        edges = set()
+
+        # Use distance-based edge detection (edge length = 1)
+        target_dist2 = 1.0
+        for i in range(12):
+            for j in range(i + 1, 12):
+                dist2 = PolyhedronGenerators._dist2(coords[i], coords[j])
+                if abs(dist2 - target_dist2) < 0.01:
+                    edges.add((i, j))
+
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
     def undirected_rhombicuboctahedron(return_coords: bool = False):
         # Rhombicuboctahedron coordinates: (±1, ±1, ±(1+√2)) and permutations
         s = 1 + sqrt(2)

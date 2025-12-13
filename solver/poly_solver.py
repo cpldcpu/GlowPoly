@@ -408,39 +408,23 @@ def is_solution_alternating_only(chosen_paths):
 def is_solution_bipolar_only(chosen_paths, dir_edges, vertices):
     """
     Check if a solution can be implemented with a bipolar driving scheme (no tristate Z needed).
-    A bipolar solution means each path can be driven individually using only Anode (A) and Cathode (C) 
-    assignments, without requiring tristate (Z) assignments to avoid sneak paths.
-    
-    This uses the same logic as the driving scheme analysis to ensure consistency.
-    
+
+    With single-path driving (one path at a time), tristate (Z) is always required for
+    inactive endpoints when there are more than 2 endpoints. Therefore, bipolar-only
+    is only possible when there are exactly 2 endpoints total.
+
     Returns True if bipolar driving scheme is possible, False if tristate is required.
     """
-    # Import the driving scheme analysis to ensure consistency
-    try:
-        from glowing_polyhedron_sim import analyze_driving_schemes
-    except ImportError:
-        # Fallback if import fails
-        return False
-    
     # Get all endpoint vertices
     endpoints = set()
     for path in chosen_paths:
         if len(path) >= 2:
             endpoints.add(path[0])
             endpoints.add(path[-1])
-    
-    vertices_list = list(vertices) if hasattr(vertices, '__iter__') else vertices
-    
-    # Use the driving scheme analysis directly
-    driving_analysis = analyze_driving_schemes(chosen_paths, dir_edges, endpoints, vertices_list)
-    
-    # Check if any path requires tristate (Z) assignments
-    has_tristate = any('Z' in analysis['scheme']['assignments'].values() for analysis in driving_analysis)
-    has_feasible = any(analysis['scheme']['feasible'] for analysis in driving_analysis)
-    all_infeasible = all(not analysis['scheme']['feasible'] for analysis in driving_analysis)
-    
-    # Bipolar means: has feasible solutions AND no tristate needed
-    return has_feasible and not has_tristate and not all_infeasible
+
+    # With single-path driving, bipolar is only possible with exactly 2 endpoints
+    # (one always A, one always C, no need for Z)
+    return len(endpoints) == 2
 
 # -------------------- New objective solver --------------------
 
