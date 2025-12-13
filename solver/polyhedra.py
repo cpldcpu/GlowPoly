@@ -308,6 +308,177 @@ class PolyhedronGenerators:
         return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
 
     @staticmethod
+    def undirected_elongated_octahedron(return_coords: bool = False):
+        """Elongated square bipyramid (J15): 10 vertices, 20 edges.
+
+        A square prism with square pyramids attached to both ends.
+        """
+        from math import sqrt
+
+        coords = []
+
+        # Bottom apex
+        coords.append((0, 0, -2))
+
+        # Bottom square (z = -1)
+        coords.append((1, 0, -1))
+        coords.append((0, 1, -1))
+        coords.append((-1, 0, -1))
+        coords.append((0, -1, -1))
+
+        # Top square (z = 1)
+        coords.append((1, 0, 1))
+        coords.append((0, 1, 1))
+        coords.append((-1, 0, 1))
+        coords.append((0, -1, 1))
+
+        # Top apex
+        coords.append((0, 0, 2))
+
+        vertices = list(range(10))
+        edges = set()
+
+        # Bottom apex (0) to bottom square (1-4)
+        for i in range(1, 5):
+            edges.add((0, i))
+
+        # Bottom square edges
+        edges.add((1, 2))
+        edges.add((2, 3))
+        edges.add((3, 4))
+        edges.add((4, 1))
+
+        # Vertical edges connecting squares
+        edges.add((1, 5))
+        edges.add((2, 6))
+        edges.add((3, 7))
+        edges.add((4, 8))
+
+        # Top square edges
+        edges.add((5, 6))
+        edges.add((6, 7))
+        edges.add((7, 8))
+        edges.add((8, 5))
+
+        # Top apex (9) to top square (5-8)
+        for i in range(5, 9):
+            edges.add((i, 9))
+
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
+    def _undirected_bipyramid(sides: int, return_coords: bool = False):
+        """Build an n-gonal bipyramid (two pyramids joined at base)."""
+        if sides < 3:
+            raise ValueError("Bipyramid requires at least 3 sides")
+
+        from math import cos, sin, pi
+
+        coords = []
+
+        # Bottom apex
+        coords.append((0, 0, -1))
+
+        # Middle polygon (z = 0)
+        for i in range(sides):
+            angle = 2 * pi * i / sides
+            coords.append((cos(angle), sin(angle), 0))
+
+        # Top apex
+        coords.append((0, 0, 1))
+
+        vertices = list(range(sides + 2))
+        edges = set()
+
+        # Bottom apex (0) to polygon vertices (1 to sides)
+        for i in range(1, sides + 1):
+            edges.add((0, i))
+
+        # Polygon edges
+        for i in range(1, sides + 1):
+            next_i = (i % sides) + 1
+            edges.add((i, next_i))
+
+        # Top apex (sides+1) to polygon vertices (1 to sides)
+        top_apex = sides + 1
+        for i in range(1, sides + 1):
+            edges.add((i, top_apex))
+
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
+    def undirected_hexagonal_bipyramid(return_coords: bool = False):
+        """Hexagonal bipyramid: 8 vertices, 18 edges."""
+        return PolyhedronGenerators._undirected_bipyramid(6, return_coords)
+
+    @staticmethod
+    def undirected_octagonal_bipyramid(return_coords: bool = False):
+        """Octagonal bipyramid: 10 vertices, 24 edges."""
+        return PolyhedronGenerators._undirected_bipyramid(8, return_coords)
+
+    @staticmethod
+    def undirected_elongated_hexagonal_bipyramid(return_coords: bool = False):
+        """Elongated hexagonal bipyramid: 14 vertices, 30 edges.
+
+        A hexagonal prism with hexagonal pyramids attached to both ends.
+        """
+        from math import cos, sin, pi
+
+        coords = []
+
+        # Bottom apex
+        coords.append((0, 0, -2))
+
+        # Bottom hexagon (z = -1)
+        for i in range(6):
+            angle = 2 * pi * i / 6
+            coords.append((cos(angle), sin(angle), -1))
+
+        # Top hexagon (z = 1)
+        for i in range(6):
+            angle = 2 * pi * i / 6
+            coords.append((cos(angle), sin(angle), 1))
+
+        # Top apex
+        coords.append((0, 0, 2))
+
+        vertices = list(range(14))
+        edges = set()
+
+        # Bottom apex (0) to bottom hexagon (1-6)
+        for i in range(1, 7):
+            edges.add((0, i))
+
+        # Bottom hexagon edges (vertices 1-6)
+        for i in range(6):
+            edges.add((i + 1, (i + 1) % 6 + 1))
+        # Explicit for clarity
+        edges.add((1, 2))
+        edges.add((2, 3))
+        edges.add((3, 4))
+        edges.add((4, 5))
+        edges.add((5, 6))
+        edges.add((6, 1))
+
+        # Vertical edges connecting hexagons (1-6 to 7-12)
+        for i in range(6):
+            edges.add((i + 1, i + 7))
+
+        # Top hexagon edges (vertices 7-12)
+        edges.add((7, 8))
+        edges.add((8, 9))
+        edges.add((9, 10))
+        edges.add((10, 11))
+        edges.add((11, 12))
+        edges.add((12, 7))
+
+        # Top apex (13) to top hexagon (7-12)
+        for i in range(7, 13):
+            edges.add((i, 13))
+
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
     def undirected_rhombicuboctahedron(return_coords: bool = False):
         # Rhombicuboctahedron coordinates: (±1, ±1, ±(1+√2)) and permutations
         s = 1 + sqrt(2)

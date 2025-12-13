@@ -275,14 +275,18 @@ POLYHEDRA = {
     "Truncated Tetrahedron": PolyhedronGenerators.undirected_truncated_tetrahedron, # 18 edges
     "Stellated Tetrahedron": PolyhedronGenerators.undirected_stellated_tetrahedron, # 18 edges
     "Hexagonal Prism": PolyhedronGenerators.undirected_hexagonal_prism,        # 18 edges
+    "Hexagonal Bipyramid": PolyhedronGenerators.undirected_hexagonal_bipyramid, # 18 edges
     "Pentagonal Antiprism": PolyhedronGenerators.undirected_pentagonal_antiprism, # 20 edges
+    "Elongated Octahedron": PolyhedronGenerators.undirected_elongated_octahedron, # 20 edges
     "Hexagonal Antiprism": PolyhedronGenerators.undirected_hexagonal_antiprism,   # 24 edges
     "Triangular Orthobicupola": PolyhedronGenerators.undirected_triangular_orthobicupola,  # 24 edges
     "Cuboctahedron": PolyhedronGenerators.undirected_cuboctahedron,            # 24 edges
+    "Octagonal Bipyramid": PolyhedronGenerators.undirected_octagonal_bipyramid, # 24 edges
     "Rhombic Dodecahedron": PolyhedronGenerators.undirected_rhombic_dodecahedron, # 24 edges
     "Stellated Triangular Prism": PolyhedronGenerators.undirected_stellated_triangular_prism,  # 27 edges
     "Dodecahedron": PolyhedronGenerators.undirected_dodecahedron,              # 30 edges
     "Icosahedron": PolyhedronGenerators.undirected_icosahedron,                # 30 edges
+    "Elongated Hexagonal Bipyramid": PolyhedronGenerators.undirected_elongated_hexagonal_bipyramid, # 30 edges
     "Stellated Cube": PolyhedronGenerators.undirected_stellated_cube,          # 36 edges
     "Stellated Octahedron": PolyhedronGenerators.undirected_stellated_octahedron,  # 36 edges
     # "Rhombicuboctahedron": PolyhedronGenerators.undirected_rhombicuboctahedron, # 56 edges
