@@ -196,23 +196,43 @@ function setupControls() {
         }
     });
 
+    // Help Modal controls
+    const helpModal = document.getElementById('help-modal');
+    const helpBtn = document.getElementById('help-btn');
+    const helpClose = document.getElementById('help-close');
+
+    if (helpBtn && helpModal && helpClose) {
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.toggle('active');
+        });
+
+        helpClose.addEventListener('click', () => {
+            helpModal.classList.remove('active');
+        });
+
+        // Close when clicking outside content (handled by shared logic below)
+    }
+
     // Flow Analysis Modal controls
     const flowModal = document.getElementById('flow-modal');
     const flowBtn = document.getElementById('flow-analysis-btn');
     const modalClose = document.getElementById('modal-close');
 
     flowBtn.addEventListener('click', () => {
-        flowModal.classList.add('active');
+        flowModal.classList.toggle('active');
     });
 
     modalClose.addEventListener('click', () => {
         flowModal.classList.remove('active');
     });
 
-    // Close modal on overlay click
-    flowModal.addEventListener('click', (e) => {
+    // Shared modal close on outside click
+    window.addEventListener('click', (e) => {
         if (e.target === flowModal) {
             flowModal.classList.remove('active');
+        }
+        if (e.target === helpModal) {
+            helpModal.classList.remove('active');
         }
     });
 

@@ -21,14 +21,69 @@
             <span class="glow-text secondary">POLYHEDRA</span>
         </h1>
         <p class="subtitle">Geodesic Cover Visualization</p>
-        <a href="https://github.com/cpldcpu/GlowPoly" target="_blank" class="github-link">
-            <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-            GitHub
-        </a>
+        <div class="header-actions">
+            <button id="help-btn" class="icon-button" title="Help / Usage">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+            <a href="https://github.com/cpldcpu/GlowPoly" target="_blank" class="github-link">
+                <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                </svg>
+                GitHub
+            </a>
+        </div>
     </header>
+
+    <!-- ... existing content ... -->
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2>USAGE GUIDE</h2>
+                <button class="modal-close" id="help-close">×</button>
+            </div>
+            <div class="help-sections">
+                <div class="help-section">
+                    <h3>Interaction</h3>
+                    <ul>
+                        <li><strong>Rotate:</strong> Left click + drag</li>
+                        <li><strong>Pan:</strong> Right click + drag</li>
+                        <li><strong>Zoom:</strong> Mouse wheel / Scroll</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3>Model Selection</h3>
+                    <ul>
+                        <li><strong>Filter:</strong> Use [1] [2] [3]... buttons to filter by pair count</li>
+                        <li><strong>Select:</strong> Choose polyhedron from dropdown</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3>Controls</h3>
+                    <ul>
+                        <li><strong>Auto Rotate:</strong> Toggle automatic rotation</li>
+                        <li><strong>Vertex Numbers:</strong> Show/hide index numbers</li>
+                        <li><strong>Show Paths:</strong> Toggle wireframe visibility</li>
+                        <li><strong>Flow Brightness:</strong> Scale brightness by flow weight</li>
+                        <li><strong>Animate Flow:</strong> Visualize path direction</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3>Flow Analysis</h3>
+                    <p>Click "Flow Analysis" to see detailed edge metrics. The "Pair Weights" section shows the
+                        driving current required for each pair to achieve balanced flow.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flow Analysis Modal (existing) -->
 
     <!-- Main container -->
     <div class="main-container">
@@ -79,7 +134,7 @@
             </div>
 
             <div class="panel-section">
-                <button id="flow-analysis-btn" class="cyber-button">View Flow Analysis</button>
+                <button id="flow-analysis-btn" class="cyber-button">Flow Analysis</button>
             </div>
 
             <div class="panel-section">

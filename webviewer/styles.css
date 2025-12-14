@@ -114,20 +114,166 @@ body {
     }
 }
 
-/* GitHub Link */
-.github-link {
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     position: absolute;
     top: 15px;
     left: 20px;
+    z-index: 20;
+}
+
+.icon-button {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--text-dim);
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 2px;
+}
+
+.icon-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-button:hover {
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+/* GitHub Link (updated to match alignment) */
+.github-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
     text-decoration: none;
-    font-family: var(--font-mono);
+    font-family: 'Orbitron', sans-serif;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
     opacity: 0.8;
-    transition: all 0.2s ease;
+}
+
+/* Help Modal Overlay - Override generic modal-overlay which is sidebar-specific */
+#help-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    border-right: none;
+    box-shadow: none;
+    transform: none;
+    /* Reset sidebar transform */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+#help-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Help Modal Inner Content container override */
+#help-modal .modal-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--cyan-glow);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.15);
+    height: auto;
+}
+
+/* Help Modal Styling */
+.help-modal-content {
+    max-width: 1200px !important;
+    /* Increased from 800px */
+    width: 95%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.help-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Reduced min-width slightly to prevent overflow on small screens */
+    gap: 1.5rem;
+    overflow-y: auto;
+    /*  overflow-x: hidden;  Not needed if width is controlled */
+    padding-right: 0.5rem;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.help-section {
+    background: rgba(0, 20, 40, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.help-section h3 {
+    color: var(--secondary-color);
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+    padding-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.help-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-section li {
+    margin-bottom: 0.5rem;
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.help-section strong {
+    color: var(--primary-color);
+}
+
+.help-section p {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Scrollbar for modal content */
+.help-sections::-webkit-scrollbar {
+    width: 6px;
+}
+
+.help-sections::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.help-sections::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
 }
 
 .github-link:hover {
