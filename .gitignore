@@ -139,3 +139,7 @@ photos_tmp/
 *.hex
 *.lst
 *.map
+report/
+report_/
+test/
+
