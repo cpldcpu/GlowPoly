@@ -1,4 +1,4 @@
-name: Deploy webapp to GitHub Pages
+name: Deploy Webviewer to GitHub Pages
 
 on:
   push:
@@ -17,30 +17,26 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: webapp
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: webapp/package-lock.json
+      - name: Create models directory
+        run: mkdir -p webviewer/models
 
-      - name: Install
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+      - name: Download polyhedra model data
+        run: |
+          cd webviewer/models
+          # Download JSON files from tesseralis/polyhedra-viewer repository
+          curl -sL "https://api.github.com/repos/tesseralis/polyhedra-viewer/contents/src/data/polyhedra?ref=canon" | \
+          jq -r '.[] | select(.name | endswith(".json")) | .download_url' | \
+          xargs -P 10 -I {} curl -sLO "{}"
+          echo "Downloaded $(ls -1 *.json 2>/dev/null | wc -l) model files"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: webapp/dist
+          path: webviewer
 
   deploy:
     needs: build

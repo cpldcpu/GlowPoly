@@ -1,0 +1,2 @@
+# Downloaded model files (fetched at build time)
+models/*.json

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Polyhedra - Geodesic Cover Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <h1 class="title">
+            <span class="glow-text">GLOWING</span>
+            <span class="glow-text secondary">POLYHEDRA</span>
+        </h1>
+        <p class="subtitle">Geodesic Cover Visualization</p>
+        <a href="https://github.com/cpldcpu/GlowPoly" target="_blank" class="github-link">
+            <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            GitHub
+        </a>
+    </header>
+
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Control Panel -->
+        <aside class="control-panel">
+            <div class="panel-section">
+                <label class="panel-label" for="poly-select">SELECT MODEL</label>
+                <select id="poly-select" class="cyber-select">
+                    <option value="">Loading...</option>
+                </select>
+                <div class="filter-group">
+                    <span class="filter-label">Filter by pairs:</span>
+                    <div class="filter-checkboxes">
+                        <label class="filter-checkbox"><input type="checkbox" id="filter-1"
+                                checked><span>1</span></label>
+                        <label class="filter-checkbox"><input type="checkbox" id="filter-2"
+                                checked><span>2</span></label>
+                        <label class="filter-checkbox"><input type="checkbox" id="filter-3"
+                                checked><span>3</span></label>
+                        <label class="filter-checkbox"><input type="checkbox" id="filter-4"
+                                checked><span>4+</span></label>
+                        <label class="filter-checkbox"><input type="checkbox" id="filter-none"
+                                checked><span>None</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3 class="panel-title">STATISTICS</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Vertices</span>
+                        <span class="stat-value" id="stat-vertices">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Edges</span>
+                        <span class="stat-value" id="stat-edges">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Pairs (k)</span>
+                        <span class="stat-value" id="stat-k">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Path Length (L)</span>
+                        <span class="stat-value" id="stat-L">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <button id="flow-analysis-btn" class="cyber-button">View Flow Analysis</button>
+            </div>
+
+            <div class="panel-section">
+                <h3 class="panel-title">PAIR WEIGHTS</h3>
+                <div class="pair-weights" id="pair-weights">
+                    <p class="no-data">-</p>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3 class="panel-title">CONTROLS</h3>
+                <div class="controls">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="auto-rotate" checked>
+                        <span class="toggle-text">Auto Rotate</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="show-labels">
+                        <span class="toggle-text">Vertex Numbers</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="show-paths" checked>
+                        <span class="toggle-text">Show Paths</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="flow-brightness">
+                        <span class="toggle-text">Flow Brightness</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="animate-flow">
+                        <span class="toggle-text">Animate Flow</span>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 3D Canvas -->
+        <main class="canvas-container">
+            <canvas id="webgl-canvas"></canvas>
+            <div class="loading-overlay" id="loading">
+                <div class="loader"></div>
+                <p>Initializing...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" id="legend">
+        <!-- Populated dynamically -->
+    </div>
+
+    <!-- Flow Analysis Modal -->
+    <div class="modal-overlay" id="flow-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>FLOW ANALYSIS</h2>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="flow-stats" id="flow-stats">
+                    <p class="no-data">Select a model with solution</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
