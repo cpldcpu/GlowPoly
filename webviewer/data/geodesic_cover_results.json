@@ -11019,6 +11019,181 @@
     ]
   },
   {
+    "name": "square",
+    "nV": 4,
+    "nE": 4,
+    "directed": false,
+    "diameter": 2,
+    "pair_edge_counts": [
+      4
+    ],
+    "single_pair_L": 2,
+    "single_pair": [
+      0,
+      2
+    ],
+    "best_L": 2,
+    "best_k": 1,
+    "solution": [
+      {
+        "s": 0,
+        "t": 2,
+        "assigned_edges_count": 4,
+        "geodesic_edges_count": 4,
+        "paths": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            3,
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "name": "star_octahedron",
+    "nV": 10,
+    "nE": 16,
+    "directed": false,
+    "diameter": 4,
+    "pair_edge_counts": [
+      16
+    ],
+    "single_pair_L": 4,
+    "single_pair": [
+      6,
+      8
+    ],
+    "best_L": 4,
+    "best_k": 1,
+    "solution": [
+      {
+        "s": 6,
+        "t": 8,
+        "assigned_edges_count": 16,
+        "geodesic_edges_count": 16,
+        "paths": [
+          [
+            6,
+            2,
+            0,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            0,
+            5,
+            8
+          ],
+          [
+            6,
+            2,
+            1,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            7,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            1,
+            5,
+            8
+          ],
+          [
+            6,
+            2,
+            9,
+            5,
+            8
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "name": "star_octahedron",
+    "nV": 10,
+    "nE": 16,
+    "directed": false,
+    "diameter": 4,
+    "pair_edge_counts": [
+      16
+    ],
+    "single_pair_L": 4,
+    "single_pair": [
+      6,
+      8
+    ],
+    "best_L": 4,
+    "best_k": 1,
+    "solution": [
+      {
+        "s": 6,
+        "t": 8,
+        "assigned_edges_count": 16,
+        "geodesic_edges_count": 16,
+        "paths": [
+          [
+            6,
+            2,
+            0,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            0,
+            5,
+            8
+          ],
+          [
+            6,
+            2,
+            1,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            7,
+            4,
+            8
+          ],
+          [
+            6,
+            3,
+            1,
+            5,
+            8
+          ],
+          [
+            6,
+            2,
+            9,
+            5,
+            8
+          ]
+        ]
+      }
+    ]
+  },
+  {
     "name": "tetrahedron",
     "nV": 4,
     "nE": 6,

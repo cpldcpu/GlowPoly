@@ -1,6 +1,7 @@
 import os
 import json
 import urllib.request
+import shutil
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
@@ -41,6 +42,18 @@ def main():
 
     success_count = sum(results)
     print(f"Successfully downloaded {success_count} files.")
+
+    # Copy local custom models from data/ folder if they exist
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    custom_models = ['square.json', 'star-octahedron.json']
+    
+    for model_name in custom_models:
+        src = os.path.join(data_dir, model_name)
+        if os.path.exists(src):
+            shutil.copy2(src, TARGET_DIR) # Changed models_dir to TARGET_DIR
+            print(f"Copied custom model: {model_name}")
+        else:
+            print(f"Warning: Custom model {model_name} not found in {data_dir}")
 
 if __name__ == "__main__":
     main()

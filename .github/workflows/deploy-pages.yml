@@ -32,6 +32,11 @@ jobs:
           jq -r '.[] | select(.name | endswith(".json")) | .download_url' | \
           xargs -P 10 -I {} curl -sLO "{}"
           echo "Downloaded $(ls -1 *.json 2>/dev/null | wc -l) model files"
+          
+          # Copy custom models from data directory
+          cp ../data/square.json .
+          cp ../data/star-octahedron.json .
+          echo "Copied custom models"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
