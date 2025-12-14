@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #define OUTPUT_MASK ((uint16_t)((1u << 0) | (1u << 1) | (1u << 2) | (1u << 3)))
+#define OUTPUT_MASK_67 ((uint16_t)((1u << 6) | (1u << 7)))
 
 int main(void)
 {
@@ -16,11 +17,18 @@ int main(void)
 	cfg |= 0x1111u;         /* MODE=01 (10MHz) | CNF=00 for pins 0-3 */
 	GPIOC->CFGLR = cfg;
 
+/* Configure PC6-PC7 as 10MHz push-pull outputs */
+	uint32_t cfg2 = GPIOC->CFGLR;
+	cfg2 &= ~(0xFF000000u);      /* clear config for pins 6-7 */	
+	cfg2 |= 0x11000000u;         /* MODE=01 (10MHz) | CNF=00 for pins 6-7 */
+	GPIOC->CFGLR = cfg2;
+
 	while (1) {
 		for (uint8_t active = 0; active < 4; active++) {
 			/* Reset all PC0-PC3, then set the active one high */
-			GPIOC->BSHR = ((uint32_t)OUTPUT_MASK << 16) | (1u << active);
-			Delay_Ms(1); /* 1 ms per step */
+			GPIOC->BSHR = ((uint32_t)OUTPUT_MASK << 16) | (1u << active) |
+						  ((uint32_t)OUTPUT_MASK_67 << 16) | (1u << (6 + (active & 1)));
+			Delay_Us(200); /* 0.2 ms per step */
 		}
 	}
 }
