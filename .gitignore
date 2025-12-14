@@ -141,5 +141,6 @@ photos_tmp/
 *.map
 report/
 report_/
-test/
+Solver/
+
 
