@@ -18,6 +18,8 @@ from poly_solver import (
     sampled_orientations_max_coverage_with_fixed_endpoints,
     solve_fixed_orientation_min_endpoints_with_L,
     is_solution_better,
+    solve_two_feedpoint,
+    enumerate_two_feedpoint_paths,
 )
 import random
 
@@ -248,7 +250,7 @@ HIDDEN_EDGE_COLOR = "#8b8d99"
 VERTEX_OUTLINE = "#2f2f35"
 VERTEX_FILL_NEAR = "#ffffff"
 VERTEX_FILL_FAR = "#d0d3de"
-LABEL_COLOR = "#d92626"
+LABEL_COLOR = "#3399ff"  # Light blue for better contrast
 ENDPOINT_FILL = "#ffd166"
 ARROW_COLOR = "#ff4d4d"
 
@@ -272,6 +274,7 @@ POLYHEDRA = {
     "Octahedron": PolyhedronGenerators.undirected_octahedron,                  # 12 edges
     "Pentagonal Prism": PolyhedronGenerators.undirected_pentagonal_prism,      # 15 edges
     "Square Antiprism": PolyhedronGenerators.undirected_square_antiprism,      # 16 edges
+    "Star Octahedron": PolyhedronGenerators.undirected_star_octahedron,        # 16 edges
     "Truncated Tetrahedron": PolyhedronGenerators.undirected_truncated_tetrahedron, # 18 edges
     "Stellated Tetrahedron": PolyhedronGenerators.undirected_stellated_tetrahedron, # 18 edges
     "Hexagonal Prism": PolyhedronGenerators.undirected_hexagonal_prism,        # 18 edges
@@ -391,7 +394,7 @@ def compute_graph_layout(vertices, edges, iterations=100):
 def find_outer_face(vertices, edges, coords):
     """
     Find a good outer face for the Schlegel diagram.
-    Uses the face closest to the viewer (highest average z after rotation).
+    Prefers larger faces for better symmetry, then uses z-coordinate as tiebreaker.
     """
     # Build adjacency list
     n = len(vertices)
@@ -400,7 +403,7 @@ def find_outer_face(vertices, edges, coords):
         adj[u].add(v)
         adj[v].add(u)
 
-    # Find all triangular and quadrilateral faces using cycle detection
+    # Find all faces using cycle detection (triangles through octagons)
     faces = []
 
     # Find triangular faces
@@ -421,23 +424,101 @@ def find_outer_face(vertices, edges, coords):
                             if x > v and x != v and x not in adj[v]:
                                 faces.append([u, v, w, x])
 
+    # Try to find larger cycles by looking for "equatorial" cycles around apex vertices
+    # A vertex with many neighbors might be an apex; the cycle of its neighbors could be the outer face
+    for apex in range(n):
+        neighbors = list(adj[apex])
+        if len(neighbors) >= 4:
+            # Try to find a cycle through these neighbors
+            cycle = find_cycle_through_vertices(neighbors, adj)
+            if cycle and len(cycle) >= 4:
+                # Verify it's a valid face (not containing the apex)
+                if apex not in cycle:
+                    faces.append(cycle)
+
+    # Try to find planar cycles (vertices sharing same y-coordinate)
+    # This helps with structures like star octahedron where equatorial vertices form a cycle
+    y_groups = {}
+    for v in range(n):
+        y = round(coords[v][1], 4)  # Group by y-coordinate
+        if y not in y_groups:
+            y_groups[y] = []
+        y_groups[y].append(v)
+
+    for y, group in y_groups.items():
+        if len(group) >= 4:
+            cycle = find_cycle_through_vertices(group, adj)
+            if cycle and len(cycle) >= 4:
+                faces.append(cycle)
+
     if not faces:
         # Fallback: use vertices with highest degree as outer face
         degrees = [(len(adj[v]), v) for v in range(n)]
         degrees.sort(reverse=True)
         return [d[1] for d in degrees[:min(4, n)]]
 
-    # Choose the face with highest average z-coordinate (closest to viewer)
-    best_face = faces[0]
-    best_z = sum(coords[v][2] for v in faces[0]) / len(faces[0])
+    # Prefer larger faces for better symmetry in the Schlegel diagram
+    # Among same-size faces, use highest average z-coordinate
+    max_size = max(len(f) for f in faces)
+    large_faces = [f for f in faces if len(f) == max_size]
 
-    for face in faces[1:]:
+    best_face = large_faces[0]
+    best_z = sum(coords[v][2] for v in large_faces[0]) / len(large_faces[0])
+
+    for face in large_faces[1:]:
         avg_z = sum(coords[v][2] for v in face) / len(face)
         if avg_z > best_z:
             best_z = avg_z
             best_face = face
 
     return best_face
+
+
+def find_cycle_through_vertices(vertex_set, adj):
+    """
+    Try to find a cycle that visits all vertices in vertex_set exactly once.
+    Uses DFS to find a Hamiltonian path through the induced subgraph.
+    """
+    if len(vertex_set) < 3:
+        return None
+
+    vertex_list = list(vertex_set)
+    vertex_set = set(vertex_set)
+
+    # Build induced subgraph adjacency
+    induced_adj = {v: adj[v] & vertex_set for v in vertex_set}
+
+    # Check if all vertices have degree >= 2 in induced subgraph (necessary for cycle)
+    for v in vertex_set:
+        if len(induced_adj[v]) < 2:
+            return None
+
+    # DFS to find Hamiltonian cycle
+    def dfs(current, visited, path):
+        if len(path) == len(vertex_set):
+            # Check if we can close the cycle
+            if path[0] in induced_adj[current]:
+                return path
+            return None
+
+        for neighbor in induced_adj[current]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                path.append(neighbor)
+                result = dfs(neighbor, visited, path)
+                if result:
+                    return result
+                path.pop()
+                visited.remove(neighbor)
+        return None
+
+    # Try starting from each vertex
+    for start in vertex_list:
+        result = dfs(start, {start}, [start])
+        if result:
+            return result
+
+    return None
 
 
 def compute_schlegel_layout(vertices, edges, coords):
@@ -486,6 +567,27 @@ def compute_schlegel_layout(vertices, edges, coords):
                 pos[v] = (avg_x, avg_y)
         if max_move < 0.0001:
             break
+
+    # Separate overlapping interior vertices (e.g., two apexes with same neighbors)
+    # Use diagonal offset based on the 3D coordinate with largest difference
+    overlap_threshold = 0.001
+    for i, v1 in enumerate(interior):
+        for v2 in interior[i+1:]:
+            dx = pos[v1][0] - pos[v2][0]
+            dy = pos[v1][1] - pos[v2][1]
+            dist = math.sqrt(dx*dx + dy*dy)
+            if dist < overlap_threshold:
+                # Find the 3D coordinate axis with the largest difference
+                c1 = coords[v1]
+                c2 = coords[v2]
+                diffs = [(abs(c1[j] - c2[j]), c1[j] - c2[j], j) for j in range(len(c1))]
+                max_diff = max(diffs, key=lambda x: x[0])
+                sign = 1 if max_diff[1] > 0 else -1
+
+                offset = 0.15  # Diagonal separation
+                # v1 with higher coord value goes upper-left, v2 goes lower-right
+                pos[v1] = (pos[v1][0] - sign * offset, pos[v1][1] - sign * offset)
+                pos[v2] = (pos[v2][0] + sign * offset, pos[v2][1] + sign * offset)
 
     # Scale to canvas coordinates
     xs = [p[0] for p in pos]
@@ -723,7 +825,7 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
             width=2,
             fill=fill,
         )
-        canvas.create_text(x, y - radius - 8, text=str(idx), fill=LABEL_COLOR, font=("Helvetica", 11, "bold"))
+        canvas.create_text(x, y - radius - 10, text=str(idx), fill=LABEL_COLOR, font=("Helvetica", 13, "bold"))
 
 
 def build_constraint_suffix(dc_only: bool, sneak_free: bool, equal_current: bool, alternating_only: bool, bipolar_only: bool) -> str:
@@ -1842,6 +1944,137 @@ def main():
     stop_button = ttk.Button(button_frame, text="Stop", state="disabled", command=stop_solver)
     stop_button.grid(row=0, column=1)
 
+    def launch_two_feedpoint():
+        """Run the two-feedpoint solver to find edge-geodetic pairs."""
+        name = get_polyhedron_name()
+        builder = POLYHEDRA.get(name)
+        if builder is None:
+            status_var.set("Please choose a polyhedron.")
+            return
+
+        set_running(True)
+
+        def worker():
+            try:
+                V, E = builder()
+                result = solve_two_feedpoint(V, E)
+
+                if result['found']:
+                    # Use only the first solution
+                    s, t, D = result['pairs'][0]
+                    paths = enumerate_two_feedpoint_paths(V, E, s, t)
+
+                    # Build directed edges (oriented from s toward t along shortest paths)
+                    dir_edges = []
+                    seen = set()
+                    for path in paths:
+                        for u, v in zip(path, path[1:]):
+                            key = (u, v)
+                            if key not in seen:
+                                seen.add(key)
+                                dir_edges.append((u, v))
+
+                    # Build chosen_paths in the same format as regular solver
+                    chosen_paths = paths
+
+                    # Compute current flow data
+                    flow_data = analyze_current_flow(chosen_paths, dir_edges)
+
+                    # Format output like the regular solver
+                    lines = []
+                    lines.append(f"Two-Feedpoint Solution for {name}")
+                    lines.append("=" * 50)
+                    lines.append(f"Graph: {len(V)} vertices, {result['num_edges']} edges")
+                    lines.append(f"Diameter: {result['diameter']}")
+                    lines.append("")
+                    lines.append(f"Feedpoints: {s} (Anode) and {t} (Cathode)")
+                    lines.append(f"Path length: {D}")
+                    lines.append(f"Number of branching paths: {len(paths)}")
+                    lines.append("")
+
+                    # Show paths
+                    lines.append("PATHS:")
+                    for i, path in enumerate(paths, 1):
+                        lines.append(f"  Path {i}: {' -> '.join(str(v) for v in path)}")
+                    lines.append("")
+
+                    # Show directed edges
+                    lines.append("DIRECTED EDGES:")
+                    for u, v in dir_edges:
+                        lines.append(f"  {u} -> {v}")
+                    lines.append("")
+
+                    # Current flow analysis
+                    lines.append("CURRENT FLOW ANALYSIS:")
+                    currents = [data['current'] for data in flow_data.values()]
+                    if currents:
+                        equal_current = len(set(f"{c:.6f}" for c in currents)) == 1
+                        if equal_current:
+                            lines.append(f"  Equal current through all edges: {currents[0]:.3f}")
+                        else:
+                            lines.append(f"  Current range: {min(currents):.3f} - {max(currents):.3f}")
+                        lines.append("")
+                        for edge, data in flow_data.items():
+                            lines.append(f"  {edge[0]} -> {edge[1]}: current={data['current']:.3f}")
+                    lines.append("")
+
+                    # Driving scheme
+                    lines.append("DRIVING SCHEME:")
+                    lines.append(f"  {s} = Anode (A)")
+                    lines.append(f"  {t} = Cathode (C)")
+                    lines.append("  All other vertices are intermediate (no connection needed).")
+                    lines.append("")
+                    lines.append("  This is a bipolar solution - no tristate (Z) switching required.")
+                    lines.append("  Simply apply voltage between the two feedpoints.")
+
+                    detail = "\n".join(lines)
+                    summary = f"2-feedpoint solution: {s} <-> {t}, {len(paths)} paths, L={D}"
+
+                    # Build highlight payload matching regular solver format
+                    oriented_edges = [(u, v) for u, v in dir_edges]
+                    highlight_payload = {
+                        'endpoints': [s, t],
+                        'edges': oriented_edges,
+                        'current_data': flow_data,
+                        'all_directed_edges': dir_edges
+                    }
+                else:
+                    detail = f"Two-Feedpoint Analysis for {name}\n"
+                    detail += "=" * 50 + "\n"
+                    detail += f"Graph: {len(V)} vertices, {result['num_edges']} edges\n"
+                    detail += f"Diameter: {result['diameter']}\n\n"
+                    detail += result['message'] + "\n\n"
+                    detail += "This polyhedron requires more than 2 feedpoints to cover all edges.\n"
+                    detail += "Use the regular solver to find a solution."
+                    summary = result['message']
+                    highlight_payload = {}
+
+                def finish():
+                    set_running(False)
+                    status_var.set("Two-feedpoint analysis complete.")
+                    summary_var.set(summary)
+                    current_highlight.clear()
+                    current_highlight.update(highlight_payload)
+                    update_canvas()
+                    output_text.configure(state="normal")
+                    output_text.delete("1.0", tk.END)
+                    output_text.insert(tk.END, detail)
+                    output_text.configure(state="disabled")
+                root.after(0, finish)
+            except Exception as exc:
+                error_msg = str(exc)
+                def fail():
+                    set_running(False)
+                    status_var.set(f"Error: {error_msg}")
+                root.after(0, fail)
+
+        thread = threading.Thread(target=worker, daemon=True)
+        current_thread[0] = thread
+        thread.start()
+
+    two_fp_button = ttk.Button(button_frame, text="Find 2-Feedpoint", command=launch_two_feedpoint)
+    two_fp_button.grid(row=0, column=2, padx=(8, 0))
+
     def stop_progress():
         job = progress_job[0]
         if job is not None:
@@ -1861,13 +2094,15 @@ def main():
     def set_running(running: bool):
         if running:
             run_button.config(state="disabled")
+            two_fp_button.config(state="disabled")
             stop_button.config(state="normal")
             start_progress()
             status_var.set("Running solver...")
             cancel_event.clear()  # Reset cancellation flag
         else:
             run_button.config(state="normal")
-            stop_button.config(state="disabled") 
+            two_fp_button.config(state="normal")
+            stop_button.config(state="disabled")
             stop_progress()
 
     def launch():

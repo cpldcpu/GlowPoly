@@ -3,6 +3,9 @@ Polyhedron LED Path Optimization Solver
 
 This module provides constraint-based optimization for LED path planning on polyhedra.
 
+Includes a special two-feedpoint solver for finding vertex pairs where all shortest
+paths between them cover all edges (edge-geodetic pairs).
+
 CORE ARCHITECTURE:
 - Generic constraint-based solvers (exhaustive_orientations_with_constraints, sampled_orientations_with_constraints)
 - Composable constraint functions (constraint_dc_only, constraint_equal_current, etc.)
@@ -816,19 +819,19 @@ def sampled_orientations_max_coverage_with_fixed_endpoints(V, undirected_edges, 
     """
     if target_endpoints <= 0:
         return None
-    
+
     random.seed(seed)
     m = len(undirected_edges)
     best = None
     max_coverage = 0
-    
+
     for _ in range(iters):
         mask = random.getrandbits(m)
         dir_edges = [(u,v) if ((mask>>i)&1) else (v,u) for i,(u,v) in enumerate(undirected_edges)]
         res = solve_fixed_orientation_max_coverage_with_fixed_endpoints(V, undirected_edges, dir_edges, L, target_endpoints, dc_only, sneak_free, equal_current, alternating_only)
         if res is None:
             continue
-        
+
         # Calculate coverage (number of edges covered)
         _, _, _, _, _, chosen_paths = res
         covered_edges = set()
@@ -840,10 +843,243 @@ def sampled_orientations_max_coverage_with_fixed_endpoints(V, undirected_edges, 
                     if (u == eu and v == ev) or (u == ev and v == eu):
                         covered_edges.add(edge_idx)
                         break
-        
+
         coverage = len(covered_edges)
         if coverage > max_coverage:
             max_coverage = coverage
             best = res
-    
+
     return best
+
+# -------------------- Two-Feedpoint Solver (Edge-Geodetic Pairs) --------------------
+
+def bfs_distances_undirected(V, undirected_edges, source):
+    """
+    BFS to compute shortest path distances from source in undirected graph.
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges (u, v)
+        source: Source vertex
+
+    Returns:
+        Dictionary mapping each vertex to its distance from source
+    """
+    # Build adjacency list for undirected graph
+    adj = defaultdict(list)
+    for u, v in undirected_edges:
+        adj[u].append(v)
+        adj[v].append(u)
+
+    dist = {source: 0}
+    queue = deque([source])
+
+    while queue:
+        u = queue.popleft()
+        for v in adj[u]:
+            if v not in dist:
+                dist[v] = dist[u] + 1
+                queue.append(v)
+
+    return dist
+
+def all_pairs_distances(V, undirected_edges):
+    """
+    Compute shortest path distances between all pairs of vertices.
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges
+
+    Returns:
+        Dictionary of dictionaries: dist[u][v] = shortest path length from u to v
+    """
+    dist = {}
+    for v in V:
+        dist[v] = bfs_distances_undirected(V, undirected_edges, v)
+    return dist
+
+def edge_geodetic_cover_edges(V, undirected_edges, s, t, dist):
+    """
+    Find edges that lie on at least one shortest s-t path.
+
+    An edge (u,v) lies on a shortest s-t path if:
+    - Both u and v are on some shortest path (dist[s][u] + dist[u][t] == D and same for v)
+    - The edge connects consecutive vertices on that path (|dist[s][u] - dist[s][v]| == 1)
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges
+        s: Source vertex
+        t: Target vertex
+        dist: All-pairs distance dictionary from all_pairs_distances()
+
+    Returns:
+        Tuple (covered_edges, path_length) where:
+        - covered_edges: Set of edges (as canonical tuples) covered by shortest s-t paths
+        - path_length: Length of shortest s-t path (diameter between s and t)
+    """
+    ds = dist[s]
+    dt = dist[t]
+    D = ds[t]  # Distance from s to t
+
+    covered = set()
+    for u, v in undirected_edges:
+        # Check if both endpoints are on some shortest s-t path
+        if ds[u] + dt[u] == D and ds[v] + dt[v] == D:
+            # Check if this edge is traversed on that path (consecutive vertices)
+            if abs(ds[u] - ds[v]) == 1:
+                # Store as canonical tuple (smaller vertex first)
+                covered.add((u, v) if u < v else (v, u))
+
+    return covered, D
+
+def find_edge_geodetic_pairs(V, undirected_edges, require_diameter=False):
+    """
+    Find all vertex pairs (s, t) where all shortest paths between s and t
+    together cover ALL edges in the graph.
+
+    This is the special case for "two-feedpoint" solutions where only two
+    vertices are needed as endpoints, and all edges can be lit by the
+    branching shortest paths between them.
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges
+        require_diameter: If True, only return pairs at maximum distance (graph diameter)
+
+    Returns:
+        List of tuples (s, t, path_length) for each edge-geodetic pair found.
+        Empty list if no such pairs exist (which is common for most polyhedra).
+    """
+    from itertools import combinations
+
+    # Compute all-pairs shortest paths
+    dist = all_pairs_distances(V, undirected_edges)
+
+    # Get canonical edge set for comparison
+    all_edges = set((u, v) if u < v else (v, u) for u, v in undirected_edges)
+
+    # Compute graph diameter if needed
+    diam = 0
+    if require_diameter:
+        for u in V:
+            for v in V:
+                if v in dist[u]:
+                    diam = max(diam, dist[u][v])
+
+    pairs = []
+    for s, t in combinations(V, 2):
+        covered, D = edge_geodetic_cover_edges(V, undirected_edges, s, t, dist)
+
+        # Check if all edges are covered
+        if covered == all_edges:
+            # Optionally filter to diameter-only pairs
+            if not require_diameter or D == diam:
+                pairs.append((s, t, D))
+
+    return pairs
+
+def solve_two_feedpoint(V, undirected_edges, require_diameter=False):
+    """
+    Solve for the special two-feedpoint case where exactly two vertices
+    can serve as the only feedpoints, with branching shortest paths
+    covering all edges.
+
+    This is a much simpler driving scheme than the general solver, as
+    it only requires switching polarity between two fixed endpoints.
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges
+        require_diameter: If True, only consider pairs at maximum graph distance
+
+    Returns:
+        Dictionary with:
+        - 'found': bool - whether any two-feedpoint solution exists
+        - 'pairs': list of (s, t, path_length) tuples
+        - 'num_edges': total number of edges in graph
+        - 'diameter': graph diameter
+        - 'message': human-readable summary
+    """
+    # Find all edge-geodetic pairs
+    pairs = find_edge_geodetic_pairs(V, undirected_edges, require_diameter)
+
+    # Compute graph diameter
+    dist = all_pairs_distances(V, undirected_edges)
+    diam = 0
+    for u in V:
+        for v in V:
+            if v in dist[u]:
+                diam = max(diam, dist[u][v])
+
+    num_edges = len(undirected_edges)
+
+    if pairs:
+        if len(pairs) == 1:
+            s, t, D = pairs[0]
+            message = f"Found 1 two-feedpoint solution: vertices {s} and {t} (path length {D})"
+        else:
+            message = f"Found {len(pairs)} two-feedpoint solutions"
+    else:
+        message = "No two-feedpoint solution exists for this polyhedron"
+
+    return {
+        'found': len(pairs) > 0,
+        'pairs': pairs,
+        'num_edges': num_edges,
+        'diameter': diam,
+        'message': message
+    }
+
+def enumerate_two_feedpoint_paths(V, undirected_edges, s, t):
+    """
+    Enumerate all shortest paths between two feedpoint vertices s and t.
+
+    Args:
+        V: List of vertices
+        undirected_edges: List of undirected edges
+        s: First feedpoint vertex
+        t: Second feedpoint vertex
+
+    Returns:
+        List of paths, where each path is a list of vertices from s to t
+    """
+    # Build adjacency list
+    adj = defaultdict(list)
+    for u, v in undirected_edges:
+        adj[u].append(v)
+        adj[v].append(u)
+
+    # BFS to get distances from s
+    dist_from_s = bfs_distances_undirected(V, undirected_edges, s)
+
+    if t not in dist_from_s:
+        return []
+
+    D = dist_from_s[t]
+
+    # Build DAG of edges on shortest paths
+    # An edge (u,v) is on a shortest path if dist[s][u] + 1 == dist[s][v] and dist[s][v] <= D
+    dag = defaultdict(list)
+    for u, v in undirected_edges:
+        du = dist_from_s.get(u, float('inf'))
+        dv = dist_from_s.get(v, float('inf'))
+        if du + 1 == dv and dv <= D:
+            dag[u].append(v)
+        elif dv + 1 == du and du <= D:
+            dag[v].append(u)
+
+    # DFS to enumerate all paths
+    paths = []
+    stack = [(s, [s])]
+
+    while stack:
+        u, path = stack.pop()
+        if u == t:
+            paths.append(path)
+            continue
+        for v in dag[u]:
+            stack.append((v, path + [v]))
+
+    return paths

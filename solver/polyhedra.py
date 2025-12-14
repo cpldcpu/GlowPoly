@@ -479,6 +479,61 @@ class PolyhedronGenerators:
         return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
 
     @staticmethod
+    def undirected_star_octahedron(return_coords: bool = False):
+        """Star octahedron: An octahedron with 4 equatorial edges replaced by
+        triangular protrusions, creating a star-like wireframe.
+
+        10 vertices, 16 edges.
+
+        Structure:
+        - Vertices 0, 1: top and bottom apex
+        - Vertices 2-5: equatorial vertices (original octahedron square)
+        - Vertices 6-9: star points (protrusions outward)
+        """
+        vertices = list(range(10))
+
+        # Edges from apexes to equatorial vertices (8 edges)
+        apex_edges = [
+            (0, 2), (0, 3), (0, 4), (0, 5),  # top apex to equatorial
+            (1, 2), (1, 3), (1, 4), (1, 5),  # bottom apex to equatorial
+        ]
+
+        # Star edges: each equatorial edge replaced by 2 edges through star point
+        # Original 2-3 → 2-6, 6-3
+        # Original 3-4 → 3-7, 7-4
+        # Original 4-5 → 4-8, 8-5
+        # Original 5-2 → 5-9, 9-2
+        star_edges = [
+            (2, 6), (6, 3),  # star point 6
+            (3, 7), (7, 4),  # star point 7
+            (4, 8), (8, 5),  # star point 8
+            (5, 9), (9, 2),  # star point 9
+        ]
+
+        edges = set(apex_edges + star_edges)  # 8 + 8 = 16 edges
+
+        # 3D coordinates
+        # Star points form equilateral triangles (60° angle) with equatorial edges
+        # s = 0.5 + sqrt(3)/2 places star points so all triangle edges are equal
+        from math import sqrt
+        s = 0.5 + sqrt(3) / 2  # ≈ 1.366
+
+        coords = [
+            (0, 1, 0),      # 0: top apex
+            (0, -1, 0),     # 1: bottom apex
+            (1, 0, 0),      # 2: equatorial +X
+            (0, 0, 1),      # 3: equatorial +Z
+            (-1, 0, 0),     # 4: equatorial -X
+            (0, 0, -1),     # 5: equatorial -Z
+            (s, 0, s),      # 6: star point between 2,3 (equilateral triangle)
+            (-s, 0, s),     # 7: star point between 3,4 (equilateral triangle)
+            (-s, 0, -s),    # 8: star point between 4,5 (equilateral triangle)
+            (s, 0, -s),     # 9: star point between 5,2 (equilateral triangle)
+        ]
+
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
     def undirected_rhombicuboctahedron(return_coords: bool = False):
         # Rhombicuboctahedron coordinates: (±1, ±1, ±(1+√2)) and permutations
         s = 1 + sqrt(2)
