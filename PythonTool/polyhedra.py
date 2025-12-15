@@ -26,6 +26,23 @@ class PolyhedronGenerators:
         return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
 
     @staticmethod
+    def undirected_square(return_coords: bool = False):
+        """Simple square: 4 vertices, 4 edges.
+        
+        A basic 2D square in the XY plane, useful for demonstrating
+        the simplest LED filament configuration.
+        """
+        coords = [
+            (1, 0, 1),    # 0: top-right
+            (-1, 0, 1),   # 1: top-left
+            (-1, 0, -1),  # 2: bottom-left
+            (1, 0, -1),   # 3: bottom-right
+        ]
+        vertices = list(range(4))
+        edges = [(0, 1), (1, 2), (2, 3), (3, 0)]  # Square edges
+        return PolyhedronGenerators._finalize(vertices, edges, coords, return_coords)
+
+    @staticmethod
     def undirected_cube(return_coords: bool = False):
         vertices = list(range(8))
         coords = [

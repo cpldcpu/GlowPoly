@@ -268,6 +268,7 @@ VIEW_MODES = {
 
 POLYHEDRA = {
     # Sorted by number of edges (ascending)
+    "Square": PolyhedronGenerators.undirected_square,                            # 4 edges
     "Regular Tetrahedron": PolyhedronGenerators.undirected_tetrahedron,        # 6 edges
     "Triangular Prism": PolyhedronGenerators.undirected_triangular_prism,      # 9 edges
     "Cube": PolyhedronGenerators.undirected_cube,                              # 12 edges
