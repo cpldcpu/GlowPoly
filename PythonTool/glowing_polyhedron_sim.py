@@ -677,7 +677,7 @@ def draw_arrowhead(canvas, x_start, y_start, x_end, y_end, color=ARROW_FOREGROUN
     canvas.create_polygon(points, fill=color, outline=color)
 
 
-def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=None):
+def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=None, show_current_labels=False, shade_by_current=True):
     canvas.delete("all")
     canvas.create_rectangle(0, 0, CANVAS_SIZE, CANVAS_SIZE, fill=BACKGROUND, outline=BACKGROUND)
 
@@ -730,12 +730,16 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
 
             # Determine edge color based on current flow
             edge_key = (u, v)
-            if current_data and edge_key in current_data:
-                current = current_data[edge_key]['current']
-                edge_color = current_to_color(current, max_current)
-            elif current_data and (v, u) in current_data:
-                current = current_data[(v, u)]['current']
-                edge_color = current_to_color(current, max_current)
+            has_current = (current_data and edge_key in current_data) or (current_data and (v, u) in current_data)
+            
+            if has_current:
+                if shade_by_current:
+                    # Gradient shading based on current magnitude
+                    current = current_data.get(edge_key, current_data.get((v, u), {})).get('current', 0)
+                    edge_color = current_to_color(current, max_current)
+                else:
+                    # Simple red for lit edges
+                    edge_color = "#ff4d4d"
             else:
                 edge_color = EDGE_COLOR
 
@@ -749,12 +753,16 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
 
             # Determine edge color based on current flow
             edge_key = (u, v)
-            if current_data and edge_key in current_data:
-                current = current_data[edge_key]['current']
-                edge_color = current_to_color(current, max_current)
-            elif current_data and (v, u) in current_data:
-                current = current_data[(v, u)]['current']
-                edge_color = current_to_color(current, max_current)
+            has_current = (current_data and edge_key in current_data) or (current_data and (v, u) in current_data)
+            
+            if has_current:
+                if shade_by_current:
+                    # Gradient shading based on current magnitude
+                    current = current_data.get(edge_key, current_data.get((v, u), {})).get('current', 0)
+                    edge_color = current_to_color(current, max_current)
+                else:
+                    # Simple red for lit edges
+                    edge_color = "#ff4d4d"
             else:
                 # No current data or edge not in solution
                 edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
@@ -769,12 +777,16 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
 
             # Determine edge color based on current flow
             edge_key = (u, v)
-            if current_data and edge_key in current_data:
-                current = current_data[edge_key]['current']
-                edge_color = current_to_color(current, max_current)
-            elif current_data and (v, u) in current_data:
-                current = current_data[(v, u)]['current']
-                edge_color = current_to_color(current, max_current)
+            has_current = (current_data and edge_key in current_data) or (current_data and (v, u) in current_data)
+            
+            if has_current:
+                if shade_by_current:
+                    # Gradient shading based on current magnitude
+                    current = current_data.get(edge_key, current_data.get((v, u), {})).get('current', 0)
+                    edge_color = current_to_color(current, max_current)
+                else:
+                    # Simple red for lit edges
+                    edge_color = "#ff4d4d"
             else:
                 # No current data or edge not in solution
                 edge_color = HIDDEN_EDGE_COLOR if depth > depth_threshold else EDGE_COLOR
@@ -827,6 +839,51 @@ def draw_polyhedron(canvas, builder, active_view, highlight=None, current_data=N
             fill=fill,
         )
         canvas.create_text(x, y - radius - 10, text=str(idx), fill=LABEL_COLOR, font=("Helvetica", 13, "bold"))
+
+    # Draw current labels on edges if enabled and current data is available
+    if show_current_labels and current_data and max_current > 0:
+        for u, v in edges:
+            edge_key = (u, v)
+            reverse_key = (v, u)
+            
+            # Get current value for this edge
+            current = None
+            if edge_key in current_data:
+                current = current_data[edge_key]['current']
+            elif reverse_key in current_data:
+                current = current_data[reverse_key]['current']
+            
+            if current is not None:
+                # Calculate midpoint of edge
+                x1, y1, z1 = projected[u]
+                x2, y2, z2 = projected[v]
+                mid_x = (x1 + x2) / 2
+                mid_y = (y1 + y2) / 2
+                
+                # Calculate relative current (normalized to max)
+                relative_current = current / max_current
+                
+                # Format the label text without trailing zeros
+                label_text = f"{relative_current:.2f}".rstrip('0').rstrip('.')
+                
+                # Offset the label slightly perpendicular to the edge to avoid overlap
+                dx = x2 - x1
+                dy = y2 - y1
+                length = (dx**2 + dy**2)**0.5
+                if length > 0:
+                    # Perpendicular offset (normalized)
+                    perp_x = -dy / length * 12
+                    perp_y = dx / length * 12
+                    mid_x += perp_x
+                    mid_y += perp_y
+                
+                # Draw label (non-bold to distinguish from vertex labels)
+                canvas.create_text(
+                    mid_x, mid_y,
+                    text=label_text,
+                    fill="#000000",
+                    font=("Helvetica", 9)
+                )
 
 
 def build_constraint_suffix(dc_only: bool, sneak_free: bool, equal_current: bool, alternating_only: bool, bipolar_only: bool) -> str:
@@ -1694,7 +1751,7 @@ def create_polyhedron_selector(main_frame):
 
 
 def create_view_controls(main_frame):
-    """Create view mode radio buttons."""
+    """Create view mode radio buttons and display options."""
     view_var = tk.StringVar(value="Top-Tilt")
     view_frame = ttk.LabelFrame(main_frame, text="View")
     view_frame.grid(row=1, column=0, columnspan=2, pady=(12, 0), sticky="ew")
@@ -1705,7 +1762,26 @@ def create_view_controls(main_frame):
             value=label_text,
             variable=view_var,
         ).grid(row=0, column=idx, padx=8, pady=4)
-    return view_var
+    
+    # Add checkbox for showing current labels on edges
+    show_current_var = tk.BooleanVar(value=False)
+    show_current_check = ttk.Checkbutton(
+        view_frame,
+        text="Show current",
+        variable=show_current_var
+    )
+    show_current_check.grid(row=0, column=len(VIEW_MODES), padx=(16, 8), pady=4)
+    
+    # Add checkbox for shading edges by current magnitude
+    shade_current_var = tk.BooleanVar(value=True)
+    shade_current_check = ttk.Checkbutton(
+        view_frame,
+        text="Shade by current",
+        variable=shade_current_var
+    )
+    shade_current_check.grid(row=0, column=len(VIEW_MODES) + 1, padx=(8, 8), pady=4)
+    
+    return {'view_var': view_var, 'show_current_var': show_current_var, 'shade_current_var': shade_current_var}
 
 
 def create_canvas(main_frame):
@@ -1859,7 +1935,10 @@ def main():
 
     notebook, main_frame, output_frame = create_notebook_layout(root)
     poly_combo, poly_values = create_polyhedron_selector(main_frame)
-    view_var = create_view_controls(main_frame)
+    view_controls = create_view_controls(main_frame)
+    view_var = view_controls['view_var']
+    show_current_var = view_controls['show_current_var']
+    shade_current_var = view_controls['shade_current_var']
     canvas = create_canvas(main_frame)
     constraint_vars = create_constraint_controls(main_frame)
     controls = constraint_vars['controls']
@@ -1911,7 +1990,7 @@ def main():
         active_view = VIEW_MODES.get(view_var.get(), (ISO_Y, ISO_X))
         highlight = current_highlight if current_highlight.get('edges') else {}
         current_data = current_highlight.get('current_data', None)
-        draw_polyhedron(canvas, builder, active_view, highlight=highlight, current_data=current_data)
+        draw_polyhedron(canvas, builder, active_view, highlight=highlight, current_data=current_data, show_current_labels=show_current_var.get(), shade_by_current=shade_current_var.get())
 
     def on_poly_change(event=None):
         current_highlight.clear()
@@ -1922,6 +2001,8 @@ def main():
 
     poly_combo.bind("<<ComboboxSelected>>", on_poly_change)
     view_var.trace_add("write", on_view_change)
+    show_current_var.trace_add("write", on_view_change)
+    shade_current_var.trace_add("write", on_view_change)
 
     poly_combo.set(poly_values[0])
     update_canvas()
