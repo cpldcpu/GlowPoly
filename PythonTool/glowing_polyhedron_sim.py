@@ -1468,7 +1468,7 @@ def run_mixed_path_solver(name, builder, iters, cancel_event, dc_only=False, sne
     return best_solution, mode, duration, total_edges
 
 
-def run_solver(name, builder, L, iters, cancel_event, dc_only=False, sneak_free=False, equal_current=False, alternating_only=False, bipolar_only=False, fixed_endpoints=0):
+def run_solver(name, builder, L, iters, cancel_event, dc_only=False, sneak_free=False, equal_current=False, alternating_only=False, bipolar_only=False, fixed_endpoints=0, allow_varying_current=False):
     V, E = builder()
     total_edges = len(E)
     start = time.time()
@@ -1476,6 +1476,64 @@ def run_solver(name, builder, L, iters, cancel_event, dc_only=False, sneak_free=
     # Check for cancellation before starting computation
     if cancel_event.is_set():
         return None
+    
+    # When allow_varying_current is enabled with fixed_endpoints=0,
+    # use the branching solver to find minimum endpoints (may have non-uniform current)
+    if allow_varying_current and fixed_endpoints == 0:
+        # Try different endpoint counts starting from 2 (minimum possible)
+        constraint_list = []
+        if dc_only:
+            constraint_list.append("DC only")
+        if sneak_free:
+            constraint_list.append("sneak free")
+        if alternating_only:
+            constraint_list.append("alternating only")
+        if bipolar_only:
+            constraint_list.append("bipolar only")
+        constraint_suffix = f" ({', '.join(constraint_list)})" if constraint_list else ""
+        
+        best_result = None
+        best_endpoints = float('inf')
+        
+        # Try 2 endpoints first (ideal), then increase
+        for target_endpoints in range(2, len(V) + 1):
+            if len(E) <= 12:
+                res = exhaustive_orientations_max_coverage_with_fixed_endpoints(V, E, L, target_endpoints, dc_only, sneak_free, equal_current, alternating_only)
+            else:
+                res = sampled_orientations_max_coverage_with_fixed_endpoints(V, E, L, target_endpoints, iters=iters, seed=42, dc_only=dc_only, sneak_free=sneak_free, equal_current=equal_current, alternating_only=alternating_only)
+            
+            if res is not None:
+                # Check if this gives full coverage
+                chosen_paths = res[5]
+                covered = set()
+                for path in chosen_paths:
+                    for i in range(len(path) - 1):
+                        u, v = path[i], path[i+1]
+                        for edge_idx, (eu, ev) in enumerate(E):
+                            if (u == eu and v == ev) or (u == ev and v == eu):
+                                covered.add(edge_idx)
+                                break
+                
+                if len(covered) == total_edges:
+                    best_result = res
+                    best_endpoints = target_endpoints
+                    break  # Found full coverage with minimum endpoints
+                elif best_result is None:
+                    best_result = res
+                    best_endpoints = target_endpoints
+        
+        if cancel_event.is_set():
+            return None
+        
+        duration = time.time() - start
+        if best_result is not None:
+            if len(E) <= 12:
+                mode = f"exhaustive (branching, {best_endpoints} endpoints){constraint_suffix}"
+            else:
+                mode = f"sampled ({iters} iterations, branching, {best_endpoints} endpoints){constraint_suffix}"
+            return best_result, mode, duration, total_edges
+        else:
+            return None
     
     # Check if using fixed endpoints constraint (overrides minimize objective)
     if fixed_endpoints > 0:
@@ -1839,11 +1897,20 @@ def create_constraint_controls(main_frame):
     bipolar_only_check = ttk.Checkbutton(controls, text="Bipolar driving scheme (no tristate Z needed)", variable=bipolar_only_var)
     bipolar_only_check.grid(row=3, column=1, columnspan=2, sticky="w", pady=(6,0))
 
-    equal_current_var = tk.BooleanVar(value=False)
-    equal_current_check = ttk.Checkbutton(controls, text="Equal current (all edges carry equal current)", variable=equal_current_var)
-    equal_current_check.grid(row=4, column=0, columnspan=2, sticky="w", pady=(6,0))
+    # Current mode radio buttons: controls how current distribution is handled
+    # - "default": Use exact cover solver (edges covered exactly once)
+    # - "equal": Require equal current through all edges (stricter constraint)
+    # - "varying": Allow branching solver for fewer endpoints (non-uniform current)
+    current_mode_var = tk.StringVar(value="default")
+    current_mode_frame = ttk.Frame(controls)
+    current_mode_frame.grid(row=4, column=0, columnspan=4, sticky="w", pady=(6,0))
+    
+    ttk.Label(current_mode_frame, text="Current:").grid(row=0, column=0, sticky="w")
+    ttk.Radiobutton(current_mode_frame, text="Default", variable=current_mode_var, value="default").grid(row=0, column=1, padx=(8,8))
+    ttk.Radiobutton(current_mode_frame, text="Equal current", variable=current_mode_var, value="equal").grid(row=0, column=2, padx=(0,8))
+    ttk.Radiobutton(current_mode_frame, text="Greedy (overlapping)", variable=current_mode_var, value="varying").grid(row=0, column=3)
 
-    # Constraint interdependencies
+
     def on_dc_only_change():
         """Enable/disable sneak path free checkbox based on DC only selection."""
         if dc_only_var.get():
@@ -1894,7 +1961,7 @@ def create_constraint_controls(main_frame):
         'alternating_only_var': alternating_only_var,
         'sneak_free_var': sneak_free_var,
         'bipolar_only_var': bipolar_only_var,
-        'equal_current_var': equal_current_var
+        'current_mode_var': current_mode_var
     }
 
 
@@ -1952,7 +2019,7 @@ def main():
     alternating_only_var = constraint_vars['alternating_only_var']
     sneak_free_var = constraint_vars['sneak_free_var']
     bipolar_only_var = constraint_vars['bipolar_only_var']
-    equal_current_var = constraint_vars['equal_current_var']
+    current_mode_var = constraint_vars['current_mode_var']
 
     ui_controls = create_status_and_buttons(main_frame, controls)
     status_var = ui_controls['status_var']
@@ -2230,10 +2297,14 @@ def main():
                 
                 dc_only_requested = dc_only_var.get()
                 sneak_free_requested = sneak_free_var.get()
-                equal_current_requested = equal_current_var.get()
                 alternating_only_requested = alternating_only_var.get()
                 bipolar_only_requested = bipolar_only_var.get()
                 path_mode_requested = path_mode_var.get()
+                
+                # Derive equal_current and allow_varying_current from current_mode radio button
+                current_mode = current_mode_var.get()
+                equal_current_requested = (current_mode == "equal")
+                allow_varying_current_requested = (current_mode == "varying")
                 
                 # Get fixed endpoints value
                 try:
@@ -2246,7 +2317,7 @@ def main():
                 # Choose solver based on path mode setting
                 if path_mode_requested == "fixed":
                     # Fixed path length: original behavior
-                    result = run_solver(name, builder, L_val, iter_val, cancel_event, dc_only=dc_only_requested, sneak_free=sneak_free_requested, equal_current=equal_current_requested, alternating_only=alternating_only_requested, bipolar_only=bipolar_only_requested, fixed_endpoints=fixed_endpoints_val)
+                    result = run_solver(name, builder, L_val, iter_val, cancel_event, dc_only=dc_only_requested, sneak_free=sneak_free_requested, equal_current=equal_current_requested, alternating_only=alternating_only_requested, bipolar_only=bipolar_only_requested, fixed_endpoints=fixed_endpoints_val, allow_varying_current=allow_varying_current_requested)
                 elif path_mode_requested == "variable":
                     # Variable path length: try different L values, all paths in solution have same L
                     result = run_variable_path_solver(name, builder, iter_val, cancel_event, dc_only=dc_only_requested, sneak_free=sneak_free_requested, equal_current=equal_current_requested, alternating_only=alternating_only_requested, bipolar_only=bipolar_only_requested)

@@ -29,13 +29,21 @@ Choose your optimization strategy:
 
 **Sneak path free** becomes available when DC only is selected. It ensures DC bias doesn't create shorter paths than the solver solution, which is critical for preventing current leakage.
 
-**Equal current** forces all edges to carry exactly the same current, important for uniform LED brightness but may reduce available solutions.
-
 **Bipolar driving scheme** ensures the solution can be implemented without tristate (Z) disconnections, using only Anode (A) and Cathode (C) assignments for simpler driver electronics.
+
+### Current Mode
+
+The Current radio buttons control how current distribution is handled:
+
+**Default** uses exact cover solving where each edge is covered exactly once. This naturally results in relatively uniform current but doesn't strictly enforce equality.
+
+**Equal current** adds a stricter constraint requiring all edges carry identical current values. This is important for uniform LED brightness but may reduce available solutions.
+
+**Greedy (overlapping)** uses a greedy path selection algorithm that tries to minimize endpoints by allowing paths to overlap (cover the same edges). This can find solutions with fewer endpoints (e.g., 2 endpoints for a cube with L=3) but results in non-uniform current distribution. Use this when minimizing connection points is more important than uniform brightness.
 
 ### Advanced Settings
 
-**Sampling iterations** controls how many random orientations to try for complex polyhedra (>12 edges). The default 2000 provides good balance of speed versus quality. Increase this for better solutions on complex shapes. Small polyhedra automatically use exhaustive search.
+**Sampling iterations** controls how many random orientations to try for complex polyhedra (>12 edges). The default 2000 provides good balance of speed versus quality. Increase this for better solutions on complex shapes. Small polyhedra automatically use exhaustive search. If you find a suboptimal solution (e.g., more endpoints than expected), try increasing iterations to 5000-10000.
 
 **Fixed endpoints** (only available in Fixed L mode) can be set to 0 to minimize endpoints (default) or to N>0 to use exactly N endpoints while maximizing coverage. This is useful when hardware has predetermined connection points.
 

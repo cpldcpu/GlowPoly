@@ -29,8 +29,15 @@ Use exhaustive_orientations_with_constraints() or sampled_orientations_with_cons
 with a list of constraint functions for flexible, maintainable optimization.
 """
 from collections import defaultdict, deque, Counter
+from itertools import combinations
 import random
 from polyhedra import PolyhedronGenerators
+
+# -------------------- Constants --------------------
+
+MAX_SEARCH_CALLS = 1_000_000  # Limit for exact cover search to prevent infinite recursion
+MAX_ENDPOINT_COMBINATIONS = 1000  # Limit for endpoint combination sampling
+DEFAULT_SAMPLE_ITERATIONS = 1000  # Default iterations for sampled solvers
 
 # -------------------- Graph + geodesics --------------------
 
@@ -96,6 +103,10 @@ def all_geodesic_paths_dir(G):
 # -------------------- Exact cover --------------------
 
 class ExactCoverMinRows:
+    """
+    Exact cover solver that minimizes the number of rows (paths) in the solution.
+    Note: This does NOT minimize endpoints - use ExactCoverMinEndpoints for that.
+    """
     def __init__(self, num_cols, row_masks):
         self.N = num_cols
         self.rows = row_masks
@@ -109,7 +120,7 @@ class ExactCoverMinRows:
         self.best_solution = None
         self.best_len = float('inf')
         self.search_calls = 0
-        self.max_search_calls = 1000000  # Limit to prevent infinite recursion
+        self.max_search_calls = MAX_SEARCH_CALLS
     def _choose_column(self, remaining_cols):
         best_c, best_count = None, float('inf')
         m = remaining_cols
@@ -146,6 +157,104 @@ class ExactCoverMinRows:
             rmask = self.rows[r]
             if (rmask & (~remaining_cols)) != 0: continue
             self._search(remaining_cols & (~rmask), partial + [r], ub)
+
+
+class ExactCoverMinEndpoints:
+    """
+    Exact cover solver that minimizes the number of DISTINCT ENDPOINTS.
+    
+    Unlike ExactCoverMinRows which minimizes path count, this solver considers
+    the actual endpoints of each path and finds the solution with fewest unique
+    endpoint vertices.
+    """
+    def __init__(self, num_cols, row_masks, row_endpoints):
+        """
+        Args:
+            num_cols: Number of columns (edges) to cover
+            row_masks: List of bitmasks, one per row (path)
+            row_endpoints: List of (start, end) tuples for each row (path)
+        """
+        self.N = num_cols
+        self.rows = row_masks
+        self.row_endpoints = row_endpoints
+        self.col_to_rows = defaultdict(list)
+        for r_idx, mask in enumerate(self.rows):
+            m = mask
+            while m:
+                c = (m & -m).bit_length()-1
+                self.col_to_rows[c].append(r_idx)
+                m &= m-1
+        self.best_solution = None
+        self.best_num_endpoints = float('inf')
+        self.best_num_paths = float('inf')
+        self.search_calls = 0
+        self.max_search_calls = MAX_SEARCH_CALLS
+    
+    def _count_endpoints(self, solution):
+        """Count distinct endpoints in a solution."""
+        endpoints = set()
+        for r in solution:
+            start, end = self.row_endpoints[r]
+            endpoints.add(start)
+            endpoints.add(end)
+        return len(endpoints)
+    
+    def _choose_column(self, remaining_cols):
+        best_c, best_count = None, float('inf')
+        m = remaining_cols
+        while m:
+            c = (m & -m).bit_length()-1
+            cnt = 0
+            for r in self.col_to_rows.get(c, []):
+                if (self.rows[r] & (~remaining_cols)) == 0:
+                    cnt += 1
+            if cnt < best_count:
+                best_count, best_c = cnt, c
+                if best_count <= 1: break
+            m &= m-1
+        return best_c, best_count
+    
+    def solve(self):
+        self.best_solution = None
+        self.best_num_endpoints = float('inf')
+        self.best_num_paths = float('inf')
+        self.search_calls = 0
+        all_cols = (1 << self.N) - 1
+        self._search(all_cols, [])
+        return self.best_solution
+    
+    def _search(self, remaining_cols, partial):
+        self.search_calls += 1
+        if self.search_calls > self.max_search_calls:
+            return
+        
+        # Pruning: if we already have more paths than needed for current best, skip
+        # (more paths generally means more endpoints, though not always)
+        if len(partial) > self.best_num_paths + 2:
+            return
+        
+        if remaining_cols == 0:
+            # Found a complete cover, check if it's better
+            num_endpoints = self._count_endpoints(partial)
+            num_paths = len(partial)
+            
+            # Primary: minimize endpoints, secondary: minimize paths
+            if (num_endpoints < self.best_num_endpoints or 
+                (num_endpoints == self.best_num_endpoints and num_paths < self.best_num_paths)):
+                self.best_num_endpoints = num_endpoints
+                self.best_num_paths = num_paths
+                self.best_solution = partial.copy()
+            return
+        
+        c, count = self._choose_column(remaining_cols)
+        if c is None or count == 0:
+            return
+        
+        for r in self.col_to_rows.get(c, []):
+            rmask = self.rows[r]
+            if (rmask & (~remaining_cols)) != 0:
+                continue
+            self._search(remaining_cols & (~rmask), partial + [r])
 
 # -------------------- Undirected polyhedra --------------------
 
@@ -243,9 +352,12 @@ def exhaustive_orientations_with_constraints(V, undirected_edges, L, constraints
     
     return best
 
-def sampled_orientations_with_constraints(V, undirected_edges, L, constraints=None, iters=1000, seed=0):
+def sampled_orientations_with_constraints(V, undirected_edges, L, constraints=None, iters=DEFAULT_SAMPLE_ITERATIONS, seed=0):
     """
     Generic sampled orientation solver with configurable constraints.
+    
+    Features early termination when an optimal solution is found (2 endpoints
+    with full edge coverage).
     
     Args:
         V: Vertices
@@ -265,6 +377,7 @@ def sampled_orientations_with_constraints(V, undirected_edges, L, constraints=No
     random.seed(seed)
     m = len(undirected_edges)
     best = None
+    total_edges = len(undirected_edges)
     
     for _ in range(iters):
         mask = random.getrandbits(m)
@@ -290,6 +403,14 @@ def sampled_orientations_with_constraints(V, undirected_edges, L, constraints=No
         else:
             if is_solution_better(res, best):
                 best = res
+        
+        # Early termination: optimal solution found (2 endpoints with full coverage)
+        # 2 endpoints is the theoretical minimum for any path-based solution
+        if best and best[0] == 2:
+            # Verify full coverage
+            covered = _paths_to_covered_edge_indices(best[5], undirected_edges)
+            if len(covered) == total_edges:
+                break  # Optimal solution found, exit early
     
     return best
 
@@ -317,21 +438,71 @@ def constraint_bipolar_only(chosen_paths, dir_edges, V):
 
 # -------------------- Utility functions for constraints --------------------
 
+def _get_vertex_roles(chosen_paths):
+    """
+    Get vertex roles from chosen paths.
+    
+    Returns:
+        defaultdict mapping vertex -> set of roles ('start', 'end')
+    """
+    vertex_roles = defaultdict(set)
+    for path in chosen_paths:
+        if len(path) >= 2:
+            vertex_roles[path[0]].add('start')
+            vertex_roles[path[-1]].add('end')
+    return vertex_roles
+
+
+def _get_vertex_classifications(chosen_paths):
+    """
+    Get vertex classifications (Anode/Cathode/Alternating) from chosen paths.
+    
+    Returns:
+        dict mapping vertex -> classification string
+    """
+    vertex_roles = _get_vertex_roles(chosen_paths)
+    classifications = {}
+    for vertex, roles in vertex_roles.items():
+        if roles == {'start'}:
+            classifications[vertex] = "Anode"
+        elif roles == {'end'}:
+            classifications[vertex] = "Cathode"
+        elif roles == {'start', 'end'}:
+            classifications[vertex] = "Alternating"
+        else:
+            classifications[vertex] = "Unknown"
+    return classifications
+
+
+def _paths_to_covered_edge_indices(paths, undirected_edges):
+    """
+    Convert paths to a set of covered edge indices.
+    
+    Args:
+        paths: List of paths (each path is a list of vertices)
+        undirected_edges: List of undirected edges for index lookup
+    
+    Returns:
+        set of edge indices that are covered by the paths
+    """
+    covered_edges = set()
+    for path in paths:
+        for i in range(len(path) - 1):
+            u, v = path[i], path[i + 1]
+            # Find edge index
+            for edge_idx, (eu, ev) in enumerate(undirected_edges):
+                if (u == eu and v == ev) or (u == ev and v == eu):
+                    covered_edges.add(edge_idx)
+                    break
+    return covered_edges
+
+
 def is_solution_dc_only(chosen_paths):
     """
     Check if a solution has only DC vertices (pure Anode or pure Cathode).
     Returns True if fully DC, False if any alternating vertices exist.
     """
-    from collections import defaultdict
-    vertex_roles = defaultdict(set)
-    
-    # Analyze each path to determine vertex roles
-    for path in chosen_paths:
-        if len(path) >= 2:
-            start_vertex = path[0]
-            end_vertex = path[-1]
-            vertex_roles[start_vertex].add('start')
-            vertex_roles[end_vertex].add('end')
+    vertex_roles = _get_vertex_roles(chosen_paths)
     
     # Check if any vertex has both roles (alternating)
     for vertex, roles in vertex_roles.items():
@@ -350,23 +521,8 @@ def has_sneak_paths(chosen_paths, dir_edges):
     if not is_solution_dc_only(chosen_paths):
         return False  # Can't analyze sneak paths for non-DC solutions
     
-    # Get vertex classifications
-    from collections import defaultdict
-    vertex_roles = defaultdict(set)
-    for path in chosen_paths:
-        if len(path) >= 2:
-            vertex_roles[path[0]].add('start')
-            vertex_roles[path[-1]].add('end')
-    
-    vertex_classifications = {}
-    for vertex in vertex_roles.keys():
-        roles = vertex_roles[vertex]
-        if roles == {'start'}:
-            vertex_classifications[vertex] = "Anode"
-        elif roles == {'end'}:
-            vertex_classifications[vertex] = "Cathode"
-        else:
-            vertex_classifications[vertex] = "Unknown"
+    # Get vertex classifications using helper
+    vertex_classifications = _get_vertex_classifications(chosen_paths)
     
     # Use existing sneak path analysis
     sneak_analysis = analyze_sneak_paths(chosen_paths, dir_edges, vertex_classifications)
@@ -390,16 +546,7 @@ def is_solution_alternating_only(chosen_paths):
     Check if a solution has all alternating vertices (each vertex is both anode and cathode).
     Returns True if all vertices used in paths are alternating, False otherwise.
     """
-    from collections import defaultdict
-    vertex_roles = defaultdict(set)  # vertex -> set of roles ('start', 'end')
-    
-    # Analyze each path to determine vertex roles
-    for path in chosen_paths:
-        if len(path) >= 2:
-            start_vertex = path[0]
-            end_vertex = path[-1]
-            vertex_roles[start_vertex].add('start')
-            vertex_roles[end_vertex].add('end')
+    vertex_roles = _get_vertex_roles(chosen_paths)
     
     # Check if all vertices are alternating (have both 'start' and 'end' roles)
     for vertex, roles in vertex_roles.items():
@@ -454,8 +601,12 @@ def solve_fixed_orientation_min_endpoints_with_L(V, undirected_edges, dir_edges,
     for msk in rmasks: union |= msk
     if union != (1<<m)-1:
         return None
-    # Solve exact cover
-    solver = ExactCoverMinRows(m, rmasks)
+    
+    # Build path endpoints list for the solver
+    path_endpoints = [(paths[i][0], paths[i][-1]) for i in idxs]
+    
+    # Solve exact cover minimizing endpoints (not paths!)
+    solver = ExactCoverMinEndpoints(m, rmasks, path_endpoints)
     sol = solver.solve()
     if sol is None:
         return None
@@ -520,7 +671,7 @@ def analyze_sneak_paths(chosen_paths, dir_edges, vertex_classifications):
                                     'from_anode': anode,
                                     'to_cathode': cathode
                                 })
-            except:
+            except Exception:
                 continue
     
     if shortest_dc_length == float('inf'):
@@ -621,6 +772,11 @@ def solve_fixed_orientation_max_coverage_with_fixed_endpoints(V, undirected_edge
     For a given orientation, find paths of length L that maximize edge coverage
     using exactly target_endpoints distinct endpoints.
     
+    Note: This function uses a GREEDY HEURISTIC that may not find the globally
+    optimal solution in all cases. It selects paths that cover the most new edges
+    at each step. For most practical polyhedra this produces good results, but
+    the solution is not guaranteed to be optimal.
+    
     Returns (num_endpoints, num_paths, endpoints_set, counts, dir_edges, chosen_paths)
     or None if no solution with exactly target_endpoints exists.
     """
@@ -638,10 +794,6 @@ def solve_fixed_orientation_max_coverage_with_fixed_endpoints(V, undirected_edge
     if not L_paths:
         return None
     
-    # Find all possible combinations that use exactly target_endpoints
-    from itertools import combinations
-    import random
-    
     # Get all unique endpoints from paths
     all_endpoints = set()
     for path in L_paths:
@@ -657,10 +809,10 @@ def solve_fixed_orientation_max_coverage_with_fixed_endpoints(V, undirected_edge
     # Try all combinations of target_endpoints from available endpoints
     # For efficiency, limit to reasonable number of combinations
     endpoint_combinations = list(combinations(all_endpoints, target_endpoints))
-    if len(endpoint_combinations) > 1000:
+    if len(endpoint_combinations) > MAX_ENDPOINT_COMBINATIONS:
         # Sample combinations if too many
         random.seed(42)
-        endpoint_combinations = random.sample(endpoint_combinations, 1000)
+        endpoint_combinations = random.sample(endpoint_combinations, MAX_ENDPOINT_COMBINATIONS)
     
     for endpoint_set in endpoint_combinations:
         endpoint_set = set(endpoint_set)
@@ -748,25 +900,7 @@ def solve_fixed_orientation_max_coverage_with_fixed_endpoints(V, undirected_edge
                 constraint_satisfied = False
             if sneak_free:
                 # Check for sneak paths
-                from collections import defaultdict
-                vertex_roles = defaultdict(set)
-                for path in selected_paths:
-                    if len(path) >= 2:
-                        vertex_roles[path[0]].add('start')
-                        vertex_roles[path[-1]].add('end')
-                
-                vertex_classifications = {}
-                for vertex in vertex_roles.keys():
-                    roles = vertex_roles[vertex]
-                    if roles == {'start'}:
-                        vertex_classifications[vertex] = "Anode"
-                    elif roles == {'end'}:
-                        vertex_classifications[vertex] = "Cathode"
-                    elif roles == {'start', 'end'}:
-                        vertex_classifications[vertex] = "Alternating"
-                    else:
-                        vertex_classifications[vertex] = "Unknown"
-                
+                vertex_classifications = _get_vertex_classifications(selected_paths)
                 sneak_analysis = analyze_sneak_paths(selected_paths, dir_edges, vertex_classifications)
                 if sneak_analysis['has_sneak_paths']:
                     constraint_satisfied = False
@@ -796,15 +930,7 @@ def exhaustive_orientations_max_coverage_with_fixed_endpoints(V, undirected_edge
         
         # Calculate coverage (number of edges covered)
         _, _, _, _, _, chosen_paths = res
-        covered_edges = set()
-        for path in chosen_paths:
-            for i in range(len(path) - 1):
-                u, v = path[i], path[i + 1]
-                # Find edge index
-                for edge_idx, (eu, ev) in enumerate(undirected_edges):
-                    if (u == eu and v == ev) or (u == ev and v == eu):
-                        covered_edges.add(edge_idx)
-                        break
+        covered_edges = _paths_to_covered_edge_indices(chosen_paths, undirected_edges)
         
         coverage = len(covered_edges)
         if coverage > max_coverage:
@@ -813,7 +939,7 @@ def exhaustive_orientations_max_coverage_with_fixed_endpoints(V, undirected_edge
     
     return best
 
-def sampled_orientations_max_coverage_with_fixed_endpoints(V, undirected_edges, L, target_endpoints, iters=1000, seed=0, dc_only=False, sneak_free=False, equal_current=False, alternating_only=False):
+def sampled_orientations_max_coverage_with_fixed_endpoints(V, undirected_edges, L, target_endpoints, iters=DEFAULT_SAMPLE_ITERATIONS, seed=0, dc_only=False, sneak_free=False, equal_current=False, alternating_only=False):
     """
     Sampled version: find orientation that maximizes edge coverage using exactly target_endpoints distinct endpoints.
     """
@@ -832,17 +958,9 @@ def sampled_orientations_max_coverage_with_fixed_endpoints(V, undirected_edges, 
         if res is None:
             continue
 
-        # Calculate coverage (number of edges covered)
+        # Calculate coverage using helper
         _, _, _, _, _, chosen_paths = res
-        covered_edges = set()
-        for path in chosen_paths:
-            for i in range(len(path) - 1):
-                u, v = path[i], path[i + 1]
-                # Find edge index
-                for edge_idx, (eu, ev) in enumerate(undirected_edges):
-                    if (u == eu and v == ev) or (u == ev and v == eu):
-                        covered_edges.add(edge_idx)
-                        break
+        covered_edges = _paths_to_covered_edge_indices(chosen_paths, undirected_edges)
 
         coverage = len(covered_edges)
         if coverage > max_coverage:
