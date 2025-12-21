@@ -50,6 +50,8 @@ let currentModel = null;
 let currentResult = null;
 let currentFlowData = null;
 let allResults = [];
+let allCycleResults = [];  // Cycle decomposition results
+let isCycleMode = false;   // True when viewing a cycle decomposition
 let flowParticles = [];
 let clock = new THREE.Clock();
 
@@ -263,6 +265,7 @@ function onResize() {
 
 async function loadData() {
     try {
+        // Load geodesic cover results
         const response = await fetch('data/geodesic_cover_results.json');
         allResults = await response.json();
 
@@ -270,8 +273,21 @@ async function loadData() {
         allResults.sort((a, b) => a.nE - b.nE);
 
     } catch (error) {
-        console.error('Failed to load results:', error);
+        console.error('Failed to load geodesic results:', error);
         allResults = [];
+    }
+
+    try {
+        // Load cycle decomposition results
+        const cycleResponse = await fetch('data/cycle_decomp_results.json');
+        allCycleResults = await cycleResponse.json();
+
+        // Sort by edge count
+        allCycleResults.sort((a, b) => (a.n_edges || 0) - (b.n_edges || 0));
+
+    } catch (error) {
+        console.error('Failed to load cycle results:', error);
+        allCycleResults = [];
     }
 }
 
@@ -297,7 +313,7 @@ function setupUI() {
     const select = document.getElementById('poly-select');
 
     // Setup filter checkbox handlers
-    const filterIds = ['filter-1', 'filter-2', 'filter-3', 'filter-4', 'filter-none'];
+    const filterIds = ['filter-1', 'filter-2', 'filter-3', 'filter-4', 'filter-none', 'filter-c'];
     filterIds.forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
             updateDropdown();
@@ -319,7 +335,8 @@ function getFilterState() {
         show2: document.getElementById('filter-2').checked,
         show3: document.getElementById('filter-3').checked,
         show4: document.getElementById('filter-4').checked,
-        showNone: document.getElementById('filter-none').checked
+        showNone: document.getElementById('filter-none').checked,
+        showCyclic: document.getElementById('filter-c').checked
     };
 }
 
@@ -332,7 +349,7 @@ function updateDropdown() {
     const select = document.getElementById('poly-select');
     const filters = getFilterState();
 
-    // Filter results based on checkbox state
+    // Filter geodesic results based on checkbox state
     const filtered = allResults.filter(r => {
         const pairCount = getPairCount(r);
         if (pairCount === 0) return filters.showNone;
@@ -342,16 +359,19 @@ function updateDropdown() {
         return filters.show4;  // 4 or more
     });
 
+    // Filter cycle results
+    const filteredCycles = filters.showCyclic ? allCycleResults.filter(r => r.ok) : [];
+
     select.innerHTML = '';
 
     // Group by solution availability
     const withSolution = filtered.filter(r => r.solution);
     const withoutSolution = filtered.filter(r => !r.solution);
 
-    // Add options with solutions first
+    // Add options with geodesic solutions first
     if (withSolution.length > 0) {
         const optGroup = document.createElement('optgroup');
-        optGroup.label = '✓ With Solutions';
+        optGroup.label = '✓ Geodesic Solutions';
         withSolution.forEach(r => {
             const opt = document.createElement('option');
             opt.value = r.name;
@@ -362,10 +382,25 @@ function updateDropdown() {
         select.appendChild(optGroup);
     }
 
-    // Add options without solutions
+    // Add cycle decomposition results
+    if (filteredCycles.length > 0) {
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = '⟲ Cycle Decomposition';
+        filteredCycles.forEach(r => {
+            const opt = document.createElement('option');
+            // Use special prefix to identify cycle results
+            const modelName = r.model.replace('.json', '');
+            opt.value = 'cycle:' + modelName;
+            opt.textContent = `${modelName} (E=${r.n_edges}, L=${r.cycle_length}, c=${r.num_cycles})`;
+            optGroup.appendChild(opt);
+        });
+        select.appendChild(optGroup);
+    }
+
+    // Add geodesic options without solutions
     if (withoutSolution.length > 0) {
         const optGroup = document.createElement('optgroup');
-        optGroup.label = '○ No Solution';
+        optGroup.label = '○ No Geodesic Solution';
         withoutSolution.forEach(r => {
             const opt = document.createElement('option');
             opt.value = r.name;
@@ -375,10 +410,14 @@ function updateDropdown() {
         select.appendChild(optGroup);
     }
 
-    // Select first with solution by default, or first overall
+    // Select first with solution by default
     if (withSolution.length > 0) {
         select.value = withSolution[0].name;
         selectPolyhedron(withSolution[0].name);
+    } else if (filteredCycles.length > 0) {
+        const firstCycle = filteredCycles[0].model.replace('.json', '');
+        select.value = 'cycle:' + firstCycle;
+        selectPolyhedron('cycle:' + firstCycle);
     } else if (filtered.length > 0) {
         select.value = filtered[0].name;
         selectPolyhedron(filtered[0].name);
@@ -386,6 +425,39 @@ function updateDropdown() {
 }
 
 async function selectPolyhedron(name) {
+    // Check if this is a cycle decomposition result
+    if (name.startsWith('cycle:')) {
+        isCycleMode = true;
+        const modelName = name.substring(6);  // Remove 'cycle:' prefix
+
+        // Find cycle result
+        currentResult = allCycleResults.find(r => r.model.replace('.json', '') === modelName);
+        if (!currentResult) return;
+
+        currentModel = await loadModel(modelName);
+        if (!currentModel) return;
+
+        updateStats();
+        renderPolyhedron();
+
+        // Render cycle paths
+        if (currentResult.cycles && currentResult.cycles.length > 0) {
+            renderCyclePaths(currentResult.cycles);
+            updateLegend();
+        } else {
+            clearPaths();
+            clearLegend();
+        }
+        // Clear just the flow modal (not pair-weights which shows cycle weights)
+        document.getElementById('flow-stats').innerHTML = '<p class="no-data">Cycle mode - no flow analysis</p>';
+        document.getElementById('flow-summary').textContent = '-';
+
+        updateEdgeColors();
+        return;
+    }
+
+    // Standard geodesic result
+    isCycleMode = false;
     currentResult = allResults.find(r => r.name === name);
     if (!currentResult) return;
 
@@ -412,10 +484,63 @@ async function selectPolyhedron(name) {
 }
 
 function updateStats() {
-    document.getElementById('stat-vertices').textContent = currentResult.nV || '-';
-    document.getElementById('stat-edges').textContent = currentResult.nE || '-';
-    document.getElementById('stat-k').textContent = currentResult.best_k || '-';
-    document.getElementById('stat-L').textContent = currentResult.best_L || '-';
+    // Hide cycle-specific stats by default
+    document.getElementById('stat-cycles-row').style.display = 'none';
+    document.getElementById('stat-endpoints-row').style.display = 'none';
+    document.getElementById('stat-uniformity-row').style.display = 'none';
+
+    if (isCycleMode) {
+        // Cycle decomposition stats
+        document.getElementById('stat-vertices').textContent = currentResult.n_vertices || '-';
+        document.getElementById('stat-edges').textContent = currentResult.n_edges || '-';
+        document.getElementById('stat-k').textContent = '-';
+        document.getElementById('stat-L').textContent = currentResult.cycle_length || '-';
+
+        // Show cycle-specific stats
+        document.getElementById('stat-cycles-row').style.display = '';
+        document.getElementById('stat-cycles').textContent = currentResult.num_cycles || '-';
+        document.getElementById('stat-endpoints-row').style.display = '';
+        document.getElementById('stat-endpoints').textContent = currentResult.num_unique_endpoints || '-';
+
+        // Update pair-weights container with cycle weights
+        updateCycleWeights();
+    } else {
+        // Geodesic stats
+        document.getElementById('stat-vertices').textContent = currentResult.nV || '-';
+        document.getElementById('stat-edges').textContent = currentResult.nE || '-';
+        document.getElementById('stat-k').textContent = currentResult.best_k || '-';
+        document.getElementById('stat-L').textContent = currentResult.best_L || '-';
+    }
+}
+
+function updateCycleWeights() {
+    const weightsContainer = document.getElementById('pair-weights');
+
+    if (!currentResult || !currentResult.cycle_weights || !currentResult.cycles) {
+        weightsContainer.innerHTML = '<p class="no-data">-</p>';
+        return;
+    }
+
+    let html = '';
+
+    // Show flow min/max style summary
+    const weights = currentResult.cycle_weights;
+    const minWeight = Math.min(...weights).toFixed(2);
+    const maxWeight = Math.max(...weights).toFixed(2);
+    html += `<div class="flow-minmax-row"><span>Flow: ${minWeight} – ${maxWeight}</span></div>`;
+    html += '<hr style="border-color: var(--cyan-dim); margin: 6px 0;">';
+
+    // Show individual cycle weights
+    currentResult.cycles.forEach((cycle, idx) => {
+        const weight = currentResult.cycle_weights[idx] !== undefined ?
+            currentResult.cycle_weights[idx].toFixed(3) : '-';
+        html += `<div class="pair-weight-item">
+            <span class="pair-label">C${idx + 1}: ${cycle.start}⟲${cycle.end}</span>
+            <span class="pair-value">${weight}</span>
+        </div>`;
+    });
+
+    weightsContainer.innerHTML = html || '<p class="no-data">-</p>';
 }
 
 // ============================================
@@ -911,6 +1036,113 @@ function renderPaths(flowData) {
     pathsGroup.visible = state.showPaths;
 }
 
+/**
+ * Render cycle decomposition paths with colored edges and endpoint markers
+ */
+function renderCyclePaths(cycles) {
+    clearPaths();
+
+    if (!currentModel || !cycles || cycles.length === 0) return;
+
+    const vertices = currentModel.vertices;
+    const scale = computeScale(vertices);
+
+    // Collect which cycles use each edge
+    const edgeUsage = {};  // "u-v" -> [cycleIdx, cycleIdx, ...]
+
+    cycles.forEach((cycle, cycleIdx) => {
+        const directedEdges = cycle.directed_edges || [];
+        for (const edge of directedEdges) {
+            const [a, b] = edge;
+            const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+            if (!edgeUsage[key]) edgeUsage[key] = [];
+            if (!edgeUsage[key].includes(cycleIdx)) {
+                edgeUsage[key].push(cycleIdx);
+            }
+        }
+    });
+
+    // Color the existing wireframe cylinders based on cycle membership
+    for (const [edgeKey, cycleIndices] of Object.entries(edgeUsage)) {
+        const cylinder = edgeCylinders[edgeKey];
+        if (!cylinder) continue;
+
+        if (cycleIndices.length === 1) {
+            // Single cycle uses this edge
+            const color = new THREE.Color(CONFIG.colors.pathPalette[cycleIndices[0] % CONFIG.colors.pathPalette.length]);
+            cylinder.material.color = color;
+            cylinder.material.opacity = 0.9;
+        } else {
+            // Multiple cycles share this edge - blend colors
+            const blendedColor = new THREE.Color(0, 0, 0);
+            for (const cycleIdx of cycleIndices) {
+                const cycleColor = new THREE.Color(CONFIG.colors.pathPalette[cycleIdx % CONFIG.colors.pathPalette.length]);
+                blendedColor.r += cycleColor.r / cycleIndices.length;
+                blendedColor.g += cycleColor.g / cycleIndices.length;
+                blendedColor.b += cycleColor.b / cycleIndices.length;
+            }
+            cylinder.material.color = blendedColor;
+            cylinder.material.opacity = 0.9;
+        }
+    }
+
+    // Create arrowheads for directed edges
+    cycles.forEach((cycle, cycleIdx) => {
+        const color = new THREE.Color(CONFIG.colors.pathPalette[cycleIdx % CONFIG.colors.pathPalette.length]);
+        const directedEdges = cycle.directed_edges || [];
+
+        for (const edge of directedEdges) {
+            const [from, to] = edge;
+            const fromPos = new THREE.Vector3(
+                vertices[from][0] * scale,
+                vertices[from][1] * scale,
+                vertices[from][2] * scale
+            );
+            const toPos = new THREE.Vector3(
+                vertices[to][0] * scale,
+                vertices[to][1] * scale,
+                vertices[to][2] * scale
+            );
+
+            // Arrow at midpoint pointing toward 'to'
+            const mid = new THREE.Vector3().addVectors(fromPos, toPos).multiplyScalar(0.5);
+            const direction = new THREE.Vector3().subVectors(toPos, fromPos).normalize();
+
+            const coneGeom = new THREE.ConeGeometry(0.03, 0.08, 8);
+            const coneMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.8 });
+            const cone = new THREE.Mesh(coneGeom, coneMat);
+
+            cone.position.copy(mid);
+            const up = new THREE.Vector3(0, 1, 0);
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+            cone.setRotationFromQuaternion(quaternion);
+
+            arrowsGroup.add(cone);
+        }
+
+        // Mark start/end vertices
+        const sPos = vertices[cycle.start];
+        const tPos = vertices[cycle.end];
+
+        // Start marker (sphere)
+        const startGeom = new THREE.SphereGeometry(0.06, 16, 16);
+        const startMat = new THREE.MeshBasicMaterial({ color: color });
+        const startMesh = new THREE.Mesh(startGeom, startMat);
+        startMesh.position.set(sPos[0] * scale, sPos[1] * scale, sPos[2] * scale);
+        pathsGroup.add(startMesh);
+
+        // End marker (octahedron)
+        const endGeom = new THREE.OctahedronGeometry(0.08);
+        const endMat = new THREE.MeshBasicMaterial({ color: color });
+        const endMesh = new THREE.Mesh(endGeom, endMat);
+        endMesh.position.set(tPos[0] * scale, tPos[1] * scale, tPos[2] * scale);
+        pathsGroup.add(endMesh);
+    });
+
+    pathsGroup.visible = state.showPaths;
+    arrowsGroup.visible = state.showPaths;
+}
+
 function createFlowParticles(path, vertices, scale, color, pairIdx) {
     // Create small particles that flow along the path
     const particleCount = Math.max(2, Math.floor(path.length / 2));
@@ -1126,6 +1358,23 @@ function updateEdgeColors() {
 function updateLegend() {
     const legend = document.getElementById('legend');
 
+    // Handle cycle mode
+    if (isCycleMode && currentResult && currentResult.cycles) {
+        let html = '';
+        currentResult.cycles.forEach((cycle, idx) => {
+            const color = CONFIG.colors.pathPalette[idx % CONFIG.colors.pathPalette.length];
+            const colorHex = '#' + color.toString(16).padStart(6, '0');
+
+            html += `<div class="legend-item">
+                <div class="legend-color" style="background-color: ${colorHex}; color: ${colorHex};"></div>
+                <span class="legend-label">C${idx + 1}: ${cycle.start} ⟲ ${cycle.end}</span>
+            </div>`;
+        });
+        legend.innerHTML = html;
+        return;
+    }
+
+    // Handle geodesic mode
     if (!currentResult || !currentResult.solution) {
         legend.innerHTML = '';
         return;

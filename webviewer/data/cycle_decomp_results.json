@@ -1,0 +1,6166 @@
+[
+  {
+    "model": "augmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 21,
+    "n_edges": 35,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 13,
+    "n_edges": 22,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 19,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-sphenocorona.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 26,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 13,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-tridiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-truncated-cube.json",
+    "ok": false,
+    "n_vertices": 28,
+    "n_edges": 48,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 65,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "augmented-truncated-tetrahedron.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 27,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "biaugmented-pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 23,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "biaugmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 17,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "biaugmented-truncated-cube.json",
+    "ok": false,
+    "n_vertices": 32,
+    "n_edges": 60,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "bigyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "bilunabirotunda.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "cube.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 12,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "cuboctahedron.json",
+    "ok": true,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 6,
+    "num_cycles": 4,
+    "num_unique_endpoints": 4,
+    "unique_endpoints": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          3,
+          4,
+          6,
+          5,
+          8,
+          7
+        ],
+        "start": 3,
+        "end": 5,
+        "path1": [
+          3,
+          4,
+          6,
+          5
+        ],
+        "path2": [
+          5,
+          8,
+          7,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            7,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          3,
+          0,
+          1,
+          5,
+          11,
+          9
+        ],
+        "start": 3,
+        "end": 5,
+        "path1": [
+          3,
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          11,
+          9,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            11,
+            9
+          ],
+          [
+            9,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          7,
+          9,
+          10,
+          4,
+          0
+        ],
+        "start": 2,
+        "end": 10,
+        "path1": [
+          2,
+          7,
+          9,
+          10
+        ],
+        "path2": [
+          10,
+          4,
+          0,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          8,
+          11,
+          10,
+          6,
+          1
+        ],
+        "start": 2,
+        "end": 10,
+        "path1": [
+          2,
+          8,
+          11,
+          10
+        ],
+        "path2": [
+          10,
+          6,
+          1,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            8
+          ],
+          [
+            8,
+            11
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.25,
+      0.25,
+      0.24999999999999994,
+      0.25
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "decagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "decagonal-prism.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 30,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "disphenocingulum.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 38,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "dodecahedron.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 30,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-bipyramid.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 25,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 45,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrobirotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-orthobicupola.json",
+    "ok": true,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 15,
+    "num_unique_endpoints": 20,
+    "unique_endpoints": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      8,
+      9,
+      14,
+      15,
+      16,
+      17,
+      19,
+      20,
+      21,
+      23,
+      26,
+      27,
+      28,
+      29
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          8,
+          11,
+          20,
+          16
+        ],
+        "start": 8,
+        "end": 20,
+        "path1": [
+          8,
+          11,
+          20
+        ],
+        "path2": [
+          20,
+          16,
+          8
+        ],
+        "directed_edges": [
+          [
+            8,
+            11
+          ],
+          [
+            11,
+            20
+          ],
+          [
+            20,
+            16
+          ],
+          [
+            16,
+            8
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          4,
+          9,
+          6
+        ],
+        "start": 1,
+        "end": 9,
+        "path1": [
+          1,
+          4,
+          9
+        ],
+        "path2": [
+          9,
+          6,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            6,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          14,
+          15,
+          23,
+          22
+        ],
+        "start": 14,
+        "end": 23,
+        "path1": [
+          14,
+          15,
+          23
+        ],
+        "path2": [
+          23,
+          22,
+          14
+        ],
+        "directed_edges": [
+          [
+            14,
+            15
+          ],
+          [
+            15,
+            23
+          ],
+          [
+            23,
+            22
+          ],
+          [
+            22,
+            14
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          10,
+          17,
+          12
+        ],
+        "start": 5,
+        "end": 17,
+        "path1": [
+          5,
+          10,
+          17
+        ],
+        "path2": [
+          17,
+          12,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            10
+          ],
+          [
+            10,
+            17
+          ],
+          [
+            17,
+            12
+          ],
+          [
+            12,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          23,
+          24,
+          29,
+          28
+        ],
+        "start": 23,
+        "end": 29,
+        "path1": [
+          23,
+          24,
+          29
+        ],
+        "path2": [
+          29,
+          28,
+          23
+        ],
+        "directed_edges": [
+          [
+            23,
+            24
+          ],
+          [
+            24,
+            29
+          ],
+          [
+            29,
+            28
+          ],
+          [
+            28,
+            23
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          2
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          2,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          3,
+          7,
+          14,
+          11
+        ],
+        "start": 3,
+        "end": 14,
+        "path1": [
+          3,
+          7,
+          14
+        ],
+        "path2": [
+          14,
+          11,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            14
+          ],
+          [
+            14,
+            11
+          ],
+          [
+            11,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          17,
+          19,
+          26,
+          24
+        ],
+        "start": 17,
+        "end": 26,
+        "path1": [
+          17,
+          19,
+          26
+        ],
+        "path2": [
+          26,
+          24,
+          17
+        ],
+        "directed_edges": [
+          [
+            17,
+            19
+          ],
+          [
+            19,
+            26
+          ],
+          [
+            26,
+            24
+          ],
+          [
+            24,
+            17
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          20,
+          22,
+          28,
+          25
+        ],
+        "start": 20,
+        "end": 28,
+        "path1": [
+          20,
+          22,
+          28
+        ],
+        "path2": [
+          28,
+          25,
+          20
+        ],
+        "directed_edges": [
+          [
+            20,
+            22
+          ],
+          [
+            22,
+            28
+          ],
+          [
+            28,
+            25
+          ],
+          [
+            25,
+            20
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          16,
+          18,
+          27,
+          25
+        ],
+        "start": 16,
+        "end": 27,
+        "path1": [
+          16,
+          18,
+          27
+        ],
+        "path2": [
+          27,
+          25,
+          16
+        ],
+        "directed_edges": [
+          [
+            16,
+            18
+          ],
+          [
+            18,
+            27
+          ],
+          [
+            27,
+            25
+          ],
+          [
+            25,
+            16
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          21,
+          26,
+          29,
+          27
+        ],
+        "start": 21,
+        "end": 29,
+        "path1": [
+          21,
+          26,
+          29
+        ],
+        "path2": [
+          29,
+          27,
+          21
+        ],
+        "directed_edges": [
+          [
+            21,
+            26
+          ],
+          [
+            26,
+            29
+          ],
+          [
+            29,
+            27
+          ],
+          [
+            27,
+            21
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          3,
+          8,
+          4
+        ],
+        "start": 0,
+        "end": 8,
+        "path1": [
+          0,
+          3,
+          8
+        ],
+        "path2": [
+          8,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          7,
+          15,
+          12
+        ],
+        "start": 2,
+        "end": 15,
+        "path1": [
+          2,
+          7,
+          15
+        ],
+        "path2": [
+          15,
+          12,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            15
+          ],
+          [
+            15,
+            12
+          ],
+          [
+            12,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          9,
+          13,
+          21,
+          18
+        ],
+        "start": 9,
+        "end": 21,
+        "path1": [
+          9,
+          13,
+          21
+        ],
+        "path2": [
+          21,
+          18,
+          9
+        ],
+        "directed_edges": [
+          [
+            9,
+            13
+          ],
+          [
+            13,
+            21
+          ],
+          [
+            21,
+            18
+          ],
+          [
+            18,
+            9
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          6,
+          10,
+          19,
+          13
+        ],
+        "start": 6,
+        "end": 19,
+        "path1": [
+          6,
+          10,
+          19
+        ],
+        "path2": [
+          19,
+          13,
+          6
+        ],
+        "directed_edges": [
+          [
+            6,
+            10
+          ],
+          [
+            10,
+            19
+          ],
+          [
+            19,
+            13
+          ],
+          [
+            13,
+            6
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666665,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666664,
+      0.06666666666666667,
+      0.06666666666666667,
+      0.06666666666666667
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "elongated-pentagonal-orthobirotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-orthocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 55,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-square-bipyramid.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-square-cupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-square-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 48,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-square-pyramid.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 16,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-triangular-bipyramid.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 27,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-triangular-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "elongated-triangular-orthobicupola.json",
+    "ok": true,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 9,
+    "num_unique_endpoints": 12,
+    "unique_endpoints": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      10,
+      12,
+      14,
+      15,
+      16,
+      17
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          12,
+          15,
+          17,
+          16
+        ],
+        "start": 12,
+        "end": 17,
+        "path1": [
+          12,
+          15,
+          17
+        ],
+        "path2": [
+          17,
+          16,
+          12
+        ],
+        "directed_edges": [
+          [
+            12,
+            15
+          ],
+          [
+            15,
+            17
+          ],
+          [
+            17,
+            16
+          ],
+          [
+            16,
+            12
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          2,
+          6,
+          3
+        ],
+        "start": 0,
+        "end": 6,
+        "path1": [
+          0,
+          2,
+          6
+        ],
+        "path2": [
+          6,
+          3,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          3,
+          7,
+          12,
+          9
+        ],
+        "start": 3,
+        "end": 12,
+        "path1": [
+          3,
+          7,
+          12
+        ],
+        "path2": [
+          12,
+          9,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            12
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            9,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          8,
+          14,
+          11
+        ],
+        "start": 5,
+        "end": 14,
+        "path1": [
+          5,
+          8,
+          14
+        ],
+        "path2": [
+          14,
+          11,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            14
+          ],
+          [
+            14,
+            11
+          ],
+          [
+            11,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          10,
+          13,
+          17,
+          14
+        ],
+        "start": 10,
+        "end": 17,
+        "path1": [
+          10,
+          13,
+          17
+        ],
+        "path2": [
+          17,
+          14,
+          10
+        ],
+        "directed_edges": [
+          [
+            10,
+            13
+          ],
+          [
+            13,
+            17
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            14,
+            10
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          4
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          4,
+          7,
+          15,
+          11
+        ],
+        "start": 4,
+        "end": 15,
+        "path1": [
+          4,
+          7,
+          15
+        ],
+        "path2": [
+          15,
+          11,
+          4
+        ],
+        "directed_edges": [
+          [
+            4,
+            7
+          ],
+          [
+            7,
+            15
+          ],
+          [
+            15,
+            11
+          ],
+          [
+            11,
+            4
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          6,
+          9,
+          16,
+          13
+        ],
+        "start": 6,
+        "end": 16,
+        "path1": [
+          6,
+          9,
+          16
+        ],
+        "path2": [
+          16,
+          13,
+          6
+        ],
+        "directed_edges": [
+          [
+            6,
+            9
+          ],
+          [
+            9,
+            16
+          ],
+          [
+            16,
+            13
+          ],
+          [
+            13,
+            6
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          2,
+          10,
+          8
+        ],
+        "start": 1,
+        "end": 10,
+        "path1": [
+          1,
+          2,
+          10
+        ],
+        "path2": [
+          10,
+          8,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            10,
+            8
+          ],
+          [
+            8,
+            1
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.1111111111111111,
+      0.11111111111111109,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "elongated-triangular-pyramid.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 12,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyrate-bidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyrobifastigium.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 14,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-bicupola.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-birotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 90,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 55,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-cupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 25,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 65,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-bicupola.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 56,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-bipyramid.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-cupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 44,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-pyramid.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-triangular-bicupola.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 42,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "gyroelongated-triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 33,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "hebesphenomegacorona.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 33,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "hexagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "icosahedron.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 30,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "icosidodecahedron.json",
+    "ok": true,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 10,
+    "num_cycles": 6,
+    "num_unique_endpoints": 6,
+    "unique_endpoints": [
+      2,
+      3,
+      14,
+      19,
+      21,
+      28
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          3,
+          4,
+          11,
+          15,
+          22,
+          21,
+          26,
+          25,
+          16,
+          10
+        ],
+        "start": 3,
+        "end": 21,
+        "path1": [
+          3,
+          4,
+          11,
+          15,
+          22,
+          21
+        ],
+        "path2": [
+          21,
+          26,
+          25,
+          16,
+          10,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            11,
+            15
+          ],
+          [
+            15,
+            22
+          ],
+          [
+            22,
+            21
+          ],
+          [
+            21,
+            26
+          ],
+          [
+            26,
+            25
+          ],
+          [
+            25,
+            16
+          ],
+          [
+            16,
+            10
+          ],
+          [
+            10,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          14,
+          13,
+          22,
+          23,
+          20,
+          19,
+          9,
+          10,
+          7,
+          8
+        ],
+        "start": 14,
+        "end": 19,
+        "path1": [
+          14,
+          13,
+          22,
+          23,
+          20,
+          19
+        ],
+        "path2": [
+          19,
+          9,
+          10,
+          7,
+          8,
+          14
+        ],
+        "directed_edges": [
+          [
+            14,
+            13
+          ],
+          [
+            13,
+            22
+          ],
+          [
+            22,
+            23
+          ],
+          [
+            23,
+            20
+          ],
+          [
+            20,
+            19
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            14
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          14,
+          5,
+          6,
+          11,
+          12,
+          19,
+          18,
+          24,
+          25,
+          17
+        ],
+        "start": 14,
+        "end": 19,
+        "path1": [
+          14,
+          5,
+          6,
+          11,
+          12,
+          19
+        ],
+        "path2": [
+          19,
+          18,
+          24,
+          25,
+          17,
+          14
+        ],
+        "directed_edges": [
+          [
+            14,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            11
+          ],
+          [
+            11,
+            12
+          ],
+          [
+            12,
+            19
+          ],
+          [
+            19,
+            18
+          ],
+          [
+            18,
+            24
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            25,
+            17
+          ],
+          [
+            17,
+            14
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          7,
+          16,
+          24,
+          27,
+          28,
+          20,
+          12,
+          4,
+          0
+        ],
+        "start": 2,
+        "end": 28,
+        "path1": [
+          2,
+          7,
+          16,
+          24,
+          27,
+          28
+        ],
+        "path2": [
+          28,
+          20,
+          12,
+          4,
+          0,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            16
+          ],
+          [
+            16,
+            24
+          ],
+          [
+            24,
+            27
+          ],
+          [
+            27,
+            28
+          ],
+          [
+            28,
+            20
+          ],
+          [
+            20,
+            12
+          ],
+          [
+            12,
+            4
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          8,
+          17,
+          26,
+          29,
+          28,
+          23,
+          15,
+          6,
+          1
+        ],
+        "start": 2,
+        "end": 28,
+        "path1": [
+          2,
+          8,
+          17,
+          26,
+          29,
+          28
+        ],
+        "path2": [
+          28,
+          23,
+          15,
+          6,
+          1,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            8
+          ],
+          [
+            8,
+            17
+          ],
+          [
+            17,
+            26
+          ],
+          [
+            26,
+            29
+          ],
+          [
+            29,
+            28
+          ],
+          [
+            28,
+            23
+          ],
+          [
+            23,
+            15
+          ],
+          [
+            15,
+            6
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          3,
+          0,
+          1,
+          5,
+          13,
+          21,
+          29,
+          27,
+          18,
+          9
+        ],
+        "start": 3,
+        "end": 21,
+        "path1": [
+          3,
+          0,
+          1,
+          5,
+          13,
+          21
+        ],
+        "path2": [
+          21,
+          29,
+          27,
+          18,
+          9,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            13
+          ],
+          [
+            13,
+            21
+          ],
+          [
+            21,
+            29
+          ],
+          [
+            29,
+            27
+          ],
+          [
+            27,
+            18
+          ],
+          [
+            18,
+            9
+          ],
+          [
+            9,
+            3
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.1666666666666667,
+      0.16666666666666666,
+      0.1666666666666667,
+      0.16666666666666666,
+      0.16666666666666666,
+      0.16666666666666666
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "metabiaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 22,
+    "n_edges": 40,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metabiaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metabiaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 70,
+    "n_edges": 120,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metabidiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metabidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metabigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "metagyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "octagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "octagonal-prism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 24,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "octahedron.json",
+    "ok": true,
+    "n_vertices": 6,
+    "n_edges": 12,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 3,
+    "num_unique_endpoints": 4,
+    "unique_endpoints": [
+      0,
+      1,
+      3,
+      5
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          3
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          3,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "start": 1,
+        "end": 3,
+        "path1": [
+          1,
+          2,
+          3
+        ],
+        "path2": [
+          3,
+          4,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          2,
+          5,
+          4
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          2,
+          5
+        ],
+        "path2": [
+          5,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.3333333333333333,
+      0.33333333333333337,
+      0.33333333333333337
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "parabiaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 22,
+    "n_edges": 40,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "parabiaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "parabiaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 70,
+    "n_edges": 120,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "parabidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "parabigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "paragyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-bipyramid.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 15,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 25,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-gyrobicupola.json",
+    "ok": true,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 10,
+    "num_unique_endpoints": 13,
+    "unique_endpoints": [
+      0,
+      1,
+      3,
+      5,
+      7,
+      8,
+      9,
+      12,
+      13,
+      15,
+      16,
+      17,
+      19
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          3,
+          6,
+          12,
+          10
+        ],
+        "start": 3,
+        "end": 12,
+        "path1": [
+          3,
+          6,
+          12
+        ],
+        "path2": [
+          12,
+          10,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            6
+          ],
+          [
+            6,
+            12
+          ],
+          [
+            12,
+            10
+          ],
+          [
+            10,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          2,
+          7,
+          4
+        ],
+        "start": 0,
+        "end": 7,
+        "path1": [
+          0,
+          2,
+          7
+        ],
+        "path2": [
+          7,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          13,
+          14,
+          19,
+          18
+        ],
+        "start": 13,
+        "end": 19,
+        "path1": [
+          13,
+          14,
+          19
+        ],
+        "path2": [
+          19,
+          18,
+          13
+        ],
+        "directed_edges": [
+          [
+            13,
+            14
+          ],
+          [
+            14,
+            19
+          ],
+          [
+            19,
+            18
+          ],
+          [
+            18,
+            13
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          6,
+          5,
+          0
+        ],
+        "start": 1,
+        "end": 5,
+        "path1": [
+          1,
+          6,
+          5
+        ],
+        "path2": [
+          5,
+          0,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            6
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          11,
+          9,
+          2
+        ],
+        "start": 5,
+        "end": 9,
+        "path1": [
+          5,
+          11,
+          9
+        ],
+        "path2": [
+          9,
+          2,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            11
+          ],
+          [
+            11,
+            9
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            2,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          3,
+          8,
+          4
+        ],
+        "start": 1,
+        "end": 8,
+        "path1": [
+          1,
+          3,
+          8
+        ],
+        "path2": [
+          8,
+          4,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          7,
+          9,
+          16,
+          13
+        ],
+        "start": 7,
+        "end": 16,
+        "path1": [
+          7,
+          9,
+          16
+        ],
+        "path2": [
+          16,
+          13,
+          7
+        ],
+        "directed_edges": [
+          [
+            7,
+            9
+          ],
+          [
+            9,
+            16
+          ],
+          [
+            16,
+            13
+          ],
+          [
+            13,
+            7
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          12,
+          15,
+          19,
+          17
+        ],
+        "start": 12,
+        "end": 19,
+        "path1": [
+          12,
+          15,
+          19
+        ],
+        "path2": [
+          19,
+          17,
+          12
+        ],
+        "directed_edges": [
+          [
+            12,
+            15
+          ],
+          [
+            15,
+            19
+          ],
+          [
+            19,
+            17
+          ],
+          [
+            17,
+            12
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          8,
+          10,
+          17,
+          14
+        ],
+        "start": 8,
+        "end": 17,
+        "path1": [
+          8,
+          10,
+          17
+        ],
+        "path2": [
+          17,
+          14,
+          8
+        ],
+        "directed_edges": [
+          [
+            8,
+            10
+          ],
+          [
+            10,
+            17
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            14,
+            8
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          15,
+          18,
+          16,
+          11
+        ],
+        "start": 15,
+        "end": 16,
+        "path1": [
+          15,
+          18,
+          16
+        ],
+        "path2": [
+          16,
+          11,
+          15
+        ],
+        "directed_edges": [
+          [
+            15,
+            18
+          ],
+          [
+            18,
+            16
+          ],
+          [
+            16,
+            11
+          ],
+          [
+            11,
+            15
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.10000000000000002,
+      0.09999999999999999,
+      0.1,
+      0.09999999999999999,
+      0.10000000000000002,
+      0.09999999999999999,
+      0.1,
+      0.10000000000000002,
+      0.1,
+      0.10000000000000002
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "pentagonal-gyrocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 50,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-orthobirotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-orthocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 50,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 6,
+    "n_edges": 10,
+    "vertex_degrees": [
+      3,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 35,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "rhombicosidodecahedron.json",
+    "ok": true,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 30,
+    "num_unique_endpoints": 40,
+    "unique_endpoints": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      13,
+      14,
+      15,
+      19,
+      21,
+      22,
+      23,
+      25,
+      27,
+      28,
+      29,
+      30,
+      32,
+      33,
+      34,
+      36,
+      38,
+      40,
+      41,
+      43,
+      44,
+      46,
+      48,
+      49,
+      50,
+      52,
+      54,
+      55,
+      57,
+      58,
+      59
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          5,
+          6,
+          15,
+          13
+        ],
+        "start": 5,
+        "end": 15,
+        "path1": [
+          5,
+          6,
+          15
+        ],
+        "path2": [
+          15,
+          13,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            15
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            13,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          43,
+          46,
+          54,
+          53
+        ],
+        "start": 43,
+        "end": 54,
+        "path1": [
+          43,
+          46,
+          54
+        ],
+        "path2": [
+          54,
+          53,
+          43
+        ],
+        "directed_edges": [
+          [
+            43,
+            46
+          ],
+          [
+            46,
+            54
+          ],
+          [
+            54,
+            53
+          ],
+          [
+            53,
+            43
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          3,
+          9,
+          4
+        ],
+        "start": 0,
+        "end": 9,
+        "path1": [
+          0,
+          3,
+          9
+        ],
+        "path2": [
+          9,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          33,
+          35,
+          46,
+          45
+        ],
+        "start": 33,
+        "end": 46,
+        "path1": [
+          33,
+          35,
+          46
+        ],
+        "path2": [
+          46,
+          45,
+          33
+        ],
+        "directed_edges": [
+          [
+            33,
+            35
+          ],
+          [
+            35,
+            46
+          ],
+          [
+            46,
+            45
+          ],
+          [
+            45,
+            33
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          44,
+          52,
+          58,
+          53
+        ],
+        "start": 44,
+        "end": 58,
+        "path1": [
+          44,
+          52,
+          58
+        ],
+        "path2": [
+          58,
+          53,
+          44
+        ],
+        "directed_edges": [
+          [
+            44,
+            52
+          ],
+          [
+            52,
+            58
+          ],
+          [
+            58,
+            53
+          ],
+          [
+            53,
+            44
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          22,
+          34,
+          33,
+          21
+        ],
+        "start": 22,
+        "end": 33,
+        "path1": [
+          22,
+          34,
+          33
+        ],
+        "path2": [
+          33,
+          21,
+          22
+        ],
+        "directed_edges": [
+          [
+            22,
+            34
+          ],
+          [
+            34,
+            33
+          ],
+          [
+            33,
+            21
+          ],
+          [
+            21,
+            22
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          15,
+          24,
+          36,
+          26
+        ],
+        "start": 15,
+        "end": 36,
+        "path1": [
+          15,
+          24,
+          36
+        ],
+        "path2": [
+          36,
+          26,
+          15
+        ],
+        "directed_edges": [
+          [
+            15,
+            24
+          ],
+          [
+            24,
+            36
+          ],
+          [
+            36,
+            26
+          ],
+          [
+            26,
+            15
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          14,
+          16,
+          27,
+          25
+        ],
+        "start": 14,
+        "end": 27,
+        "path1": [
+          14,
+          16,
+          27
+        ],
+        "path2": [
+          27,
+          25,
+          14
+        ],
+        "directed_edges": [
+          [
+            14,
+            16
+          ],
+          [
+            16,
+            27
+          ],
+          [
+            27,
+            25
+          ],
+          [
+            25,
+            14
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          19,
+          20,
+          32,
+          31
+        ],
+        "start": 19,
+        "end": 32,
+        "path1": [
+          19,
+          20,
+          32
+        ],
+        "path2": [
+          32,
+          31,
+          19
+        ],
+        "directed_edges": [
+          [
+            19,
+            20
+          ],
+          [
+            20,
+            32
+          ],
+          [
+            32,
+            31
+          ],
+          [
+            31,
+            19
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          28,
+          29,
+          41,
+          40
+        ],
+        "start": 28,
+        "end": 41,
+        "path1": [
+          28,
+          29,
+          41
+        ],
+        "path2": [
+          41,
+          40,
+          28
+        ],
+        "directed_edges": [
+          [
+            28,
+            29
+          ],
+          [
+            29,
+            41
+          ],
+          [
+            41,
+            40
+          ],
+          [
+            40,
+            28
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          8,
+          17,
+          28,
+          18
+        ],
+        "start": 8,
+        "end": 28,
+        "path1": [
+          8,
+          17,
+          28
+        ],
+        "path2": [
+          28,
+          18,
+          8
+        ],
+        "directed_edges": [
+          [
+            8,
+            17
+          ],
+          [
+            17,
+            28
+          ],
+          [
+            28,
+            18
+          ],
+          [
+            18,
+            8
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          49,
+          55,
+          59,
+          56
+        ],
+        "start": 49,
+        "end": 59,
+        "path1": [
+          49,
+          55,
+          59
+        ],
+        "path2": [
+          59,
+          56,
+          49
+        ],
+        "directed_edges": [
+          [
+            49,
+            55
+          ],
+          [
+            55,
+            59
+          ],
+          [
+            59,
+            56
+          ],
+          [
+            56,
+            49
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          27,
+          37,
+          48,
+          39
+        ],
+        "start": 27,
+        "end": 48,
+        "path1": [
+          27,
+          37,
+          48
+        ],
+        "path2": [
+          48,
+          39,
+          27
+        ],
+        "directed_edges": [
+          [
+            27,
+            37
+          ],
+          [
+            37,
+            48
+          ],
+          [
+            48,
+            39
+          ],
+          [
+            39,
+            27
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          3,
+          10,
+          8,
+          2
+        ],
+        "start": 3,
+        "end": 8,
+        "path1": [
+          3,
+          10,
+          8
+        ],
+        "path2": [
+          8,
+          2,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            10
+          ],
+          [
+            10,
+            8
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          13,
+          17,
+          29,
+          24
+        ],
+        "start": 13,
+        "end": 29,
+        "path1": [
+          13,
+          17,
+          29
+        ],
+        "path2": [
+          29,
+          24,
+          13
+        ],
+        "directed_edges": [
+          [
+            13,
+            17
+          ],
+          [
+            17,
+            29
+          ],
+          [
+            29,
+            24
+          ],
+          [
+            24,
+            13
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          36,
+          38,
+          49,
+          47
+        ],
+        "start": 36,
+        "end": 49,
+        "path1": [
+          36,
+          38,
+          49
+        ],
+        "path2": [
+          49,
+          47,
+          36
+        ],
+        "directed_edges": [
+          [
+            36,
+            38
+          ],
+          [
+            38,
+            49
+          ],
+          [
+            49,
+            47
+          ],
+          [
+            47,
+            36
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          30,
+          32,
+          44,
+          42
+        ],
+        "start": 30,
+        "end": 44,
+        "path1": [
+          30,
+          32,
+          44
+        ],
+        "path2": [
+          44,
+          42,
+          30
+        ],
+        "directed_edges": [
+          [
+            30,
+            32
+          ],
+          [
+            32,
+            44
+          ],
+          [
+            44,
+            42
+          ],
+          [
+            42,
+            30
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          7,
+          11,
+          22,
+          16
+        ],
+        "start": 7,
+        "end": 22,
+        "path1": [
+          7,
+          11,
+          22
+        ],
+        "path2": [
+          22,
+          16,
+          7
+        ],
+        "directed_edges": [
+          [
+            7,
+            11
+          ],
+          [
+            11,
+            22
+          ],
+          [
+            22,
+            16
+          ],
+          [
+            16,
+            7
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          41,
+          47,
+          55,
+          51
+        ],
+        "start": 41,
+        "end": 55,
+        "path1": [
+          41,
+          47,
+          55
+        ],
+        "path2": [
+          55,
+          51,
+          41
+        ],
+        "directed_edges": [
+          [
+            41,
+            47
+          ],
+          [
+            47,
+            55
+          ],
+          [
+            55,
+            51
+          ],
+          [
+            51,
+            41
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          4,
+          11,
+          21,
+          12
+        ],
+        "start": 4,
+        "end": 21,
+        "path1": [
+          4,
+          11,
+          21
+        ],
+        "path2": [
+          21,
+          12,
+          4
+        ],
+        "directed_edges": [
+          [
+            4,
+            11
+          ],
+          [
+            11,
+            21
+          ],
+          [
+            21,
+            12
+          ],
+          [
+            12,
+            4
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          25,
+          26,
+          38,
+          37
+        ],
+        "start": 25,
+        "end": 38,
+        "path1": [
+          25,
+          26,
+          38
+        ],
+        "path2": [
+          38,
+          37,
+          25
+        ],
+        "directed_edges": [
+          [
+            25,
+            26
+          ],
+          [
+            26,
+            38
+          ],
+          [
+            38,
+            37
+          ],
+          [
+            37,
+            25
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          54,
+          57,
+          59,
+          58
+        ],
+        "start": 54,
+        "end": 59,
+        "path1": [
+          54,
+          57,
+          59
+        ],
+        "path2": [
+          59,
+          58,
+          54
+        ],
+        "directed_edges": [
+          [
+            54,
+            57
+          ],
+          [
+            57,
+            59
+          ],
+          [
+            59,
+            58
+          ],
+          [
+            58,
+            54
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          48,
+          50,
+          57,
+          56
+        ],
+        "start": 48,
+        "end": 57,
+        "path1": [
+          48,
+          50,
+          57
+        ],
+        "path2": [
+          57,
+          56,
+          48
+        ],
+        "directed_edges": [
+          [
+            48,
+            50
+          ],
+          [
+            50,
+            57
+          ],
+          [
+            57,
+            56
+          ],
+          [
+            56,
+            48
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          9,
+          12,
+          23,
+          19
+        ],
+        "start": 9,
+        "end": 23,
+        "path1": [
+          9,
+          12,
+          23
+        ],
+        "path2": [
+          23,
+          19,
+          9
+        ],
+        "directed_edges": [
+          [
+            9,
+            12
+          ],
+          [
+            12,
+            23
+          ],
+          [
+            23,
+            19
+          ],
+          [
+            19,
+            9
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          34,
+          39,
+          50,
+          45
+        ],
+        "start": 34,
+        "end": 50,
+        "path1": [
+          34,
+          39,
+          50
+        ],
+        "path2": [
+          50,
+          45,
+          34
+        ],
+        "directed_edges": [
+          [
+            34,
+            39
+          ],
+          [
+            39,
+            50
+          ],
+          [
+            50,
+            45
+          ],
+          [
+            45,
+            34
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          10,
+          18,
+          30,
+          20
+        ],
+        "start": 10,
+        "end": 30,
+        "path1": [
+          10,
+          18,
+          30
+        ],
+        "path2": [
+          30,
+          20,
+          10
+        ],
+        "directed_edges": [
+          [
+            10,
+            18
+          ],
+          [
+            18,
+            30
+          ],
+          [
+            30,
+            20
+          ],
+          [
+            20,
+            10
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          40,
+          42,
+          52,
+          51
+        ],
+        "start": 40,
+        "end": 52,
+        "path1": [
+          40,
+          42,
+          52
+        ],
+        "path2": [
+          52,
+          51,
+          40
+        ],
+        "directed_edges": [
+          [
+            40,
+            42
+          ],
+          [
+            42,
+            52
+          ],
+          [
+            52,
+            51
+          ],
+          [
+            51,
+            40
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          23,
+          31,
+          43,
+          35
+        ],
+        "start": 23,
+        "end": 43,
+        "path1": [
+          23,
+          31,
+          43
+        ],
+        "path2": [
+          43,
+          35,
+          23
+        ],
+        "directed_edges": [
+          [
+            23,
+            31
+          ],
+          [
+            31,
+            43
+          ],
+          [
+            43,
+            35
+          ],
+          [
+            35,
+            23
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          6,
+          14,
+          7
+        ],
+        "start": 1,
+        "end": 14,
+        "path1": [
+          1,
+          6,
+          14
+        ],
+        "path2": [
+          14,
+          7,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            6
+          ],
+          [
+            6,
+            14
+          ],
+          [
+            14,
+            7
+          ],
+          [
+            7,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          2
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          2,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333,
+      0.03333333333333333
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "rhombicuboctahedron.json",
+    "ok": true,
+    "n_vertices": 24,
+    "n_edges": 48,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 12,
+    "num_unique_endpoints": 16,
+    "unique_endpoints": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      8,
+      9,
+      10,
+      13,
+      14,
+      15,
+      18,
+      19,
+      21,
+      22,
+      23
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          0,
+          3,
+          9,
+          4
+        ],
+        "start": 0,
+        "end": 9,
+        "path1": [
+          0,
+          3,
+          9
+        ],
+        "path2": [
+          9,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          14,
+          19,
+          23,
+          20
+        ],
+        "start": 14,
+        "end": 23,
+        "path1": [
+          14,
+          19,
+          23
+        ],
+        "path2": [
+          23,
+          20,
+          14
+        ],
+        "directed_edges": [
+          [
+            14,
+            19
+          ],
+          [
+            19,
+            23
+          ],
+          [
+            23,
+            20
+          ],
+          [
+            20,
+            14
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          3,
+          10,
+          8
+        ],
+        "start": 2,
+        "end": 10,
+        "path1": [
+          2,
+          3,
+          10
+        ],
+        "path2": [
+          10,
+          8,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            10,
+            8
+          ],
+          [
+            8,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          8,
+          12,
+          19,
+          16
+        ],
+        "start": 8,
+        "end": 19,
+        "path1": [
+          8,
+          12,
+          19
+        ],
+        "path2": [
+          19,
+          16,
+          8
+        ],
+        "directed_edges": [
+          [
+            8,
+            12
+          ],
+          [
+            12,
+            19
+          ],
+          [
+            19,
+            16
+          ],
+          [
+            16,
+            8
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          18,
+          21,
+          23,
+          22
+        ],
+        "start": 18,
+        "end": 23,
+        "path1": [
+          18,
+          21,
+          23
+        ],
+        "path2": [
+          23,
+          22,
+          18
+        ],
+        "directed_edges": [
+          [
+            18,
+            21
+          ],
+          [
+            21,
+            23
+          ],
+          [
+            23,
+            22
+          ],
+          [
+            22,
+            18
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          13,
+          15,
+          21,
+          20
+        ],
+        "start": 13,
+        "end": 21,
+        "path1": [
+          13,
+          15,
+          21
+        ],
+        "path2": [
+          21,
+          20,
+          13
+        ],
+        "directed_edges": [
+          [
+            13,
+            15
+          ],
+          [
+            15,
+            21
+          ],
+          [
+            21,
+            20
+          ],
+          [
+            20,
+            13
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          2
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          2,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          6,
+          13,
+          7
+        ],
+        "start": 1,
+        "end": 13,
+        "path1": [
+          1,
+          6,
+          13
+        ],
+        "path2": [
+          13,
+          7,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            6
+          ],
+          [
+            6,
+            13
+          ],
+          [
+            13,
+            7
+          ],
+          [
+            7,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          9,
+          11,
+          18,
+          17
+        ],
+        "start": 9,
+        "end": 18,
+        "path1": [
+          9,
+          11,
+          18
+        ],
+        "path2": [
+          18,
+          17,
+          9
+        ],
+        "directed_edges": [
+          [
+            9,
+            11
+          ],
+          [
+            11,
+            18
+          ],
+          [
+            18,
+            17
+          ],
+          [
+            17,
+            9
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          6,
+          14,
+          12
+        ],
+        "start": 5,
+        "end": 14,
+        "path1": [
+          5,
+          6,
+          14
+        ],
+        "path2": [
+          14,
+          12,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            14
+          ],
+          [
+            14,
+            12
+          ],
+          [
+            12,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          10,
+          16,
+          22,
+          17
+        ],
+        "start": 10,
+        "end": 22,
+        "path1": [
+          10,
+          16,
+          22
+        ],
+        "path2": [
+          22,
+          17,
+          10
+        ],
+        "directed_edges": [
+          [
+            10,
+            16
+          ],
+          [
+            16,
+            22
+          ],
+          [
+            22,
+            17
+          ],
+          [
+            17,
+            10
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          4,
+          7,
+          15,
+          11
+        ],
+        "start": 4,
+        "end": 15,
+        "path1": [
+          4,
+          7,
+          15
+        ],
+        "path2": [
+          15,
+          11,
+          4
+        ],
+        "directed_edges": [
+          [
+            4,
+            7
+          ],
+          [
+            7,
+            15
+          ],
+          [
+            15,
+            11
+          ],
+          [
+            11,
+            4
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "snub-cube.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 60,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "snub-disphenoid.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 18,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "snub-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 150,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "snub-square-antiprism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 40,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "sphenocorona.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 22,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "sphenomegacorona.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 28,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "square-antiprism.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 16,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "square-cupola.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "square-gyrobicupola.json",
+    "ok": true,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 8,
+    "num_unique_endpoints": 10,
+    "unique_endpoints": [
+      0,
+      1,
+      2,
+      5,
+      7,
+      9,
+      10,
+      13,
+      14,
+      15
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          0,
+          2,
+          7,
+          4
+        ],
+        "start": 0,
+        "end": 7,
+        "path1": [
+          0,
+          2,
+          7
+        ],
+        "path2": [
+          7,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          3,
+          9,
+          8
+        ],
+        "start": 2,
+        "end": 9,
+        "path1": [
+          2,
+          3,
+          9
+        ],
+        "path2": [
+          9,
+          8,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            8,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          9,
+          11,
+          15,
+          14
+        ],
+        "start": 9,
+        "end": 15,
+        "path1": [
+          9,
+          11,
+          15
+        ],
+        "path2": [
+          15,
+          14,
+          9
+        ],
+        "directed_edges": [
+          [
+            9,
+            11
+          ],
+          [
+            11,
+            15
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            14,
+            9
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          4,
+          10,
+          6
+        ],
+        "start": 1,
+        "end": 10,
+        "path1": [
+          1,
+          4,
+          10
+        ],
+        "path2": [
+          10,
+          6,
+          1
+        ],
+        "directed_edges": [
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            6,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          10,
+          12,
+          15,
+          13
+        ],
+        "start": 10,
+        "end": 15,
+        "path1": [
+          10,
+          12,
+          15
+        ],
+        "path2": [
+          15,
+          13,
+          10
+        ],
+        "directed_edges": [
+          [
+            10,
+            12
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            13,
+            10
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          6,
+          13,
+          11
+        ],
+        "start": 5,
+        "end": 13,
+        "path1": [
+          5,
+          6,
+          13
+        ],
+        "path2": [
+          13,
+          11,
+          5
+        ],
+        "directed_edges": [
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            13
+          ],
+          [
+            13,
+            11
+          ],
+          [
+            11,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          1,
+          5,
+          3
+        ],
+        "start": 0,
+        "end": 5,
+        "path1": [
+          0,
+          1,
+          5
+        ],
+        "path2": [
+          5,
+          3,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          7,
+          8,
+          14,
+          12
+        ],
+        "start": 7,
+        "end": 14,
+        "path1": [
+          7,
+          8,
+          14
+        ],
+        "path2": [
+          14,
+          12,
+          7
+        ],
+        "directed_edges": [
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            14
+          ],
+          [
+            14,
+            12
+          ],
+          [
+            12,
+            7
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.12499999999999994,
+      0.125
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "square-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "square-pyramid.json",
+    "ok": false,
+    "n_vertices": 5,
+    "n_edges": 8,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "square.json",
+    "ok": true,
+    "n_vertices": 4,
+    "n_edges": 4,
+    "vertex_degrees": [
+      2
+    ],
+    "cycle_length": 4,
+    "num_cycles": 1,
+    "num_unique_endpoints": 2,
+    "unique_endpoints": [
+      0,
+      2
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "start": 0,
+        "end": 2,
+        "path1": [
+          0,
+          1,
+          2
+        ],
+        "path2": [
+          2,
+          3,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      1.0
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "star-octahedron.json",
+    "ok": true,
+    "n_vertices": 10,
+    "n_edges": 16,
+    "vertex_degrees": [
+      2,
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 4,
+    "num_unique_endpoints": 4,
+    "unique_endpoints": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          3,
+          7,
+          4,
+          0
+        ],
+        "start": 3,
+        "end": 4,
+        "path1": [
+          3,
+          7,
+          4
+        ],
+        "path2": [
+          4,
+          0,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          6,
+          3,
+          1
+        ],
+        "start": 2,
+        "end": 3,
+        "path1": [
+          2,
+          6,
+          3
+        ],
+        "path2": [
+          3,
+          1,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            6
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          4,
+          8,
+          5,
+          1
+        ],
+        "start": 4,
+        "end": 5,
+        "path1": [
+          4,
+          8,
+          5
+        ],
+        "path2": [
+          5,
+          1,
+          4
+        ],
+        "directed_edges": [
+          [
+            4,
+            8
+          ],
+          [
+            8,
+            5
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          9,
+          5,
+          0
+        ],
+        "start": 2,
+        "end": 5,
+        "path1": [
+          2,
+          9,
+          5
+        ],
+        "path2": [
+          5,
+          0,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            9
+          ],
+          [
+            9,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.25,
+      0.25,
+      0.25,
+      0.24999999999999994
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "star_octahedron.json",
+    "ok": true,
+    "n_vertices": 10,
+    "n_edges": 16,
+    "vertex_degrees": [
+      2,
+      4
+    ],
+    "cycle_length": 4,
+    "num_cycles": 4,
+    "num_unique_endpoints": 4,
+    "unique_endpoints": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          3,
+          7,
+          4,
+          0
+        ],
+        "start": 3,
+        "end": 4,
+        "path1": [
+          3,
+          7,
+          4
+        ],
+        "path2": [
+          4,
+          0,
+          3
+        ],
+        "directed_edges": [
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            3
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          6,
+          3,
+          1
+        ],
+        "start": 2,
+        "end": 3,
+        "path1": [
+          2,
+          6,
+          3
+        ],
+        "path2": [
+          3,
+          1,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            6
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          4,
+          8,
+          5,
+          1
+        ],
+        "start": 4,
+        "end": 5,
+        "path1": [
+          4,
+          8,
+          5
+        ],
+        "path2": [
+          5,
+          1,
+          4
+        ],
+        "directed_edges": [
+          [
+            4,
+            8
+          ],
+          [
+            8,
+            5
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          9,
+          5,
+          0
+        ],
+        "start": 2,
+        "end": 5,
+        "path1": [
+          2,
+          9,
+          5
+        ],
+        "path2": [
+          5,
+          0,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            9
+          ],
+          [
+            9,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.25,
+      0.25,
+      0.25,
+      0.24999999999999994
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "tetrahedron.json",
+    "ok": false,
+    "n_vertices": 4,
+    "n_edges": 6,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triangular-bipyramid.json",
+    "ok": false,
+    "n_vertices": 5,
+    "n_edges": 9,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triangular-hebesphenorotunda.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triangular-orthobicupola.json",
+    "ok": true,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "cycle_length": 6,
+    "num_cycles": 4,
+    "num_unique_endpoints": 5,
+    "unique_endpoints": [
+      0,
+      2,
+      6,
+      8,
+      11
+    ],
+    "cycles": [
+      {
+        "vertices": [
+          0,
+          1,
+          7,
+          11,
+          10,
+          4
+        ],
+        "start": 0,
+        "end": 11,
+        "path1": [
+          0,
+          1,
+          7,
+          11
+        ],
+        "path2": [
+          11,
+          10,
+          4,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          5,
+          10,
+          6,
+          3,
+          1
+        ],
+        "start": 2,
+        "end": 6,
+        "path1": [
+          2,
+          5,
+          10,
+          6
+        ],
+        "path2": [
+          6,
+          3,
+          1,
+          2
+        ],
+        "directed_edges": [
+          [
+            2,
+            5
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          6,
+          4,
+          5,
+          8,
+          7,
+          9
+        ],
+        "start": 6,
+        "end": 8,
+        "path1": [
+          6,
+          4,
+          5,
+          8
+        ],
+        "path2": [
+          8,
+          7,
+          9,
+          6
+        ],
+        "directed_edges": [
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            9,
+            6
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          2,
+          8,
+          11,
+          9,
+          3
+        ],
+        "start": 0,
+        "end": 11,
+        "path1": [
+          0,
+          2,
+          8,
+          11
+        ],
+        "path2": [
+          11,
+          9,
+          3,
+          0
+        ],
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            8,
+            11
+          ],
+          [
+            11,
+            9
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      }
+    ],
+    "cycle_weights": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ],
+    "uniformity": 1.0
+  },
+  {
+    "model": "triangular-prism.json",
+    "ok": false,
+    "n_vertices": 6,
+    "n_edges": 9,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 23,
+    "n_edges": 45,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 30,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triaugmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 21,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "triaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 75,
+    "n_edges": 135,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "tridiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "tridiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 45,
+    "n_edges": 75,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "trigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-cube.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-cuboctahedron.json",
+    "ok": false,
+    "n_vertices": 48,
+    "n_edges": 72,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-icosahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-icosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 120,
+    "n_edges": 180,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-octahedron.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  },
+  {
+    "model": "truncated-tetrahedron.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No equal even-length cycle decomposition found."
+  }
+]
