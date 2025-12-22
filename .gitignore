@@ -139,8 +139,11 @@ photos_tmp/
 *.hex
 *.lst
 *.map
-report/
+# report/
 report_/
-Solver/
+Solver/models*
+Solver/backup*
+Solver/output
+
 
 
