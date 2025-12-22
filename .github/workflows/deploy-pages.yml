@@ -26,13 +26,22 @@ jobs:
 
       - name: Download polyhedra model data
         run: |
+          set -euxo pipefail
           cd webviewer/models
-          # Download JSON files from tesseralis/polyhedra-viewer repository
-          curl -sL "https://api.github.com/repos/tesseralis/polyhedra-viewer/contents/src/data/polyhedra?ref=canon" | \
-          jq -r '.[] | select(.name | endswith(".json")) | .download_url' | \
-          xargs -P 10 -I {} curl -sLO "{}"
-          echo "Downloaded $(ls -1 *.json 2>/dev/null | wc -l) model files"
-          
+          API_URL="https://api.github.com/repos/tesseralis/polyhedra-viewer/contents/src/data/polyhedra?ref=canon"
+          echo "Fetching list from $API_URL"
+          # Use the Actions token to increase API rate limits and avoid getting an error string back
+          response=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
+          # Only try to index the response if it's an array; otherwise print it for debugging
+          if echo "$response" | jq -e 'type=="array"' >/dev/null 2>&1; then
+            echo "$response" | jq -r '.[] | select(.name | endswith(".json")) | .download_url' | xargs -r -P 10 -I {} curl -sSLO "{}"
+            echo "Downloaded $(ls -1 *.json 2>/dev/null | wc -l) model files"
+          else
+            echo "API response was not an array; printing response for debugging:"
+            echo "$response"
+            echo "Skipping automatic downloads from tesseralis/polyhedra-viewer."
+          fi
+
           # Copy custom models from data directory
           cp ../data/square.json .
           cp ../data/star-octahedron.json .
