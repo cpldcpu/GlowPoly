@@ -658,10 +658,10 @@ def compute_cycle_weights(
     w, residuals, rank, s = np.linalg.lstsq(A, target, rcond=None)
     w = np.clip(w, 0, None)  # Non-negative weights
     
-    # Normalize weights so they sum to 1 (relative weights)
-    w_sum = w.sum()
-    if w_sum > 0:
-        w_normalized = w / w_sum
+    # Normalize weights so max is 1.0 (like geodesic covers)
+    w_max = w.max()
+    if w_max > 0:
+        w_normalized = w / w_max
     else:
         w_normalized = w
     

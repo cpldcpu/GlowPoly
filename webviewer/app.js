@@ -192,9 +192,15 @@ function setupControls() {
     document.getElementById('animate-flow').addEventListener('change', (e) => {
         state.animateFlow = e.target.checked;
         // Re-render to show/hide arrows vs particles (only if paths are shown)
-        if (currentFlowData && state.showPaths) {
-            renderPaths(currentFlowData);
-            updateEdgeColors();  // Restore proper edge coloring after re-render
+        if (state.showPaths) {
+            if (isCycleMode && currentResult && currentResult.cycles) {
+                // Cycle mode: re-render cycle paths
+                renderCyclePaths(currentResult.cycles);
+            } else if (currentFlowData) {
+                // Geodesic mode: re-render geodesic paths
+                renderPaths(currentFlowData);
+                updateEdgeColors();  // Restore proper edge coloring after re-render
+            }
         }
     });
 
@@ -1086,38 +1092,46 @@ function renderCyclePaths(cycles) {
         }
     }
 
-    // Create arrowheads for directed edges
+    // Create arrowheads or flow particles for directed edges
     cycles.forEach((cycle, cycleIdx) => {
         const color = new THREE.Color(CONFIG.colors.pathPalette[cycleIdx % CONFIG.colors.pathPalette.length]);
-        const directedEdges = cycle.directed_edges || [];
 
-        for (const edge of directedEdges) {
-            const [from, to] = edge;
-            const fromPos = new THREE.Vector3(
-                vertices[from][0] * scale,
-                vertices[from][1] * scale,
-                vertices[from][2] * scale
-            );
-            const toPos = new THREE.Vector3(
-                vertices[to][0] * scale,
-                vertices[to][1] * scale,
-                vertices[to][2] * scale
-            );
+        if (state.animateFlow) {
+            // Animate flow: create particles along the cycle path
+            // Use vertices array and close the loop
+            const cyclePath = [...cycle.vertices, cycle.vertices[0]];
+            createFlowParticles(cyclePath, vertices, scale, color, cycleIdx);
+        } else {
+            // Static arrows on each edge
+            const directedEdges = cycle.directed_edges || [];
+            for (const edge of directedEdges) {
+                const [from, to] = edge;
+                const fromPos = new THREE.Vector3(
+                    vertices[from][0] * scale,
+                    vertices[from][1] * scale,
+                    vertices[from][2] * scale
+                );
+                const toPos = new THREE.Vector3(
+                    vertices[to][0] * scale,
+                    vertices[to][1] * scale,
+                    vertices[to][2] * scale
+                );
 
-            // Arrow at midpoint pointing toward 'to'
-            const mid = new THREE.Vector3().addVectors(fromPos, toPos).multiplyScalar(0.5);
-            const direction = new THREE.Vector3().subVectors(toPos, fromPos).normalize();
+                // Arrow at midpoint pointing toward 'to'
+                const mid = new THREE.Vector3().addVectors(fromPos, toPos).multiplyScalar(0.5);
+                const direction = new THREE.Vector3().subVectors(toPos, fromPos).normalize();
 
-            const coneGeom = new THREE.ConeGeometry(0.03, 0.08, 8);
-            const coneMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.8 });
-            const cone = new THREE.Mesh(coneGeom, coneMat);
+                const coneGeom = new THREE.ConeGeometry(0.03, 0.08, 8);
+                const coneMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.8 });
+                const cone = new THREE.Mesh(coneGeom, coneMat);
 
-            cone.position.copy(mid);
-            const up = new THREE.Vector3(0, 1, 0);
-            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
-            cone.setRotationFromQuaternion(quaternion);
+                cone.position.copy(mid);
+                const up = new THREE.Vector3(0, 1, 0);
+                const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+                cone.setRotationFromQuaternion(quaternion);
 
-            arrowsGroup.add(cone);
+                arrowsGroup.add(cone);
+            }
         }
 
         // Mark start/end vertices
@@ -1306,6 +1320,19 @@ function updateEdgeColors() {
                     if (!edgeUsage[key].includes(pairIdx)) {
                         edgeUsage[key].push(pairIdx);
                     }
+                }
+            }
+        });
+    } else if (isCycleMode && currentResult.cycles) {
+        // Cycle decomposition mode
+        currentResult.cycles.forEach((cycle, cycleIdx) => {
+            const directedEdges = cycle.directed_edges || [];
+            for (const edge of directedEdges) {
+                const [a, b] = edge;
+                const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+                if (!edgeUsage[key]) edgeUsage[key] = [];
+                if (!edgeUsage[key].includes(cycleIdx)) {
+                    edgeUsage[key].push(cycleIdx);
                 }
             }
         });

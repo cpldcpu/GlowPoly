@@ -1,0 +1,124 @@
+model,ok,n_vertices,n_edges,vertex_degrees,cycle_length,num_cycles,num_endpoints,note
+augmented-dodecahedron.json,False,21,35,"3,4,5",,,,No equal even-length cycle decomposition found.
+augmented-hexagonal-prism.json,False,13,22,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-pentagonal-prism.json,False,11,19,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-sphenocorona.json,False,11,26,"4,5",,,,No equal even-length cycle decomposition found.
+augmented-triangular-prism.json,False,7,13,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-tridiminished-icosahedron.json,False,10,18,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-truncated-cube.json,False,28,48,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-truncated-dodecahedron.json,False,65,105,"3,4",,,,No equal even-length cycle decomposition found.
+augmented-truncated-tetrahedron.json,False,15,27,"3,4",,,,No equal even-length cycle decomposition found.
+biaugmented-pentagonal-prism.json,False,12,23,"3,4",,,,No equal even-length cycle decomposition found.
+biaugmented-triangular-prism.json,False,8,17,"4,5",,,,No equal even-length cycle decomposition found.
+biaugmented-truncated-cube.json,False,32,60,"3,4",,,,No equal even-length cycle decomposition found.
+bigyrate-diminished-rhombicosidodecahedron.json,False,55,105,"3,4",,,,No equal even-length cycle decomposition found.
+bilunabirotunda.json,False,14,26,"3,4",,,,No equal even-length cycle decomposition found.
+cube.json,False,8,12,3,,,,No equal even-length cycle decomposition found.
+cuboctahedron.json,True,12,24,4,6,4,4,
+decagonal-antiprism.json,False,20,40,4,,,,No equal even-length cycle decomposition found.
+decagonal-prism.json,False,20,30,3,,,,No equal even-length cycle decomposition found.
+diminished-rhombicosidodecahedron.json,False,55,105,"3,4",,,,No equal even-length cycle decomposition found.
+disphenocingulum.json,False,16,38,"4,5",,,,No equal even-length cycle decomposition found.
+dodecahedron.json,False,20,30,3,,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-bipyramid.json,False,12,25,"4,5",,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-cupola.json,False,25,45,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-gyrobicupola.json,True,30,60,4,12,5,6,
+elongated-pentagonal-gyrobirotunda.json,False,40,80,4,,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-gyrocupolarotunda.json,False,35,70,4,,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-orthobicupola.json,True,30,60,4,12,5,6,
+elongated-pentagonal-orthobirotunda.json,False,40,80,4,,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-orthocupolarotunda.json,True,35,70,4,10,7,9,
+elongated-pentagonal-pyramid.json,False,11,20,"3,4,5",,,,No equal even-length cycle decomposition found.
+elongated-pentagonal-rotunda.json,False,30,55,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-square-bipyramid.json,False,10,20,4,,,,No equal even-length cycle decomposition found.
+elongated-square-cupola.json,False,20,36,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-square-gyrobicupola.json,False,24,48,4,,,,No equal even-length cycle decomposition found.
+elongated-square-pyramid.json,False,9,16,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-triangular-bipyramid.json,False,8,15,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-triangular-cupola.json,False,15,27,"3,4",,,,No equal even-length cycle decomposition found.
+elongated-triangular-gyrobicupola.json,False,18,36,4,,,,No equal even-length cycle decomposition found.
+elongated-triangular-orthobicupola.json,True,18,36,4,4,9,12,
+elongated-triangular-pyramid.json,False,7,12,"3,4",,,,No equal even-length cycle decomposition found.
+gyrate-bidiminished-rhombicosidodecahedron.json,False,50,90,"3,4",,,,No equal even-length cycle decomposition found.
+gyrate-rhombicosidodecahedron.json,False,60,120,4,,,,No equal even-length cycle decomposition found.
+gyrobifastigium.json,False,8,14,"3,4",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-bicupola.json,False,30,70,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-birotunda.json,False,40,90,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-cupola.json,False,25,55,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-cupolarotunda.json,False,35,80,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-pyramid.json,False,11,25,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-pentagonal-rotunda.json,False,30,65,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-square-bicupola.json,False,24,56,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-square-bipyramid.json,False,10,24,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-square-cupola.json,False,20,44,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-square-pyramid.json,False,9,20,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-triangular-bicupola.json,False,18,42,"4,5",,,,No equal even-length cycle decomposition found.
+gyroelongated-triangular-cupola.json,False,15,33,"4,5",,,,No equal even-length cycle decomposition found.
+hebesphenomegacorona.json,False,14,33,"4,5",,,,No equal even-length cycle decomposition found.
+hexagonal-antiprism.json,True,12,24,4,8,3,4,
+hexagonal-prism.json,False,12,18,3,,,,No equal even-length cycle decomposition found.
+icosahedron.json,False,12,30,5,,,,No equal even-length cycle decomposition found.
+icosidodecahedron.json,True,30,60,4,10,6,6,
+metabiaugmented-dodecahedron.json,False,22,40,"3,4,5",,,,No equal even-length cycle decomposition found.
+metabiaugmented-hexagonal-prism.json,False,14,26,"3,4",,,,No equal even-length cycle decomposition found.
+metabiaugmented-truncated-dodecahedron.json,False,70,120,"3,4",,,,No equal even-length cycle decomposition found.
+metabidiminished-icosahedron.json,False,10,20,"3,4,5",,,,No equal even-length cycle decomposition found.
+metabidiminished-rhombicosidodecahedron.json,False,50,90,"3,4",,,,No equal even-length cycle decomposition found.
+metabigyrate-rhombicosidodecahedron.json,False,60,120,4,,,,No equal even-length cycle decomposition found.
+metagyrate-diminished-rhombicosidodecahedron.json,False,55,105,"3,4",,,,No equal even-length cycle decomposition found.
+octagonal-antiprism.json,False,16,32,4,,,,No equal even-length cycle decomposition found.
+octagonal-prism.json,False,16,24,3,,,,No equal even-length cycle decomposition found.
+octahedron.json,True,6,12,4,4,3,4,
+parabiaugmented-dodecahedron.json,False,22,40,"3,4,5",,,,No equal even-length cycle decomposition found.
+parabiaugmented-hexagonal-prism.json,False,14,26,"3,4",,,,No equal even-length cycle decomposition found.
+parabiaugmented-truncated-dodecahedron.json,False,70,120,"3,4",,,,No equal even-length cycle decomposition found.
+parabidiminished-rhombicosidodecahedron.json,False,50,90,"3,4",,,,No equal even-length cycle decomposition found.
+parabigyrate-rhombicosidodecahedron.json,False,60,120,4,,,,No equal even-length cycle decomposition found.
+paragyrate-diminished-rhombicosidodecahedron.json,False,55,105,"3,4",,,,No equal even-length cycle decomposition found.
+pentagonal-antiprism.json,False,10,20,4,,,,No equal even-length cycle decomposition found.
+pentagonal-bipyramid.json,False,7,15,"4,5",,,,No equal even-length cycle decomposition found.
+pentagonal-cupola.json,False,15,25,"3,4",,,,No equal even-length cycle decomposition found.
+pentagonal-gyrobicupola.json,True,20,40,4,4,10,13,
+pentagonal-gyrocupolarotunda.json,False,25,50,4,,,,No equal even-length cycle decomposition found.
+pentagonal-orthobicupola.json,False,20,40,4,,,,No equal even-length cycle decomposition found.
+pentagonal-orthobirotunda.json,True,30,60,4,10,6,7,
+pentagonal-orthocupolarotunda.json,True,25,50,4,10,5,7,
+pentagonal-prism.json,False,10,15,3,,,,No equal even-length cycle decomposition found.
+pentagonal-pyramid.json,False,6,10,"3,5",,,,No equal even-length cycle decomposition found.
+pentagonal-rotunda.json,False,20,35,"3,4",,,,No equal even-length cycle decomposition found.
+rhombicosidodecahedron.json,True,60,120,4,10,12,20,
+rhombicuboctahedron.json,True,24,48,4,12,4,4,
+snub-cube.json,False,24,60,5,,,,No equal even-length cycle decomposition found.
+snub-disphenoid.json,False,8,18,"4,5",,,,No equal even-length cycle decomposition found.
+snub-dodecahedron.json,False,60,150,5,,,,No equal even-length cycle decomposition found.
+snub-square-antiprism.json,False,16,40,5,,,,No equal even-length cycle decomposition found.
+sphenocorona.json,False,10,22,"4,5",,,,No equal even-length cycle decomposition found.
+sphenomegacorona.json,False,12,28,"4,5",,,,No equal even-length cycle decomposition found.
+square-antiprism.json,False,8,16,4,,,,No equal even-length cycle decomposition found.
+square-cupola.json,False,12,20,"3,4",,,,No equal even-length cycle decomposition found.
+square-gyrobicupola.json,True,16,32,4,8,4,4,
+square-orthobicupola.json,False,16,32,4,,,,No equal even-length cycle decomposition found.
+square-pyramid.json,False,5,8,"3,4",,,,No equal even-length cycle decomposition found.
+square.json,True,4,4,2,4,1,2,
+star-octahedron.json,True,10,16,"2,4",4,4,4,
+star_octahedron.json,True,10,16,"2,4",4,4,4,
+tetrahedron.json,False,4,6,3,,,,No equal even-length cycle decomposition found.
+triangular-bipyramid.json,False,5,9,"3,4",,,,No equal even-length cycle decomposition found.
+triangular-cupola.json,False,9,15,"3,4",,,,No equal even-length cycle decomposition found.
+triangular-hebesphenorotunda.json,False,18,36,4,,,,No equal even-length cycle decomposition found.
+triangular-orthobicupola.json,True,12,24,4,6,4,5,
+triangular-prism.json,False,6,9,3,,,,No equal even-length cycle decomposition found.
+triaugmented-dodecahedron.json,False,23,45,"3,4,5",,,,No equal even-length cycle decomposition found.
+triaugmented-hexagonal-prism.json,False,15,30,4,,,,No equal even-length cycle decomposition found.
+triaugmented-triangular-prism.json,False,9,21,"4,5",,,,No equal even-length cycle decomposition found.
+triaugmented-truncated-dodecahedron.json,False,75,135,"3,4",,,,No equal even-length cycle decomposition found.
+tridiminished-icosahedron.json,False,9,15,"3,4",,,,No equal even-length cycle decomposition found.
+tridiminished-rhombicosidodecahedron.json,False,45,75,"3,4",,,,No equal even-length cycle decomposition found.
+trigyrate-rhombicosidodecahedron.json,False,60,120,4,,,,No equal even-length cycle decomposition found.
+truncated-cube.json,False,24,36,3,,,,No equal even-length cycle decomposition found.
+truncated-cuboctahedron.json,False,48,72,3,,,,No equal even-length cycle decomposition found.
+truncated-dodecahedron.json,False,60,90,3,,,,No equal even-length cycle decomposition found.
+truncated-icosahedron.json,False,60,90,3,,,,No equal even-length cycle decomposition found.
+truncated-icosidodecahedron.json,False,120,180,3,,,,No equal even-length cycle decomposition found.
+truncated-octahedron.json,False,24,36,3,,,,No equal even-length cycle decomposition found.
+truncated-tetrahedron.json,False,12,18,3,,,,No equal even-length cycle decomposition found.
