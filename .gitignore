@@ -144,6 +144,9 @@ report_/
 Solver/models*
 Solver/backup*
 Solver/output
+models/
+
+
 
 
 
