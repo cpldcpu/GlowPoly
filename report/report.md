@@ -7,7 +7,7 @@ It all began with [a video by Huy Vector](https://www.youtube.com/watch?v=zocqV4
 
 But of course, in my mind, this quickly turned into a logic puzzle: Why only four filaments when a cube actually has twelve edges? What if we would build the entire cube out of LED filaments? How could we ensure that all edges light up properly? What about more interesting shapes? 
 
-Turns out this is a deep rabbit hole. In this article, I summarize some of my findings and intermediate steps.
+Turns out this is a deep rabbit hole. In this article, I summarize some of my findings, tools I built and suitable filaments objects, I identified.
 
 ## LED Filaments
 
@@ -53,7 +53,7 @@ Luckily it is possible to limit the search space by introducing additional const
 
 ## The Cube
 
-Let's explore a simple 3D object: the cube ($V=8$, $E=12$). Each vertex connects three edges, making it a 3-regular graph. There are trivial solutions for $L=1$ and $P=8$, where each vertex is connected to a power supply. The images below show a solution as a 3D graph and a flattened 2D representation ([Schlegel diagram](https://en.wikipedia.org/wiki/Schlegel_diagram)). The number next to each edge indicates the normalized magnitude of current flow.
+Let's explore a simple 3D object: the cube ($V=8$, $E=12$). Each vertex connects three edges, making it a *3-regular graph*. There are trivial solutions for $L=1$ and $P=8$, where each vertex is connected to a power supply. The images below show a solution as a 3D graph and a flattened 2D representation ([Schlegel diagram](https://en.wikipedia.org/wiki/Schlegel_diagram)). The number next to each edge indicates the normalized magnitude of current flow.
 
 <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
   <img src="cube_L1.png" alt="Cube graph from simulator" style="max-width: 40%;">
