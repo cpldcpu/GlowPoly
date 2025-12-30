@@ -111,6 +111,7 @@ Conditions
 - We want to check for the following property
 - Do two points s,t exist so that all edges lies on the minimum length path between s,t.
 
+https://en.wikipedia.org/wiki/Exact_cover
 
 ## Generalized problem statement
 
