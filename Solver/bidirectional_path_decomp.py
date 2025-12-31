@@ -23,6 +23,7 @@ import argparse
 import json
 import os
 import sys
+import time
 from collections import deque
 from typing import Any, Dict, List, Optional, Set, Tuple
 from itertools import combinations
@@ -179,10 +180,13 @@ def enumerate_simple_paths_pruned(
     end: int,
     length: int,
     dist_to_end: List[int],
-    max_paths: int = 100000,
+    max_paths: int = 10000,
+    start_time: float = 0,
+    timeout: float = float('inf'),
 ) -> List[List[int]]:
     """
     Enumerate simple paths of exactly 'length' edges with distance-based pruning.
+    Returns early if timeout is exceeded.
     """
     if length < 1:
         return []
@@ -193,8 +197,15 @@ def enumerate_simple_paths_pruned(
 
     found: List[List[int]] = []
     stack: List[Tuple[int, List[int], Set[int]]] = [(start, [start], {start})]
+    iteration_count = 0
 
     while stack and len(found) < max_paths:
+        # Check timeout periodically
+        iteration_count += 1
+        if iteration_count % 100 == 0:
+            if time.time() - start_time > timeout:
+                return found  # Return what we have so far
+        
         v, path, visited = stack.pop()
         steps_used = len(path) - 1
         remaining = length - steps_used
@@ -642,232 +653,17 @@ def analyze_simultaneous_driving_circuit(
     }
 
 
-# =============================================================================
-# Dancing Links (DLX) Implementation for Exact Cover
-# =============================================================================
-
-class DLXNode:
-    """Node in the Dancing Links data structure."""
-    __slots__ = ['left', 'right', 'up', 'down', 'column', 'row_id']
-    
-    def __init__(self):
-        self.left = self.right = self.up = self.down = self
-        self.column = None
-        self.row_id = -1
-
-
-class DLXColumn(DLXNode):
-    """Column header node with size tracking."""
-    __slots__ = ['size', 'col_id']
-    
-    def __init__(self, col_id):
-        super().__init__()
-        self.size = 0
-        self.col_id = col_id
-        self.column = self
-
-
-class DLX:
-    """
-    Dancing Links implementation of Algorithm X for exact cover.
-    
-    Much faster than naive backtracking for sparse matrices.
-    """
-    
-    def __init__(self, num_columns: int):
-        self.header = DLXColumn(-1)
-        self.columns: List[DLXColumn] = []
-        self.solution: List[int] = []
-        self.all_solutions: List[List[int]] = []
-        
-        # Create column headers
-        prev = self.header
-        for i in range(num_columns):
-            col = DLXColumn(i)
-            col.left = prev
-            col.right = self.header
-            prev.right = col
-            self.header.left = col
-            self.columns.append(col)
-            prev = col
-    
-    def add_row(self, row_id: int, col_indices: List[int]):
-        """Add a row covering the specified columns."""
-        if not col_indices:
-            return
-        
-        first = None
-        prev = None
-        
-        for col_idx in col_indices:
-            col = self.columns[col_idx]
-            
-            node = DLXNode()
-            node.row_id = row_id
-            node.column = col
-            
-            # Link vertically
-            node.up = col.up
-            node.down = col
-            col.up.down = node
-            col.up = node
-            col.size += 1
-            
-            # Link horizontally
-            if first is None:
-                first = node
-                node.left = node.right = node
-            else:
-                node.left = prev
-                node.right = first
-                prev.right = node
-                first.left = node
-            
-            prev = node
-    
-    def cover(self, col: DLXColumn):
-        """Cover a column (remove from header list and all rows)."""
-        col.right.left = col.left
-        col.left.right = col.right
-        
-        row = col.down
-        while row != col:
-            node = row.right
-            while node != row:
-                node.down.up = node.up
-                node.up.down = node.down
-                node.column.size -= 1
-                node = node.right
-            row = row.down
-    
-    def uncover(self, col: DLXColumn):
-        """Uncover a column (restore to header list and all rows)."""
-        row = col.up
-        while row != col:
-            node = row.left
-            while node != row:
-                node.column.size += 1
-                node.down.up = node
-                node.up.down = node
-                node = node.left
-            row = row.up
-        
-        col.right.left = col
-        col.left.right = col
-    
-    def choose_column(self) -> Optional[DLXColumn]:
-        """Choose column with minimum size (S heuristic)."""
-        best = None
-        best_size = float('inf')
-        
-        col = self.header.right
-        while col != self.header:
-            if col.size < best_size:
-                best_size = col.size
-                best = col
-                if best_size <= 1:
-                    break
-            col = col.right
-        
-        return best
-    
-    def solve(self, find_all: bool = False, max_solutions: int = 100) -> bool:
-        """
-        Solve the exact cover problem.
-        
-        Args:
-            find_all: If True, find all solutions (up to max_solutions)
-            max_solutions: Maximum number of solutions to find
-            
-        Returns:
-            True if at least one solution found
-        """
-        if self.header.right == self.header:
-            # All columns covered - found a solution!
-            self.all_solutions.append(list(self.solution))
-            return True
-        
-        if len(self.all_solutions) >= max_solutions:
-            return True
-        
-        col = self.choose_column()
-        if col is None or col.size == 0:
-            return False
-        
-        self.cover(col)
-        
-        row = col.down
-        while row != col:
-            self.solution.append(row.row_id)
-            
-            # Cover all columns in this row
-            node = row.right
-            while node != row:
-                self.cover(node.column)
-                node = node.right
-            
-            if self.solve(find_all, max_solutions):
-                if not find_all:
-                    self.uncover(col)
-                    return True
-            
-            # Uncover columns in reverse order
-            self.solution.pop()
-            node = row.left
-            while node != row:
-                self.uncover(node.column)
-                node = node.left
-            
-            row = row.down
-        
-        self.uncover(col)
-        return len(self.all_solutions) > 0
-
-
-def solve_exact_cover_dlx(
-    all_edges: List[Edge],
-    path_edges: List[Set[Edge]],
-    find_all: bool = False,
-    max_solutions: int = 100,
-) -> List[List[int]]:
-    """
-    Solve exact cover using Dancing Links (DLX).
-    
-    Args:
-        all_edges: List of edges to cover
-        path_edges: List of edge sets, one per path
-        find_all: If True, find all solutions
-        max_solutions: Maximum solutions to find
-        
-    Returns:
-        List of solutions, where each solution is a list of path indices
-    """
-    # Create edge index mapping
-    edge_to_idx = {e: i for i, e in enumerate(all_edges)}
-    num_cols = len(all_edges)
-    
-    # Build DLX matrix
-    dlx = DLX(num_cols)
-    
-    for path_idx, edges in enumerate(path_edges):
-        col_indices = [edge_to_idx[e] for e in edges if e in edge_to_idx]
-        if col_indices:
-            dlx.add_row(path_idx, col_indices)
-    
-    # Solve
-    dlx.solve(find_all=find_all, max_solutions=max_solutions)
-    
-    return dlx.all_solutions
-
-
 def solve_exact_cover_paths(
     all_edges: Set[Edge],
     paths: List[List[int]],
     path_edges: List[Set[Edge]],
+    start_time: float = 0,
+    timeout: float = float('inf'),
 ) -> Optional[List[int]]:
     """
     Find a subset of paths that covers all edges exactly once.
-    Returns list of path indices, or None if impossible.
+    Only returns solutions that have no short circuits (all paths driven simultaneously).
+    Returns list of path indices, or None if impossible or timeout.
     """
     # Build edge -> candidate paths mapping
     edge_to_paths: Dict[Edge, List[int]] = {e: [] for e in all_edges}
@@ -881,9 +677,42 @@ def solve_exact_cover_paths(
         if not cands:
             return None
 
+    # Helper to check if solution has no short circuits
+    # (all paths are driven simultaneously in unidirectional mode)
+    def has_short_circuit(sol: List[int]) -> bool:
+        if len(sol) < 2:
+            return False
+        
+        # Check 1: Shared intermediate vertices
+        intermediates = [set(paths[pi][1:-1]) for pi in sol]
+        for i in range(len(intermediates)):
+            for j in range(i + 1, len(intermediates)):
+                if intermediates[i] & intermediates[j]:
+                    return True
+        
+        # Check 2: Chord edges that bypass path segments
+        for pi in sol:
+            path = paths[pi]
+            vertex_position = {v: pos for pos, v in enumerate(path)}
+            
+            for pj in sol:
+                if pi == pj:
+                    continue
+                for edge in path_edges[pj]:
+                    u, v = edge
+                    if u in vertex_position and v in vertex_position:
+                        pos_u, pos_v = vertex_position[u], vertex_position[v]
+                        if abs(pos_u - pos_v) > 1:
+                            return True
+        
+        return False
+
     # Backtracking with most-constrained-edge heuristic
     uncovered = set(all_edges)
     chosen: List[int] = []
+    all_solutions: List[List[int]] = []
+    max_solutions = 50
+    iteration_count = [0]
 
     def pick_edge() -> Optional[Edge]:
         best_e = None
@@ -898,8 +727,21 @@ def solve_exact_cover_paths(
         return best_e
 
     def backtrack() -> bool:
-        if not uncovered:
+        # Check timeout periodically
+        iteration_count[0] += 1
+        if iteration_count[0] % 100 == 0:
+            if time.time() - start_time > timeout:
+                return True  # Timeout - stop searching
+        
+        if len(all_solutions) >= max_solutions:
             return True
+            
+        if not uncovered:
+            sol = list(chosen)
+            if not has_short_circuit(sol):
+                all_solutions.append(sol)
+                return True  # Found a perfect solution
+            return False
 
         e = pick_edge()
         if e is None:
@@ -913,7 +755,7 @@ def solve_exact_cover_paths(
             chosen.append(pi)
             uncovered.difference_update(pes)
 
-            if backtrack():
+            if backtrack() and all_solutions:
                 return True
 
             uncovered.update(pes)
@@ -921,8 +763,10 @@ def solve_exact_cover_paths(
 
         return False
 
-    if backtrack():
-        return chosen
+    backtrack()
+    
+    if all_solutions:
+        return all_solutions[0]
     return None
 
 
@@ -933,6 +777,8 @@ def solve_exact_cover_paths_bidirectional(
     path_edges: List[Set[Edge]],
     path_directions: List[str],
     prefer_balanced: bool = True,
+    start_time: float = 0,
+    timeout: float = float('inf'),
 ) -> Optional[List[int]]:
     """
     Find a subset of paths that covers all edges exactly once,
@@ -941,7 +787,7 @@ def solve_exact_cover_paths_bidirectional(
     Uses backtracking with early termination when perfect solution found.
     If prefer_balanced=True, finds the best solution by vertex independence and balance.
     
-    Returns list of path indices, or None if no bidirectional solution exists.
+    Returns list of path indices, or None if no bidirectional solution exists or timeout.
     """
     # Build edge -> candidate paths mapping
     edge_to_paths: Dict[Edge, List[int]] = {e: [] for e in all_edges}
@@ -955,22 +801,103 @@ def solve_exact_cover_paths_bidirectional(
         if not cands:
             return None
 
-    # Helper to check if solution has no shared intermediate vertices
+    # Helper to check if solution has no short circuits
     def is_perfect_solution(sol: List[int]) -> bool:
+        """
+        Check if solution has no short circuits.
+        
+        Edge directions are fixed by which path uses them.
+        An edge can conduct during an operation if its orientation matches the voltage gradient.
+        
+        During forward operation: forward edges conduct, some forward edges might also short reverse paths
+        During reverse operation: reverse edges conduct, some forward edges might also conduct (rectifier effect)
+        
+        A short circuit exists when:
+        1. Two same-direction paths share an intermediate vertex
+        2. An edge connects non-consecutive vertices on a path AND the edge would conduct during that operation
+        """
         fwd_indices = [pi for pi in sol if path_directions[pi] == 'forward']
         rev_indices = [pi for pi in sol if path_directions[pi] == 'reverse']
         
-        def has_shared_intermediates(indices):
+        # Get directed edges from each path (preserving direction based on path order)
+        fwd_directed_edges = []  # List of (u, v) where u comes before v in the forward path
+        for pi in fwd_indices:
+            path = paths[pi]
+            for i in range(len(path) - 1):
+                fwd_directed_edges.append((path[i], path[i+1]))
+        
+        rev_directed_edges = []  # List of (u, v) where u comes before v in the reverse path
+        for pi in rev_indices:
+            path = paths[pi]
+            for i in range(len(path) - 1):
+                rev_directed_edges.append((path[i], path[i+1]))
+        
+        def has_short_circuit_same_dir(indices, dir_edges):
+            """Check for short circuits within same-direction paths."""
             if len(indices) < 2:
                 return False
+            
+            # Check 1: Shared intermediate vertices
             intermediates = [set(paths[pi][1:-1]) for pi in indices]
             for i in range(len(intermediates)):
                 for j in range(i + 1, len(intermediates)):
                     if intermediates[i] & intermediates[j]:
                         return True
+            
+            # Check 2: Chord edges from same-direction paths
+            for pi in indices:
+                path = paths[pi]
+                vertex_position = {v: pos for pos, v in enumerate(path)}
+                
+                for pj in indices:
+                    if pi == pj:
+                        continue
+                    for k in range(len(paths[pj]) - 1):
+                        u, v = paths[pj][k], paths[pj][k+1]
+                        if u in vertex_position and v in vertex_position:
+                            pos_u, pos_v = vertex_position[u], vertex_position[v]
+                            if abs(pos_u - pos_v) > 1:
+                                return True
+            
             return False
         
-        return not has_shared_intermediates(fwd_indices) and not has_shared_intermediates(rev_indices)
+        def has_cross_direction_short(target_indices, source_directed_edges):
+            """
+            Check if edges from source paths create shorts on target paths.
+            An edge u→v from source path creates a short on target path if:
+            - Both u and v are on the target path
+            - The edge direction (u→v) matches the "downhill" direction on target path
+              (i.e., pos(u) < pos(v), meaning u is at higher potential)
+            """
+            for pi in target_indices:
+                path = paths[pi]
+                vertex_position = {v: pos for pos, v in enumerate(path)}
+                
+                for u, v in source_directed_edges:
+                    if u in vertex_position and v in vertex_position:
+                        pos_u, pos_v = vertex_position[u], vertex_position[v]
+                        # Edge goes u→v. On target path, lower position = higher potential
+                        # If pos_u < pos_v, edge goes from high to low potential, it conducts
+                        if pos_u < pos_v and pos_v - pos_u > 1:
+                            return True
+            
+            return False
+        
+        # Check same-direction short circuits
+        if has_short_circuit_same_dir(fwd_indices, fwd_directed_edges):
+            return False
+        if has_short_circuit_same_dir(rev_indices, rev_directed_edges):
+            return False
+        
+        # Check cross-direction short circuits (rectifier effect)
+        # Forward edges that conduct during reverse operation
+        if has_cross_direction_short(rev_indices, fwd_directed_edges):
+            return False
+        # Reverse edges that conduct during forward operation  
+        if has_cross_direction_short(fwd_indices, rev_directed_edges):
+            return False
+        
+        return True
 
     # Backtracking with early termination
     uncovered = set(all_edges)
@@ -978,6 +905,7 @@ def solve_exact_cover_paths_bidirectional(
     all_solutions: List[List[int]] = []
     max_solutions = 50
     found_perfect = [False]
+    iteration_count = [0]
 
     def pick_edge() -> Optional[Edge]:
         best_e = None
@@ -992,6 +920,12 @@ def solve_exact_cover_paths_bidirectional(
         return best_e
 
     def backtrack() -> bool:
+        # Check timeout periodically
+        iteration_count[0] += 1
+        if iteration_count[0] % 100 == 0:
+            if time.time() - start_time > timeout:
+                return True  # Timeout - stop searching
+        
         if found_perfect[0] or len(all_solutions) >= max_solutions:
             return True
             
@@ -1036,23 +970,86 @@ def solve_exact_cover_paths_bidirectional(
         # Return the perfect solution (last one added)
         return all_solutions[-1]
     
-    # Score and return best
-    def solution_score(sol):
+    # No perfect (short-circuit-free) solution found
+    # Filter to only return solutions with zero short circuits
+    def count_short_circuits(sol):
         fwd = [pi for pi in sol if path_directions[pi] == 'forward']
         rev = [pi for pi in sol if path_directions[pi] == 'reverse']
-        balance = abs(len(fwd) - len(rev))
         
-        def count_shared(indices):
+        # Get directed edges
+        fwd_directed_edges = []
+        for pi in fwd:
+            path = paths[pi]
+            for i in range(len(path) - 1):
+                fwd_directed_edges.append((path[i], path[i+1]))
+        
+        rev_directed_edges = []
+        for pi in rev:
+            path = paths[pi]
+            for i in range(len(path) - 1):
+                rev_directed_edges.append((path[i], path[i+1]))
+        
+        def count_in_group(indices):
             if len(indices) < 2:
                 return 0
+            
+            count = 0
+            
+            # Count shared intermediate vertices
             intermediates = [set(paths[pi][1:-1]) for pi in indices]
-            return sum(len(intermediates[i] & intermediates[j]) 
-                      for i in range(len(intermediates)) 
-                      for j in range(i+1, len(intermediates)))
+            for i in range(len(intermediates)):
+                for j in range(i+1, len(intermediates)):
+                    count += len(intermediates[i] & intermediates[j])
+            
+            # Count chord edges - same-direction paths
+            for pi in indices:
+                path = paths[pi]
+                vertex_position = {v: pos for pos, v in enumerate(path)}
+                
+                for pj in indices:
+                    if pi == pj:
+                        continue
+                    for k in range(len(paths[pj]) - 1):
+                        u, v = paths[pj][k], paths[pj][k+1]
+                        if u in vertex_position and v in vertex_position:
+                            pos_u, pos_v = vertex_position[u], vertex_position[v]
+                            if abs(pos_u - pos_v) > 1:
+                                count += 1
+            
+            return count
         
-        return (count_shared(fwd) + count_shared(rev), balance)
+        def count_cross_direction_shorts(target_indices, source_directed_edges):
+            """Count shorts from source edges on target paths (rectifier effect)."""
+            count = 0
+            for pi in target_indices:
+                path = paths[pi]
+                vertex_position = {v: pos for pos, v in enumerate(path)}
+                
+                for u, v in source_directed_edges:
+                    if u in vertex_position and v in vertex_position:
+                        pos_u, pos_v = vertex_position[u], vertex_position[v]
+                        if pos_u < pos_v and pos_v - pos_u > 1:
+                            count += 1
+            return count
+        
+        total = count_in_group(fwd) + count_in_group(rev)
+        # Add cross-direction shorts
+        total += count_cross_direction_shorts(rev, fwd_directed_edges)
+        total += count_cross_direction_shorts(fwd, rev_directed_edges)
+        return total
     
-    return min(all_solutions, key=solution_score)
+    # Only return solutions with zero short circuits
+    perfect_solutions = [sol for sol in all_solutions if count_short_circuits(sol) == 0]
+    
+    if perfect_solutions:
+        # Return the most balanced one
+        def balance_score(sol):
+            fwd = sum(1 for pi in sol if path_directions[pi] == 'forward')
+            rev = sum(1 for pi in sol if path_directions[pi] == 'reverse')
+            return abs(fwd - rev)
+        return min(perfect_solutions, key=balance_score)
+    
+    return None  # No short-circuit-free solution exists
 
 
 def find_bidirectional_decomposition(
@@ -1061,13 +1058,15 @@ def find_bidirectional_decomposition(
     max_L: int = 20,
     verbose: bool = False,
     algo: str = "pruned",
+    timeout: float = 60.0,
 ) -> Optional[Dict[str, Any]]:
     """
     Find a bidirectional path decomposition where all paths share the same endpoints.
     
     Tries all vertex pairs (s, t) and path lengths L.
-    Returns result dict or None.
+    Returns result dict or None, or a timeout result if time exceeded.
     """
+    start_time = time.time()
     m = len(edges)
     adj = build_adj(n, edges)
     all_edges_set = set(edges)
@@ -1082,7 +1081,8 @@ def find_bidirectional_decomposition(
     
     # Try different path lengths
     # For m edges with paths of length L, we need m/L paths
-    candidate_lengths = [L for L in range(1, min(m + 1, max_L + 1)) if m % L == 0]
+    # Exclude L=1 (single edges) and L=m (one giant path) - not practical solutions
+    candidate_lengths = [L for L in range(2, min(m, max_L + 1)) if m % L == 0]
     
     # Prefer longer paths (fewer total paths needed)
     candidate_lengths = sorted(candidate_lengths, reverse=True)
@@ -1090,6 +1090,10 @@ def find_bidirectional_decomposition(
     best_result = None
     
     for L in candidate_lengths:
+        # Per-L timeout - each L value gets its own timeout window
+        L_start_time = time.time()
+        L_timeout_hit = False
+        
         num_paths_needed = m // L
         if verbose:
             print(f"  Trying L={L} ({num_paths_needed} paths needed)...", file=sys.stderr, flush=True)
@@ -1103,6 +1107,13 @@ def find_bidirectional_decomposition(
             endpoint_pairs = combinations(vertices, 2)
 
         for s, t in endpoint_pairs:
+            # Check per-L timeout
+            if time.time() - L_start_time > timeout:
+                L_timeout_hit = True
+                if verbose:
+                    print(f"    (timeout for L={L})", file=sys.stderr, flush=True)
+                break  # Move to next L value
+            
             if algo == "pruned":
                 dist_s = all_dist[s]
                 dist_t = all_dist[t]
@@ -1110,8 +1121,10 @@ def find_bidirectional_decomposition(
                     continue
                 if not all_edges_on_length_L_paths(edges, dist_s, dist_t, L):
                     continue
-                paths_st = enumerate_simple_paths_pruned(adj, s, t, L, dist_t)
-                paths_ts = enumerate_simple_paths_pruned(adj, t, s, L, dist_s)
+                paths_st = enumerate_simple_paths_pruned(adj, s, t, L, dist_t,
+                    start_time=L_start_time, timeout=timeout)
+                paths_ts = enumerate_simple_paths_pruned(adj, t, s, L, dist_s,
+                    start_time=L_start_time, timeout=timeout)
             else:
                 paths_st = enumerate_simple_paths(adj, s, t, L)
                 paths_ts = enumerate_simple_paths(adj, t, s, L)
@@ -1146,8 +1159,20 @@ def find_bidirectional_decomposition(
             if len(valid_paths) < num_paths_needed:
                 continue
             
-            # Try to find exact cover
-            solution = solve_exact_cover_paths(all_edges_set, valid_paths, valid_edges)
+            # Try to find bidirectional exact cover first (requires both forward and reverse paths)
+            solution = None
+            if paths_st and paths_ts:  # Only possible if we have paths in both directions
+                solution = solve_exact_cover_paths_bidirectional(
+                    all_edges_set, valid_paths, valid_edges, valid_directions,
+                    start_time=L_start_time, timeout=timeout
+                )
+            
+            # Fall back to any exact cover if no bidirectional solution
+            if solution is None:
+                solution = solve_exact_cover_paths(
+                    all_edges_set, valid_paths, valid_edges,
+                    start_time=L_start_time, timeout=timeout
+                )
             
             if solution is not None:
                 result_paths = [valid_paths[i] for i in solution]
@@ -1354,6 +1379,7 @@ def process_model(
     find_all: bool = False,
     verbose: bool = False,
     algo: str = "pruned",
+    timeout: float = 60.0,
 ) -> Dict[str, Any]:
     """Process a single model file."""
     name = os.path.basename(path)
@@ -1400,8 +1426,20 @@ def process_model(
             }
         else:
             result = find_bidirectional_decomposition(
-                n, edges, max_L=max_L, verbose=verbose, algo=algo
+                n, edges, max_L=max_L, verbose=verbose, algo=algo, timeout=timeout
             )
+            
+            # Check for timeout
+            if result is not None and result.get("timeout"):
+                return {
+                    "model": name,
+                    "ok": False,
+                    "n_vertices": n,
+                    "n_edges": len(edges),
+                    "vertex_degrees": unique_degrees,
+                    "message": f"Timeout after {result.get('elapsed', timeout):.1f}s",
+                    "timeout": True,
+                }
             
             if result is None:
                 return {
@@ -1445,6 +1483,12 @@ def main():
         default="pruned",
         help="Path search algorithm (default: pruned)",
     )
+    ap.add_argument(
+        "--timeout", "-t",
+        type=float,
+        default=60.0,
+        help="Timeout in seconds per model (default: 60). Set to 0 to disable.",
+    )
     args = ap.parse_args()
 
     # Collect input files
@@ -1466,6 +1510,7 @@ def main():
             find_all=args.all,
             verbose=args.verbose,
             algo=args.algo,
+            timeout=args.timeout if args.timeout > 0 else float('inf'),
         )
         results.append(result)
 
