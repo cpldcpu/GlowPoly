@@ -96,19 +96,20 @@
                 </select>
                 <div class="filter-group">
                     <span class="filter-label">Filter by pairs:</span>
-                    <div class="filter-checkboxes">
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-1"
-                                checked><span>1</span></label>
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-2"
-                                checked><span>2</span></label>
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-3"
-                                checked><span>3</span></label>
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-4"
-                                checked><span>4+</span></label>
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-none"
-                                checked><span>None</span></label>
-                        <label class="filter-checkbox"><input type="checkbox" id="filter-c"
-                                checked><span>C</span></label>
+                    <div class="filter-buttons">
+                        <label class="filter-btn"><input type="checkbox" id="filter-1" checked><span>1</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-2"><span>2</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-3"><span>3</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-4"><span>4+</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-none"><span>None</span></label>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Solution type:</span>
+                    <div class="filter-buttons">
+                        <label class="filter-btn"><input type="checkbox" id="filter-g" checked><span>G</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-c" checked><span>C</span></label>
+                        <label class="filter-btn"><input type="checkbox" id="filter-b" checked><span>B</span></label>
                     </div>
                 </div>
             </div>
@@ -125,24 +126,12 @@
                         <span class="stat-value" id="stat-edges">-</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Pairs (k)</span>
-                        <span class="stat-value" id="stat-k">-</span>
+                        <span class="stat-label">Taps</span>
+                        <span class="stat-value" id="stat-taps">-</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Path Length (L)</span>
+                        <span class="stat-label">Path Length</span>
                         <span class="stat-value" id="stat-L">-</span>
-                    </div>
-                    <div class="stat-item" id="stat-cycles-row" style="display:none">
-                        <span class="stat-label">Cycles</span>
-                        <span class="stat-value" id="stat-cycles">-</span>
-                    </div>
-                    <div class="stat-item" id="stat-endpoints-row" style="display:none">
-                        <span class="stat-label">Endpoints</span>
-                        <span class="stat-value" id="stat-endpoints">-</span>
-                    </div>
-                    <div class="stat-item" id="stat-uniformity-row" style="display:none">
-                        <span class="stat-label">Uniformity</span>
-                        <span class="stat-value" id="stat-uniformity">-</span>
                     </div>
                 </div>
             </div>

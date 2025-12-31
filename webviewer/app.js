@@ -51,7 +51,9 @@ let currentResult = null;
 let currentFlowData = null;
 let allResults = [];
 let allCycleResults = [];  // Cycle decomposition results
+let allBidirectionalResults = [];  // Bidirectional path results
 let isCycleMode = false;   // True when viewing a cycle decomposition
+let isBidirectionalMode = false;  // True when viewing bidirectional paths
 let flowParticles = [];
 let clock = new THREE.Clock();
 
@@ -193,7 +195,10 @@ function setupControls() {
         state.animateFlow = e.target.checked;
         // Re-render to show/hide arrows vs particles (only if paths are shown)
         if (state.showPaths) {
-            if (isCycleMode && currentResult && currentResult.cycles) {
+            if (isBidirectionalMode && currentResult && currentResult.paths) {
+                // Bidirectional mode: re-render bidirectional paths
+                renderBidirectionalPaths(currentResult.paths);
+            } else if (isCycleMode && currentResult && currentResult.cycles) {
                 // Cycle mode: re-render cycle paths
                 renderCyclePaths(currentResult.cycles);
             } else if (currentFlowData) {
@@ -295,6 +300,19 @@ async function loadData() {
         console.error('Failed to load cycle results:', error);
         allCycleResults = [];
     }
+
+    try {
+        // Load bidirectional path results
+        const bidirResponse = await fetch('data/bidirectional_path_results.json');
+        allBidirectionalResults = await bidirResponse.json();
+
+        // Sort by edge count
+        allBidirectionalResults.sort((a, b) => (a.n_edges || 0) - (b.n_edges || 0));
+
+    } catch (error) {
+        console.error('Failed to load bidirectional results:', error);
+        allBidirectionalResults = [];
+    }
 }
 
 async function loadModel(polyName) {
@@ -319,7 +337,7 @@ function setupUI() {
     const select = document.getElementById('poly-select');
 
     // Setup filter checkbox handlers
-    const filterIds = ['filter-1', 'filter-2', 'filter-3', 'filter-4', 'filter-none', 'filter-c'];
+    const filterIds = ['filter-1', 'filter-2', 'filter-3', 'filter-4', 'filter-none', 'filter-g', 'filter-c', 'filter-b'];
     filterIds.forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
             updateDropdown();
@@ -342,7 +360,9 @@ function getFilterState() {
         show3: document.getElementById('filter-3').checked,
         show4: document.getElementById('filter-4').checked,
         showNone: document.getElementById('filter-none').checked,
-        showCyclic: document.getElementById('filter-c').checked
+        showGeodesic: document.getElementById('filter-g').checked,
+        showCyclic: document.getElementById('filter-c').checked,
+        showBidirectional: document.getElementById('filter-b').checked
     };
 }
 
@@ -356,17 +376,30 @@ function updateDropdown() {
     const filters = getFilterState();
 
     // Filter geodesic results based on checkbox state
-    const filtered = allResults.filter(r => {
+    const filtered = filters.showGeodesic ? allResults.filter(r => {
         const pairCount = getPairCount(r);
         if (pairCount === 0) return filters.showNone;
         if (pairCount === 1) return filters.show1;
         if (pairCount === 2) return filters.show2;
         if (pairCount === 3) return filters.show3;
         return filters.show4;  // 4 or more
-    });
+    }) : [];
 
-    // Filter cycle results
-    const filteredCycles = filters.showCyclic ? allCycleResults.filter(r => r.ok) : [];
+    // Filter cycle results by number of taps (unique_endpoints), not cycle count
+    const filteredCycles = filters.showCyclic ? allCycleResults.filter(r => {
+        if (!r.ok) return false;
+        const tapCount = r.num_unique_endpoints || 0;
+        // Number of taps: 2=1pair, 4=2pairs, 6=3pairs, etc.
+        const pairEquiv = Math.floor(tapCount / 2);
+        if (pairEquiv === 0) return filters.showNone;
+        if (pairEquiv === 1) return filters.show1;
+        if (pairEquiv === 2) return filters.show2;
+        if (pairEquiv === 3) return filters.show3;
+        return filters.show4;  // 4 or more pairs (8+ taps)
+    }) : [];
+
+    // Filter bidirectional results
+    const filteredBidir = filters.showBidirectional ? allBidirectionalResults.filter(r => r.ok) : [];
 
     select.innerHTML = '';
 
@@ -403,6 +436,21 @@ function updateDropdown() {
         select.appendChild(optGroup);
     }
 
+    // Add bidirectional path results
+    if (filteredBidir.length > 0) {
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = '⇆ Bidirectional Paths';
+        filteredBidir.forEach(r => {
+            const opt = document.createElement('option');
+            const modelName = r.model.replace('.json', '');
+            opt.value = 'bidir:' + modelName;
+            const bidir = r.is_bidirectional ? 'AC' : 'DC';
+            opt.textContent = `${modelName} (E=${r.n_edges}, L=${r.path_length}, ${r.forward_paths}↑${r.reverse_paths}↓ ${bidir})`;
+            optGroup.appendChild(opt);
+        });
+        select.appendChild(optGroup);
+    }
+
     // Add geodesic options without solutions
     if (withoutSolution.length > 0) {
         const optGroup = document.createElement('optgroup');
@@ -431,9 +479,42 @@ function updateDropdown() {
 }
 
 async function selectPolyhedron(name) {
+    // Check if this is a bidirectional path result
+    if (name.startsWith('bidir:')) {
+        isBidirectionalMode = true;
+        isCycleMode = false;
+        const modelName = name.substring(6);  // Remove 'bidir:' prefix
+
+        // Find bidirectional result
+        currentResult = allBidirectionalResults.find(r => r.model.replace('.json', '') === modelName);
+        if (!currentResult) return;
+
+        currentModel = await loadModel(modelName);
+        if (!currentModel) return;
+
+        updateStats();
+        renderPolyhedron();
+
+        // Render bidirectional paths
+        if (currentResult.paths && currentResult.paths.length > 0) {
+            renderBidirectionalPaths(currentResult.paths);
+            updateLegend();
+        } else {
+            clearPaths();
+            clearLegend();
+        }
+        // Clear flow modal for bidirectional mode
+        document.getElementById('flow-stats').innerHTML = '<p class="no-data">Bidirectional mode - no flow analysis</p>';
+        updateBidirectionalWeights();
+
+        updateEdgeColors();
+        return;
+    }
+
     // Check if this is a cycle decomposition result
     if (name.startsWith('cycle:')) {
         isCycleMode = true;
+        isBidirectionalMode = false;
         const modelName = name.substring(6);  // Remove 'cycle:' prefix
 
         // Find cycle result
@@ -464,6 +545,7 @@ async function selectPolyhedron(name) {
 
     // Standard geodesic result
     isCycleMode = false;
+    isBidirectionalMode = false;
     currentResult = allResults.find(r => r.name === name);
     if (!currentResult) return;
 
@@ -490,23 +572,19 @@ async function selectPolyhedron(name) {
 }
 
 function updateStats() {
-    // Hide cycle-specific stats by default
-    document.getElementById('stat-cycles-row').style.display = 'none';
-    document.getElementById('stat-endpoints-row').style.display = 'none';
-    document.getElementById('stat-uniformity-row').style.display = 'none';
+    if (isBidirectionalMode) {
+        // Bidirectional path stats
+        document.getElementById('stat-vertices').textContent = currentResult.n_vertices || '-';
+        document.getElementById('stat-edges').textContent = currentResult.n_edges || '-';
+        document.getElementById('stat-taps').textContent = '2';  // Always 2 taps (one endpoint pair)
+        document.getElementById('stat-L').textContent = currentResult.path_length || '-';
 
-    if (isCycleMode) {
+    } else if (isCycleMode) {
         // Cycle decomposition stats
         document.getElementById('stat-vertices').textContent = currentResult.n_vertices || '-';
         document.getElementById('stat-edges').textContent = currentResult.n_edges || '-';
-        document.getElementById('stat-k').textContent = '-';
-        document.getElementById('stat-L').textContent = currentResult.cycle_length || '-';
-
-        // Show cycle-specific stats
-        document.getElementById('stat-cycles-row').style.display = '';
-        document.getElementById('stat-cycles').textContent = currentResult.num_cycles || '-';
-        document.getElementById('stat-endpoints-row').style.display = '';
-        document.getElementById('stat-endpoints').textContent = currentResult.num_unique_endpoints || '-';
+        document.getElementById('stat-taps').textContent = currentResult.num_unique_endpoints || '-';
+        document.getElementById('stat-L').textContent = currentResult.cycle_length ? (currentResult.cycle_length / 2) : '-';
 
         // Update pair-weights container with cycle weights
         updateCycleWeights();
@@ -514,7 +592,8 @@ function updateStats() {
         // Geodesic stats
         document.getElementById('stat-vertices').textContent = currentResult.nV || '-';
         document.getElementById('stat-edges').textContent = currentResult.nE || '-';
-        document.getElementById('stat-k').textContent = currentResult.best_k || '-';
+        const pairs = currentResult.best_k || 0;
+        document.getElementById('stat-taps').textContent = pairs > 0 ? pairs * 2 : '-';  // 2 taps per pair
         document.getElementById('stat-L').textContent = currentResult.best_L || '-';
     }
 }
@@ -1157,6 +1236,145 @@ function renderCyclePaths(cycles) {
     arrowsGroup.visible = state.showPaths;
 }
 
+/**
+ * Render bidirectional path decomposition with forward/reverse coloring
+ * Forward paths (s→t): Blue color
+ * Reverse paths (t→s): Orange color
+ */
+function renderBidirectionalPaths(paths) {
+    clearPaths();
+
+    if (!currentModel || !paths || paths.length === 0) return;
+
+    const vertices = currentModel.vertices;
+    const scale = computeScale(vertices);
+
+    // Colors for forward/reverse paths
+    const FORWARD_COLOR = new THREE.Color(0x00aaff);  // Blue
+    const REVERSE_COLOR = new THREE.Color(0xffaa00);  // Orange
+
+    // Collect which paths use each edge and their direction
+    const edgeDirection = {};  // "u-v" -> 'forward' | 'reverse'
+
+    paths.forEach((path, pathIdx) => {
+        const directedEdges = path.directed_edges || [];
+        const direction = path.direction;  // 'forward' or 'reverse'
+
+        for (const edge of directedEdges) {
+            const [a, b] = edge;
+            const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+            edgeDirection[key] = direction;
+        }
+    });
+
+    // Color the existing wireframe cylinders based on direction
+    for (const [edgeKey, direction] of Object.entries(edgeDirection)) {
+        const cylinder = edgeCylinders[edgeKey];
+        if (!cylinder) continue;
+
+        const color = direction === 'forward' ? FORWARD_COLOR : REVERSE_COLOR;
+        cylinder.material.color = color;
+        cylinder.material.opacity = 0.9;
+    }
+
+    // Create arrowheads or flow particles for directed edges
+    paths.forEach((path, pathIdx) => {
+        const direction = path.direction;
+        const color = direction === 'forward' ? FORWARD_COLOR : REVERSE_COLOR;
+
+        if (state.animateFlow) {
+            // Animate flow: create particles along the path
+            createFlowParticles(path.vertices, vertices, scale, color, pathIdx);
+        } else {
+            // Static arrows on each edge
+            const directedEdges = path.directed_edges || [];
+            for (const edge of directedEdges) {
+                const [from, to] = edge;
+                const fromPos = new THREE.Vector3(
+                    vertices[from][0] * scale,
+                    vertices[from][1] * scale,
+                    vertices[from][2] * scale
+                );
+                const toPos = new THREE.Vector3(
+                    vertices[to][0] * scale,
+                    vertices[to][1] * scale,
+                    vertices[to][2] * scale
+                );
+
+                // Arrow at midpoint pointing toward 'to'
+                const mid = new THREE.Vector3().addVectors(fromPos, toPos).multiplyScalar(0.5);
+                const arrowDir = new THREE.Vector3().subVectors(toPos, fromPos).normalize();
+
+                const coneGeom = new THREE.ConeGeometry(0.03, 0.08, 8);
+                const coneMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.8 });
+                const cone = new THREE.Mesh(coneGeom, coneMat);
+
+                cone.position.copy(mid);
+                const up = new THREE.Vector3(0, 1, 0);
+                const quaternion = new THREE.Quaternion().setFromUnitVectors(up, arrowDir);
+                cone.setRotationFromQuaternion(quaternion);
+
+                arrowsGroup.add(cone);
+            }
+        }
+    });
+
+    // Mark endpoint vertices (shared by all paths)
+    if (currentResult && currentResult.endpoint_pair) {
+        const [sIdx, tIdx] = currentResult.endpoint_pair;
+        const sPos = vertices[sIdx];
+        const tPos = vertices[tIdx];
+
+        // Endpoint A marker (larger sphere, cyan)
+        const startGeom = new THREE.SphereGeometry(0.08, 16, 16);
+        const startMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+        const startMesh = new THREE.Mesh(startGeom, startMat);
+        startMesh.position.set(sPos[0] * scale, sPos[1] * scale, sPos[2] * scale);
+        pathsGroup.add(startMesh);
+
+        // Endpoint B marker (octahedron, magenta)
+        const endGeom = new THREE.OctahedronGeometry(0.1);
+        const endMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+        const endMesh = new THREE.Mesh(endGeom, endMat);
+        endMesh.position.set(tPos[0] * scale, tPos[1] * scale, tPos[2] * scale);
+        pathsGroup.add(endMesh);
+    }
+
+    pathsGroup.visible = state.showPaths;
+    arrowsGroup.visible = state.showPaths;
+}
+
+/**
+ * Update pair weights panel with bidirectional path info
+ */
+function updateBidirectionalWeights() {
+    const weightsContainer = document.getElementById('pair-weights');
+
+    if (!currentResult || !currentResult.paths) {
+        weightsContainer.innerHTML = '<p class="no-data">-</p>';
+        return;
+    }
+
+    let html = '';
+
+    // Show mode indicator
+    const modeLabel = currentResult.is_bidirectional ? 'AC (Bidirectional)' : 'DC (Unidirectional)';
+    html += `<div class="flow-minmax-row"><span>${modeLabel}</span></div>`;
+    html += '<hr style="border-color: var(--cyan-dim); margin: 6px 0;">';
+
+    // Show individual paths
+    currentResult.paths.forEach((path, idx) => {
+        const dirSymbol = path.direction === 'forward' ? '→' : '←';
+        const colorClass = path.direction === 'forward' ? 'forward' : 'reverse';
+        html += `<div class="pair-weight-item">
+            <span class="pair-label">P${idx + 1}: ${path.start}${dirSymbol}${path.end}</span>
+            <span class="pair-value ${colorClass}">${path.direction}</span>
+        </div>`;
+    });
+
+    weightsContainer.innerHTML = html || '<p class="no-data">-</p>';
+}
+
 function createFlowParticles(path, vertices, scale, color, pairIdx) {
     // Create small particles that flow along the path
     const particleCount = Math.max(2, Math.floor(path.length / 2));
@@ -1308,8 +1526,24 @@ function updateEdgeColors() {
 
     // Build edge usage map for coloring (needed for both modes)
     const edgeUsage = {};  // "u-v" -> [pairIdx, ...]
+    const edgeDirection = {};  // "u-v" -> 'forward' | 'reverse' (for bidirectional mode)
 
-    if (currentResult.solution) {
+    if (isBidirectionalMode && currentResult.paths) {
+        // Bidirectional mode: track direction for each edge
+        currentResult.paths.forEach((path, pathIdx) => {
+            const directedEdges = path.directed_edges || [];
+            const direction = path.direction;  // 'forward' or 'reverse'
+            for (const edge of directedEdges) {
+                const [a, b] = edge;
+                const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+                if (!edgeUsage[key]) edgeUsage[key] = [];
+                if (!edgeUsage[key].includes(pathIdx)) {
+                    edgeUsage[key].push(pathIdx);
+                }
+                edgeDirection[key] = direction;
+            }
+        });
+    } else if (currentResult.solution) {
         currentResult.solution.forEach((pair, pairIdx) => {
             const paths = extractPaths(pair);
             for (const path of paths) {
@@ -1349,6 +1583,11 @@ function updateEdgeColors() {
         if (!state.showPaths) {
             // Paths hidden: use warm white for all edges
             finalColor = WARM_WHITE_2700K.clone();
+        } else if (isBidirectionalMode && edgeDirection[edgeKey]) {
+            // Bidirectional mode: use forward (blue) / reverse (orange) colors
+            const FORWARD_COLOR = new THREE.Color(0x00aaff);  // Blue
+            const REVERSE_COLOR = new THREE.Color(0xffaa00);  // Orange
+            finalColor = edgeDirection[edgeKey] === 'forward' ? FORWARD_COLOR : REVERSE_COLOR;
         } else if (isUsedEdge) {
             // Paths shown and edge is used: use path color(s)
             const pairIndices = edgeUsage[edgeKey];

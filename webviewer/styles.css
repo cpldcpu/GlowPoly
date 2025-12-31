@@ -413,6 +413,41 @@ body {
     display: none;
 }
 
+/* Filter Buttons (new two-row layout) */
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--cyan-dim);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--cyan-glow);
+}
+
+.filter-btn:has(input:checked) {
+    background: var(--cyan-dim);
+    color: var(--cyan-glow);
+    border-color: var(--cyan-glow);
+}
+
+.filter-btn input {
+    display: none;
+}
+
 /* Stats Grid */
 .stats-grid {
     display: grid;

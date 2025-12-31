@@ -1,0 +1,2257 @@
+[
+  {
+    "model": "augmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 21,
+    "n_edges": 35,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 13,
+    "n_edges": 22,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 19,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-sphenocorona.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 26,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 13,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-tridiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-truncated-cube.json",
+    "ok": false,
+    "n_vertices": 28,
+    "n_edges": 48,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 65,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "augmented-truncated-tetrahedron.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 27,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "biaugmented-pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 23,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "biaugmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 17,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "biaugmented-truncated-cube.json",
+    "ok": false,
+    "n_vertices": 32,
+    "n_edges": 60,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "bigyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "bilunabirotunda.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "cube.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 12,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "cuboctahedron.json",
+    "ok": true,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "path_length": 6,
+    "num_paths": 4,
+    "endpoint_pair": [
+      0,
+      11
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          0,
+          4,
+          6,
+          1,
+          5,
+          8,
+          11
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 11,
+        "directed_edges": [
+          [
+            0,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            11
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          11,
+          5,
+          6,
+          10,
+          4,
+          3,
+          0
+        ],
+        "direction": "reverse",
+        "start": 11,
+        "end": 0,
+        "directed_edges": [
+          [
+            11,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          11,
+          9,
+          7,
+          8,
+          2,
+          1,
+          0
+        ],
+        "direction": "reverse",
+        "start": 11,
+        "end": 0,
+        "directed_edges": [
+          [
+            11,
+            9
+          ],
+          [
+            9,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          2,
+          7,
+          3,
+          9,
+          10,
+          11
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 11,
+        "directed_edges": [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            11
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "decagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "decagonal-prism.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 30,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "disphenocingulum.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 38,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "dodecahedron.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 30,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-bipyramid.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 25,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 45,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrobirotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-gyrocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-orthobirotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-orthocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 55,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-square-bipyramid.json",
+    "ok": true,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4
+    ],
+    "path_length": 5,
+    "num_paths": 4,
+    "endpoint_pair": [
+      2,
+      7
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          2,
+          6,
+          1,
+          0,
+          3,
+          7
+        ],
+        "direction": "forward",
+        "start": 2,
+        "end": 7,
+        "directed_edges": [
+          [
+            2,
+            6
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            7
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          7,
+          8,
+          3,
+          4,
+          1,
+          2
+        ],
+        "direction": "reverse",
+        "start": 7,
+        "end": 2,
+        "directed_edges": [
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          5,
+          8,
+          9,
+          4,
+          7
+        ],
+        "direction": "forward",
+        "start": 2,
+        "end": 7,
+        "directed_edges": [
+          [
+            2,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            4,
+            7
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          7,
+          9,
+          6,
+          5,
+          0,
+          2
+        ],
+        "direction": "reverse",
+        "start": 7,
+        "end": 2,
+        "directed_edges": [
+          [
+            7,
+            9
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "elongated-square-cupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-square-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 48,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-square-pyramid.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 16,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-triangular-bipyramid.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 27,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-triangular-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-triangular-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "elongated-triangular-pyramid.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 12,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyrate-bidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyrobifastigium.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 14,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-bicupola.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 70,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-birotunda.json",
+    "ok": false,
+    "n_vertices": 40,
+    "n_edges": 90,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 55,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-cupolarotunda.json",
+    "ok": false,
+    "n_vertices": 35,
+    "n_edges": 80,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 11,
+    "n_edges": 25,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 65,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-bicupola.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 56,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-bipyramid.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-cupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 44,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-square-pyramid.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-triangular-bicupola.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 42,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "gyroelongated-triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 33,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "hebesphenomegacorona.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 33,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "hexagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "icosahedron.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 30,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "icosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabiaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 22,
+    "n_edges": 40,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabiaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabiaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 70,
+    "n_edges": 120,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabidiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metabigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "metagyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "octagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "octagonal-prism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 24,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "octahedron.json",
+    "ok": true,
+    "n_vertices": 6,
+    "n_edges": 12,
+    "vertex_degrees": [
+      4
+    ],
+    "path_length": 3,
+    "num_paths": 4,
+    "endpoint_pair": [
+      0,
+      5
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          0,
+          1,
+          4,
+          5
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 5,
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          1,
+          2,
+          0
+        ],
+        "direction": "reverse",
+        "start": 5,
+        "end": 0,
+        "directed_edges": [
+          [
+            5,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          5,
+          3,
+          4,
+          0
+        ],
+        "direction": "reverse",
+        "start": 5,
+        "end": 0,
+        "directed_edges": [
+          [
+            5,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          3,
+          2,
+          5
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 5,
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            5
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "parabiaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 22,
+    "n_edges": 40,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "parabiaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 14,
+    "n_edges": 26,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "parabiaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 70,
+    "n_edges": 120,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "parabidiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 50,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "parabigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "paragyrate-diminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 55,
+    "n_edges": 105,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-antiprism.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 20,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-bipyramid.json",
+    "ok": false,
+    "n_vertices": 7,
+    "n_edges": 15,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-cupola.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 25,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-gyrobicupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-gyrocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 50,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 40,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-orthobirotunda.json",
+    "ok": false,
+    "n_vertices": 30,
+    "n_edges": 60,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-orthocupolarotunda.json",
+    "ok": false,
+    "n_vertices": 25,
+    "n_edges": 50,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-prism.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-pyramid.json",
+    "ok": false,
+    "n_vertices": 6,
+    "n_edges": 10,
+    "vertex_degrees": [
+      3,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "pentagonal-rotunda.json",
+    "ok": false,
+    "n_vertices": 20,
+    "n_edges": 35,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "rhombicuboctahedron.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 48,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "snub-cube.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 60,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "snub-disphenoid.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 18,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "snub-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 150,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "snub-square-antiprism.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 40,
+    "vertex_degrees": [
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "sphenocorona.json",
+    "ok": false,
+    "n_vertices": 10,
+    "n_edges": 22,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "sphenomegacorona.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 28,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "square-antiprism.json",
+    "ok": false,
+    "n_vertices": 8,
+    "n_edges": 16,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "square-cupola.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 20,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "square-gyrobicupola.json",
+    "ok": true,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "path_length": 8,
+    "num_paths": 4,
+    "endpoint_pair": [
+      2,
+      13
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          2,
+          7,
+          12,
+          15,
+          11,
+          5,
+          1,
+          6,
+          13
+        ],
+        "direction": "forward",
+        "start": 2,
+        "end": 13,
+        "directed_edges": [
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            12
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            15,
+            11
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            6,
+            13
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          13,
+          15,
+          14,
+          12,
+          10,
+          6,
+          5,
+          3,
+          2
+        ],
+        "direction": "reverse",
+        "start": 13,
+        "end": 2,
+        "directed_edges": [
+          [
+            13,
+            15
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            14,
+            12
+          ],
+          [
+            12,
+            10
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          13,
+          11,
+          9,
+          8,
+          7,
+          4,
+          1,
+          0,
+          2
+        ],
+        "direction": "reverse",
+        "start": 13,
+        "end": 2,
+        "directed_edges": [
+          [
+            13,
+            11
+          ],
+          [
+            11,
+            9
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          8,
+          14,
+          9,
+          3,
+          0,
+          4,
+          10,
+          13
+        ],
+        "direction": "forward",
+        "start": 2,
+        "end": 13,
+        "directed_edges": [
+          [
+            2,
+            8
+          ],
+          [
+            8,
+            14
+          ],
+          [
+            14,
+            9
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            10,
+            13
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "square-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 16,
+    "n_edges": 32,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "square-pyramid.json",
+    "ok": false,
+    "n_vertices": 5,
+    "n_edges": 8,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "square.json",
+    "ok": true,
+    "n_vertices": 4,
+    "n_edges": 4,
+    "vertex_degrees": [
+      2
+    ],
+    "path_length": 2,
+    "num_paths": 2,
+    "endpoint_pair": [
+      0,
+      2
+    ],
+    "forward_paths": 1,
+    "reverse_paths": 1,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          0,
+          1,
+          2
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 2,
+        "directed_edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          2,
+          3,
+          0
+        ],
+        "direction": "reverse",
+        "start": 2,
+        "end": 0,
+        "directed_edges": [
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "star-octahedron.json",
+    "ok": true,
+    "n_vertices": 10,
+    "n_edges": 16,
+    "vertex_degrees": [
+      2,
+      4
+    ],
+    "path_length": 4,
+    "num_paths": 4,
+    "endpoint_pair": [
+      0,
+      1
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          0,
+          5,
+          9,
+          2,
+          1
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 1,
+        "directed_edges": [
+          [
+            0,
+            5
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          5,
+          8,
+          4,
+          0
+        ],
+        "direction": "reverse",
+        "start": 1,
+        "end": 0,
+        "directed_edges": [
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          3,
+          7,
+          4,
+          1
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 1,
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          3,
+          6,
+          2,
+          0
+        ],
+        "direction": "reverse",
+        "start": 1,
+        "end": 0,
+        "directed_edges": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "star_octahedron.json",
+    "ok": true,
+    "n_vertices": 10,
+    "n_edges": 16,
+    "vertex_degrees": [
+      2,
+      4
+    ],
+    "path_length": 4,
+    "num_paths": 4,
+    "endpoint_pair": [
+      0,
+      1
+    ],
+    "forward_paths": 2,
+    "reverse_paths": 2,
+    "is_bidirectional": true,
+    "paths": [
+      {
+        "vertices": [
+          0,
+          5,
+          9,
+          2,
+          1
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 1,
+        "directed_edges": [
+          [
+            0,
+            5
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          5,
+          8,
+          4,
+          0
+        ],
+        "direction": "reverse",
+        "start": 1,
+        "end": 0,
+        "directed_edges": [
+          [
+            1,
+            5
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          0,
+          3,
+          7,
+          4,
+          1
+        ],
+        "direction": "forward",
+        "start": 0,
+        "end": 1,
+        "directed_edges": [
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      {
+        "vertices": [
+          1,
+          3,
+          6,
+          2,
+          0
+        ],
+        "direction": "reverse",
+        "start": 1,
+        "end": 0,
+        "directed_edges": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "model": "tetrahedron.json",
+    "ok": false,
+    "n_vertices": 4,
+    "n_edges": 6,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triangular-bipyramid.json",
+    "ok": false,
+    "n_vertices": 5,
+    "n_edges": 9,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triangular-cupola.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triangular-hebesphenorotunda.json",
+    "ok": false,
+    "n_vertices": 18,
+    "n_edges": 36,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triangular-orthobicupola.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 24,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triangular-prism.json",
+    "ok": false,
+    "n_vertices": 6,
+    "n_edges": 9,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triaugmented-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 23,
+    "n_edges": 45,
+    "vertex_degrees": [
+      3,
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triaugmented-hexagonal-prism.json",
+    "ok": false,
+    "n_vertices": 15,
+    "n_edges": 30,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triaugmented-triangular-prism.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 21,
+    "vertex_degrees": [
+      4,
+      5
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "triaugmented-truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 75,
+    "n_edges": 135,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "tridiminished-icosahedron.json",
+    "ok": false,
+    "n_vertices": 9,
+    "n_edges": 15,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "tridiminished-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 45,
+    "n_edges": 75,
+    "vertex_degrees": [
+      3,
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "trigyrate-rhombicosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 120,
+    "vertex_degrees": [
+      4
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-cube.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-cuboctahedron.json",
+    "ok": false,
+    "n_vertices": 48,
+    "n_edges": 72,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-dodecahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-icosahedron.json",
+    "ok": false,
+    "n_vertices": 60,
+    "n_edges": 90,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-icosidodecahedron.json",
+    "ok": false,
+    "n_vertices": 120,
+    "n_edges": 180,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-octahedron.json",
+    "ok": false,
+    "n_vertices": 24,
+    "n_edges": 36,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  },
+  {
+    "model": "truncated-tetrahedron.json",
+    "ok": false,
+    "n_vertices": 12,
+    "n_edges": 18,
+    "vertex_degrees": [
+      3
+    ],
+    "message": "No bidirectional path decomposition found."
+  }
+]
