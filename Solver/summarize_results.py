@@ -61,7 +61,16 @@ def summarize_geodesic(data, degrees_map=None):
         degrees_list = degrees_map.get(name)
         degrees = format_degrees(degrees_list) if degrees_list else "-"
         path_length = item.get("best_L", "-")
-        num_taps = item.get("best_k", "-")
+        # Count unique endpoint vertices (taps) from solution
+        solution = item.get("solution", [])
+        if solution:
+            endpoints = set()
+            for pair in solution:
+                endpoints.add(pair.get("s"))
+                endpoints.add(pair.get("t"))
+            num_taps = len(endpoints)
+        else:
+            num_taps = "-"
         results.append({
             "name": name,
             "vertices": nV,
@@ -83,7 +92,9 @@ def summarize_bidirectional(data):
         nE = item.get("n_edges", 0)
         degrees = format_degrees(item.get("vertex_degrees", []))
         path_length = item.get("path_length", "-")
-        num_taps = item.get("num_paths", "-")
+        # Taps = number of endpoint vertices (always 2 for bidirectional)
+        endpoint_pair = item.get("endpoint_pair", [])
+        num_taps = len(endpoint_pair) if endpoint_pair else "-"
         results.append({
             "name": name,
             "vertices": nV,
