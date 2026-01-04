@@ -11,10 +11,20 @@ Turns out this is a deep rabbit hole. In this article, I summarize some of my fi
 
 ## LED Filaments
 
-The LED filaments that most commonly found in asian online market places typically measure 38mm in length with a forward voltage of 3V. Each filament contains 16 blue LED dies mounted on a thin white ceramic substrate. All LED dies are connected in parallel. Metal contacts at both ends are serving as anode and cathode. The entire assembly is encapsulated in a silicone coating laced with a phosphor, which converts the blue light into a broader spectrum of colors. Blue filaments use a clear encapsulation without phosphor and allow us to see the individual LED dies inside.
+The LED filaments commonly found in asian online market places typically measure 38mm in length with a forward voltage of 3V. Each filament consists of 16 blue LED dies mounted on a thin white ceramic substrate. All LED dies are connected in parallel. Metal contacts at both ends are serving as anode and cathode. The entire assembly is encapsulated in a silicone coating laced with a phosphor, which converts the blue light into a broader spectrum of colors. Blue filaments use a clear encapsulation without phosphor and allow us to see the individual LED dies inside.
 
-![LED filaments with different colors](filaments_vs_black.jpg)
-![Closeup of LED filament structure](filament_close_up.jpg)
+<!-- ![LED filaments with different colors](filaments_vs_black.jpg)
+![Closeup of LED filament structure](filament_close_up.jpg) -->
+
+
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="filaments_vs_black.jpg" alt="LED filaments with different colors" style="max-width: 50%;">
+</div>
+
+<!-- <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="filament_close_up.jpg" alt="Closeup of LED filament structure" style="max-width: 50%;">
+</div>   -->
+
 
 The filaments are diodes: Current can only flow in one direction, from anode to cathode. When a forward voltage of about 3V is applied, the filament lights up, with brightness proportional to the current flowing through it (typically 10-100 mA). When multiple filaments are connected in series, their forward voltages add up. Connecting them in parallel divides the current among them. I stored a more detailed characterization [here](../filaments/).
 
@@ -25,46 +35,39 @@ With some care (and a lot of patience), the metal ends of the filaments can be s
 How to solve this? Let's start with a simple 2D object. The photo below shows a simple square made from four LED filaments. A constant current supply is attached to the top and bottom joint, allowing all filaments to light up. The left and right (blue and red) part of the circuit form two parallel paths for the current to flow from top to bottom, while the filaments on each side are in series. The total voltage drop is around 6V, and each filament receives about half the total current.
 
 <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <img src="square.jpg" alt="Square graph from simulator" style="max-width: 45%;">
+  <img src="square.jpg" alt="Square graph from simulator" style="max-width: 35%;">
 
-  <img src="square.png" alt="Square graph from simulator" style="max-width: 45%;">
+  <img src="square.png" alt="Square graph from simulator" style="max-width: 35%;">
 </div>
 
-As shown on the right figure, the structure can be represented as a graph: Each junction corresponds to a vertex, and each filament corresponds to a connection between two vertices, a directed edge. Yellow markers indicate the feeding points where current is injected. This abstraction allows us to analyze the relationship between the geometry and its electrical properties using [graph theory](https://en.wikipedia.org/wiki/Graph_theory)[^2].
+As shown on the right figure, the structure can be represented as a graph: Each junction corresponds to a **vertex**, and each filament corresponds to a connection between two vertices, a directed **edge**. Yellow markers indicate the feeding points where current is injected. This abstraction allows us to analyze the relationship between the geometry and its electrical properties using [graph theory](https://en.wikipedia.org/wiki/Graph_theory)[^2].
 
 ### What do we actually want to achieve?
 
 Given a wireframe object made from LED filaments, what do we actually want to achieve? Two obvious objectives are:
 
 1) All edges shall light up.
-2) We want to minimize the number of feeding points.
-
-For example, the square above meets the first condition with two feeding points. Things get quickly more complicated when we move to more complex objects. 
-
-Assuming with have E edges (filaments) and V vertices (junctions),
-there are $2^E$ possible ways to orient the edges. For each orientation, there are $3^V$ possible combinations to attach feeding points (each vertex can be anode, cathode, or unconnected). Searching through all combinations quickly becomes infeasible for larger objects. 
-
-Even a simple cube with 12 edges and 8 vertices has $2^{12} = 4096$ possible edge orientations and $3^8 = 6561$ feeding point combinations with a total search space of over 26 million possibilities.
-
-Luckily it is possible to limit the search space by introducing additional constraints. First, we can restrict the allowed path length $L$ between feeding points. This is desirable since then the voltage drop is constant between all feeding points. Given this constraint, we usually want to optimize for minimum feeding points, but I found that it often helps to set a target number of feeding points and search for valid configurations that meet this target. Note that this reduces the search space from $3^V$ to $\binom{V}{P} \cdot 2^{P}$, where $P$ is the number of feeding points.
-
+2) We want to minimize the number of feeding points $P$, the vertices where we connect the power supply.
 3) The path length for all circuits between feeding points shall be exactly $L$ edges. 
-4) The number of feeding points shall be exactly $P$ (or be minimized).
+
+The third condition is needed to ensure driving with a constant voltage supply. The voltage drop between feeding points will then equal to $V_{tot} = L \cdot V_f \approx 3V \cdot L$.
+
+The square above meets the first condition with two feeding points and the path length is $L=2$. Things get quickly more complicated when we move to more complex objects. 
 
 ## The Cube
 
-Let's explore a simple 3D object: the cube ($V=8$, $E=12$). Each vertex connects three edges, making it a *3-regular graph*. There are trivial solutions for $L=1$ and $P=8$, where each vertex is connected to a power supply. The images below show a solution as a 3D graph and a flattened 2D representation ([Schlegel diagram](https://en.wikipedia.org/wiki/Schlegel_diagram)). The number next to each edge indicates the normalized magnitude of current flow.
+Let's explore a simple 3D object first: the cube. A cube has 8 connection points (vertices, $V=8$) and 12 filaments (edges, $E=12$). Each vertex connects three edges, making it a *3-regular graph*. There are trivial solutions for $L=1$ and $P=8$, where each vertex is connected to a power supply with alternating polarities. The images below show a solution as a 3D graph and a flattened 2D representation ([Schlegel diagram](https://en.wikipedia.org/wiki/Schlegel_diagram)). The number next to each edge indicates the normalized magnitude of current flow.
 
 <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <img src="cube_L1.png" alt="Cube graph from simulator" style="max-width: 40%;">
-  <img src="cube_L1_flat.png" alt="Cube graph from simulator" style="max-width: 40%;">
+  <img src="cube_L1.png" alt="Cube graph from simulator" style="max-width: 30%;">
+  <img src="cube_L1_flat.png" alt="Cube graph from simulator" style="max-width: 30%;">
 </div>
 
 Unfortunately, there is no solution that allows fewer feeding points while maintaining a constant current through all edges. However, there is a solution for $L=3$ and $P=2$, where the feeding points are connected to opposite vertices of the cube. The images below show this solution as a 3D graph and a flattened 2D representation. We can see that, while all edges are lit, the current distribution is uneven: Edges in the middle of the path only carry half of the current due to branching.
 
 <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <img src="cube_L3.png" alt="Cube graph (L=3)" style="max-width: 40%;">
-  <img src="cube_L3_flat.png" alt="Cube Schlegel diagram (L=3)" style="max-width: 40%;">
+  <img src="cube_L3.png" alt="Cube graph (L=3)" style="max-width: 30%;">
+  <img src="cube_L3_flat.png" alt="Cube Schlegel diagram (L=3)" style="max-width: 30%;">
 </div>
 
 Below you can see a photo of the actual cube with $L=3$ and two feeding points ($P=2$). While the current varies by a factor of two between edges, the impact on the appearance is surprisingly small and is rather exaggerated in the photograph. The reason for this is that we look at the filaments in separation vs. a constant brightness background. The eye response to lightness [is less than linear](https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law), and furthermore, is mostly sensitive to [relative brightness differences](https://en.wikipedia.org/wiki/Contrast_(vision)) of object next to each other, so the filament to filament variation is less noticeable relative to a constant lightness background. 
@@ -75,23 +78,76 @@ Below you can see a photo of the actual cube with $L=3$ and two feeding points (
 
 ## The Octahedron
 
-The octahedron is another simple polyhedron with $V=6$, $E=12$. In contrast to the cube, each vertex connects four edges, making it a 4-regular graph. 
+The Octahedron is another simple polyhedron with $V=6$, $E=12$. In contrast to the cube, each vertex connects four edges, making it a 4-regular graph.
+
+### DC Driving with 2 Feeding Points
+
+No solution exists for a simple DC driving scheme where bias is applied to only two vertices (anode and cathode). As shown below in the first two images, only 8 out of 12 edges can be made to light up when driven this way. 
+
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="octahedron_dc_L2.png" alt="Octahedron graph (L=2)" style="max-width: 25%;">
+  <img src="octahedron_dc_l2_planar.png" alt="Octahedron Schlegel diagram (L=2)" style="max-width: 25%;">
+  <img src="octahedron_dc_l2_4fp_planar.png" alt="Octahedron Schlegel diagram (L=2, 4 feeding points)" style="max-width: 25%;">
+</div>
+
+### Multiplexed DC Driving
+
+However, as shown on in the rightmost image, if we allow four feeding points and drive them alternatingly, all edges can be made to light up. The table below shows which circuits are activated by applying a voltage to the vertices. Since vertices 0/1 feed four current paths in parallel, we need to feed in double the current as into 2/3, or keep them on for twice as long.
+
+```
+=== Driving Scheme ===
+Path 1: 0 -> 2 -> 1 | 0=A 1=C
+Path 2: 0 -> 3 -> 1 | 0=A 1=C
+Path 3: 0 -> 4 -> 1 | 0=A 1=C
+Path 4: 0 -> 5 -> 1 | 0=A 1=C
+Path 5: 2 -> 4 -> 3 | 2=A 3=C
+Path 6: 2 -> 5 -> 3 | 2=A 3=C
+```
+
+### Bipolar Driving 
+
+Interestingly, there is another solution that allows driving all edges with only two feeding points: Bipolar driving, where we apply an alternating voltage.
+
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="octahedron3d.png" alt="Octahedron graph (L=3)" style="max-width: 35%;">
+  <img src="octahedron_ac_l3_planar.png" alt="Octahedron Schlegel diagram (L=3)" style="max-width: 35%;">
+</div>
+
+The images above show how this approach works. The path length is $L=3$, and the two feeding points are connected to opposite vertices of the octahedron. The table below shows the paths that are activated during each cycle of the alternating current driving scheme.
+
+```
+=== Driving Scheme ===
+Path 1a: 0 -> 5 -> 3 -> 1 | 0=A 1=C
+Path 1b: 0 -> 5 -> 2 -> 1 | 0=A 1=C
+Path 2a: 0 -> 4 -> 2 -> 1 | 0=A 1=C
+Path 2b: 0 -> 4 -> 3 -> 1 | 0=A 1=C
+Path 3a: 1 -> 5 -> 2 -> 0 | 1=A 0=C
+Path 3b: 1 -> 5 -> 3 -> 0 | 1=A 0=C
+Path 4a: 1 -> 4 -> 2 -> 0 | 1=A 0=C
+Path 4b: 1 -> 4 -> 3 -> 0 | 1=A 0=C
+```
+
+The four edges in the middle of the path (5->3,5->2,4->2,4->3) are part of both the forward and backward biased directions - the filaments leading to them act as a full-bridge rectifier. Since the current for the middle segments is branched (2x), the middle segments receive half the current. But since they are driven in both directions, the time-averaged current is the same as for the outer segments.
+
+## Driver Board
+
+Now that we moved beyond simple DC driving schemes, the question arises: How to implement this in hardware? I designed a driver board based on a CH32V003 MCU and multiple H-bridge ICs (motor driver), that can drive up to 12 feedpoints with configurable Anode, Cathode, or High-Z states at voltages up to 10V and beyond. [More details here](https://github.com/cpldcpu/GlowPoly/tree/master/hardware). Below you can see the driver board next to an Octahedron illuminated with bipolar driving.
+
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="driverboard.jpg" alt="Octahedron graph (L=3)" style="max-width: 40%;">
+  <img src="octahedron.jpg" alt="Octahedron Schlegel diagram (L=3)" style="max-width: 45%;">
+</div>
 
 
-=== Driving Scheme Analysis ===
-Each path is driven individually: start=A (anode), end=C (cathode), others=Z (high-Z)
+## How to generalize this?
 
-Path 1: 0 -> 5 -> 3 -> 1 | 0=A 1=C
-Path 2: 0 -> 4 -> 2 -> 1 | 0=A 1=C
-Path 3: 1 -> 5 -> 2 -> 0 | 1=A 0=C
-Path 4: 1 -> 4 -> 3 -> 0 | 1=A 0=C
+Assuming we have $E$ edges (filaments) and $V$ vertices (junctions),
+there are $2^E$ possible ways to orient the edges. For each orientation, there are $3^V$ possible combinations to attach feeding points (each vertex can be anode, cathode, or unconnected). Searching through all combinations quickly becomes infeasible for larger objects. Even a simple cube with 12 edges and 8 vertices has $2^{12} = 4096$ possible edge orientations and $3^8 = 6561$ feeding point combinations with a total search space of over 26 million possibilities.
 
 
 
-There are multiple solutions for $L=3$ and $P=2$. The images below show one solution as a 3D graph and a flattened 2D representation. The current distribution is more even than in the cube case, since each vertex has an even degree.
 
-
-The octahedron ($V=6$, $E=12$) is another interesting shape. Each vertex connects four edges, making it a 4-regular graph. There are multiple solutions for $L=3$ and $P=2$. The images below show one solution as a 3D graph and a flattened 2D representation. The current distribution is more even than in the cube case, since each vertex has an even degree.
+Given this constraint, we usually want to optimize for minimum feeding points, but I found that it often helps to set a target number of feeding points and search for valid configurations that meet this target. Note that this reduces the search space from $3^V$ to $\binom{V}{P} \cdot 2^{P}$, where $P$ is the number of feeding points.
 
 
 ## Euler circuit
@@ -129,6 +185,43 @@ E_{\min}(s,t) = E.
 ]
 In words: **every edge of (G) lies on at least one shortest (s!-!t) path.**
 
+Geodesic Cover (122 models) [taps <= 1]
+=======================================
+  Name                           V    E  Degrees  Path Len  Taps
+  --------------------------------------------------------------
+  cube                           8   12  3               3     2
+  decagonal prism               20   30  3               6     2
+  hexagonal prism               12   18  3               4     2
+  octagonal prism               16   24  3               5     2
+  square                         4    4  2               2     2
+  star_octahedron               10   16  2, 4            4     2
+  truncated cuboctahedron       48   72  3               9     2
+  truncated icosidodecahedron  120  180  3              15     2
+  truncated octahedron          24   36  3               6     2
+
+Bidirectional Path (6 solutions) [taps <= 10]
+=============================================
+  Name                         V   E  Degrees  Path Len  Taps
+  -----------------------------------------------------------
+  cuboctahedron               12  24  4               6     2
+  elongated-square-bipyramid  10  20  4               5     2
+  octahedron                   6  12  4               3     2
+  square                       4   4  2               2     2
+  square-gyrobicupola         16  32  4               8     2
+  star_octahedron             10  16  2, 4            4     2
+
+
+Cycle Decomposition (12 solutions) [taps <= 10]
+===============================================
+  Name                       V   E  Degrees  Path Len  Taps
+  ---------------------------------------------------------
+  cuboctahedron             12  24  4               6     4
+  icosidodecahedron         30  60  4              10     6
+  octahedron                 6  12  4               4     4
+  square                     4   4  2               4     2
+  square-gyrobicupola       16  32  4               4    10
+  star_octahedron           10  16  2, 4            4     4
+  triangular-orthobicupola  12  24  4               6     5
 
 ## References and Comments
 
@@ -335,24 +428,7 @@ A more sophisticated approach: allow vertices to act as **both anode AND cathode
 - Requires more complex driving hardware (must switch polarity)
 - Needs careful timing/sequencing
 
-## Example: The Octahedron
 
-The octahedron (6 vertices, 12 edges) is an excellent case study because it can be solved in multiple ways, each with different tradeoffs.
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1rem 0;">
-  <figure style="text-align: center; max-width: 30%;">
-    <img src="octahedron2d.png" alt="Octahedron - Alternating" style="width: 100%;">
-    <figcaption><strong>Alternating</strong><br>Each vertex is both anode and cathode</figcaption>
-  </figure>
-  <figure style="text-align: center; max-width: 30%;">
-    <img src="octahedron2d_dconly.png" alt="Octahedron - DC only, 2 feedpoints" style="width: 100%;">
-    <figcaption><strong>DC - 2 Feedpoints</strong><br>Limited coverage, sneak path issues</figcaption>
-  </figure>
-  <figure style="text-align: center; max-width: 30%;">
-    <img src="octahedron2d_dc4feedpoints.png" alt="Octahedron - DC only, 4 feedpoints" style="width: 100%;">
-    <figcaption><strong>DC - 4 Feedpoints</strong><br>Full coverage, requires tristate</figcaption>
-  </figure>
-</div>
 
 ## Which to Choose?
 
