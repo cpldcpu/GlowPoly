@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Equal Even-Length Cycle Decomposition Solver
+Equal Cycle Decomposition Solver (length = 2 * diameter)
 
 Finds a partition of all edges into edge-disjoint cycles where:
-  1. All cycles have the SAME length
-  2. All cycles have EVEN length
-  3. All cycles are CHORDLESS (no shortcuts)
+  1. All cycles have the SAME length (2 * graph diameter)
+  2. All cycles are CHORDLESS (no shortcuts)
+  3. Opposite vertex pairs on each cycle have distance == diameter
   4. Output includes DIRECTED edges (order follows cycle vertex sequence)
 
 Usage:
@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import sys
+from collections import deque
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 Edge = Tuple[int, int]  # (u, v) undirected: stored as (min, max)
@@ -65,6 +66,34 @@ def build_adj(n: int, edges: List[Edge]) -> Dict[int, Set[int]]:
         adj[u].add(v)
         adj[v].add(u)
     return adj
+
+
+def all_pairs_shortest_paths(adj: Dict[int, Set[int]]) -> Optional[List[List[int]]]:
+    """Return all-pairs shortest-path distances or None if disconnected."""
+    n = len(adj)
+    dist_matrix: List[List[int]] = []
+    for start in range(n):
+        dist = [-1] * n
+        dist[start] = 0
+        q = deque([start])
+        while q:
+            u = q.popleft()
+            for v in adj[u]:
+                if dist[v] == -1:
+                    dist[v] = dist[u] + 1
+                    q.append(v)
+        if any(d == -1 for d in dist):
+            return None
+        dist_matrix.append(dist)
+    return dist_matrix
+
+
+def graph_diameter_from_dist(dist_matrix: Optional[List[List[int]]]) -> Optional[int]:
+    if dist_matrix is None:
+        return None
+    if not dist_matrix:
+        return 0
+    return max(max(row) for row in dist_matrix)
 
 
 def enumerate_cycles(adj: Dict[int, Set[int]], length: int, max_cycles: int = 50000) -> List[List[int]]:
@@ -149,6 +178,22 @@ def has_chord(cycle: List[int], adj: Dict[int, Set[int]]) -> bool:
             if vj in adj[vi]:
                 return True  # Found a chord
     return False
+
+
+def cycle_opposite_pairs_ok(cycle: List[int], dist_matrix: List[List[int]], diameter: int) -> bool:
+    """Opposite vertices on the cycle must be at graph distance == diameter."""
+    k = len(cycle)
+    if k % 2 != 0:
+        return False
+    half = k // 2
+    if half != diameter:
+        return False
+    for i in range(half):
+        u = cycle[i]
+        v = cycle[i + half]
+        if dist_matrix[u][v] != diameter:
+            return False
+    return True
 
 
 def count_paths_of_length(adj: Dict[int, Set[int]], start: int, end: int, length: int) -> int:
@@ -507,7 +552,7 @@ def find_decomposition(
     verbose: bool = False,
 ) -> Optional[Dict[str, Any]]:
     """
-    Find cycle decomposition with equal even-length cycles.
+    Find cycle decomposition with equal cycle length 2*diameter.
     
     Args:
         require_unique: If True, only accept geodesically unique cycles
@@ -523,12 +568,19 @@ def find_decomposition(
         if len(nbrs) % 2 != 0:
             return None  # Not Eulerian
 
-    # Find valid cycle lengths: must be even, divide m, and <= max_L
-    # Minimum cycle = 4 (even)
-    candidates = [L for L in range(4, min(m + 1, max_L + 1), 2) if m % L == 0]
+    dist_matrix = all_pairs_shortest_paths(adj)
+    diameter = graph_diameter_from_dist(dist_matrix)
+    if diameter is None:
+        return None
+    L = 2 * diameter
+    if L < 4:
+        return None
+    if m % L != 0:
+        return None
+    if max_L is not None and L > max_L:
+        return None
 
-    if prefer_longer:
-        candidates = sorted(candidates, reverse=True)
+    candidates = [L]
 
     all_edges_set = set(edges)
 
@@ -547,13 +599,16 @@ def find_decomposition(
         # Filter: only keep cycles that are:
         # 1. Using valid edges
         # 2. Chordless (no shortcuts via non-cycle edges)
-        # 3. Optionally: No branching (no alternative paths from intermediate vertices)
+        # 3. Opposite vertex pairs have distance == diameter
+        # 4. Optionally: No branching (no alternative paths from intermediate vertices)
         valid = []
         valid_edges = []
         for c, es in zip(cycles, cycle_edges):
             if not es.issubset(all_edges_set):
                 continue
             if has_chord(c, adj):
+                continue
+            if dist_matrix is None or not cycle_opposite_pairs_ok(c, dist_matrix, diameter):
                 continue
             if require_unique and has_branch(c, adj):
                 continue
@@ -605,6 +660,7 @@ def find_decomposition(
                 "num_cycles": len(result_cycles),
                 "num_unique_endpoints": len(unique_endpoints),
                 "unique_endpoints": sorted(unique_endpoints),
+                "diameter": diameter,
                 "cycles": oriented_cycles,
             }
 
@@ -730,10 +786,15 @@ def process_model(path: str, max_L: int = 20, require_unique: bool = False, verb
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Equal even-length cycle decomposition solver")
+    ap = argparse.ArgumentParser(description="Equal cycle decomposition solver (length = 2 * diameter)")
     ap.add_argument("input", help="Model JSON file or folder of models")
     ap.add_argument("--out", "-o", default=None, help="Output folder (default: print to stdout)")
-    ap.add_argument("--max-L", type=int, default=20, help="Maximum cycle length to try (default: 20)")
+    ap.add_argument(
+        "--max-L",
+        type=int,
+        default=20,
+        help="Safety cap: skip if 2*diameter exceeds this value (default: 20)",
+    )
     ap.add_argument("--unique", action="store_true", help="Only accept geodesically unique cycles")
     ap.add_argument("--verbose", "-v", action="store_true", help="Show progress for each cycle length")
     args = ap.parse_args()

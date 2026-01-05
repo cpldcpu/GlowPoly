@@ -101,6 +101,9 @@ def iter_endpoint_pairs_for_length(
     """
     Generate (s, t) endpoint pairs that pass degree/parity constraints.
     For a full edge cover into s-t paths, internal vertices must have even degree.
+
+    For bidirectional paths (half forward, half reverse), endpoints can have
+    degree = num_paths_needed (unidirectional) OR degree = num_paths_needed/2 (balanced bidirectional).
     """
     if len(odd_vertices) == 2:
         s, t = odd_vertices
@@ -110,7 +113,11 @@ def iter_endpoint_pairs_for_length(
     if len(odd_vertices) == 0:
         if num_paths_needed % 2 == 1:
             return iter(())
-        candidates = [v for v in vertices if degrees[v] == num_paths_needed]
+        # For bidirectional: also consider vertices with degree = num_paths_needed/2
+        # (balanced bidirectional: half forward, half reverse)
+        half_paths = num_paths_needed // 2
+        candidates = [v for v in vertices if degrees[v] == num_paths_needed or
+                      (half_paths > 0 and degrees[v] == half_paths)]
         if len(candidates) < 2:
             return iter(())
         return combinations(candidates, 2)
@@ -240,6 +247,128 @@ def path_to_edges(path: List[int]) -> Set[Edge]:
 def path_to_directed_edges(path: List[int]) -> List[Tuple[int, int]]:
     """Convert a path to directed edges following vertex order."""
     return [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+
+
+def validate_no_short_circuits(
+    paths: List[List[int]],
+    directions: List[str],
+    adj: Dict[int, Set[int]] = None,
+    n: int = 0,
+) -> Tuple[bool, List[str]]:
+    """
+    Validate that a solution has no short circuits with directed edges.
+
+    Checks for:
+    1. Non-monotonic paths (paths that backtrack in level = distance from s)
+    2. Shared intermediate vertices between same-phase paths
+    3. Edge shortcuts that bypass parts of other paths
+
+    For directed edges (like LEDs):
+    - Forward phase: all forward paths driven together (s=high, t=low)
+    - Reverse phase: all reverse paths driven together (t=high, s=low)
+
+    Returns (is_valid, list_of_issues).
+    """
+    issues = []
+
+    if not paths:
+        return (True, [])
+
+    # Get endpoints from first path
+    s = paths[0][0] if directions[0] == 'forward' else paths[0][-1]
+    t = paths[0][-1] if directions[0] == 'forward' else paths[0][0]
+
+    # Compute distances from s if adj provided
+    dist_s = None
+    if adj is not None and n > 0:
+        inf = 10**9
+        dist_s = [inf] * n
+        dist_s[s] = 0
+        queue = deque([s])
+        while queue:
+            v = queue.popleft()
+            for u in adj[v]:
+                if dist_s[u] == inf:
+                    dist_s[u] = dist_s[v] + 1
+                    queue.append(u)
+
+    # Check 1: Non-monotonic paths (must have strictly increasing/decreasing levels)
+    if dist_s is not None:
+        for pi, (path, direction) in enumerate(zip(paths, directions)):
+            levels = [dist_s[v] for v in path]
+
+            if direction == 'forward':
+                # Forward path: levels should be non-decreasing (can have horizontal edges)
+                for j in range(len(levels) - 1):
+                    if levels[j] > levels[j + 1]:
+                        issues.append(
+                            f"path {pi}: non-monotonic at {path[j]}→{path[j+1]} "
+                            f"(level {levels[j]}→{levels[j+1]})"
+                        )
+                        break
+            else:
+                # Reverse path: levels should be non-increasing
+                for j in range(len(levels) - 1):
+                    if levels[j] < levels[j + 1]:
+                        issues.append(
+                            f"path {pi}: non-monotonic at {path[j]}→{path[j+1]} "
+                            f"(level {levels[j]}→{levels[j+1]})"
+                        )
+                        break
+
+    # Group paths by direction
+    fwd_paths = [(i, paths[i]) for i, d in enumerate(directions) if d == 'forward']
+    rev_paths = [(i, paths[i]) for i, d in enumerate(directions) if d == 'reverse']
+
+    def check_phase_shorts(phase_paths: List[Tuple[int, List[int]]], phase_name: str) -> List[str]:
+        """Check for shorts within a single phase (all paths driven together)."""
+        phase_issues = []
+
+        if len(phase_paths) < 2:
+            return phase_issues
+
+        # Check 2: Shared intermediate vertices (creates current branching)
+        for i, (pi, path_i) in enumerate(phase_paths):
+            intermediates_i = set(path_i[1:-1])
+            for j, (pj, path_j) in enumerate(phase_paths):
+                if i >= j:
+                    continue
+                intermediates_j = set(path_j[1:-1])
+                shared = intermediates_i & intermediates_j
+                if shared:
+                    phase_issues.append(
+                        f"{phase_name}: paths {pi} and {pj} share intermediate vertices {shared}"
+                    )
+
+        # Check 3: Edge shortcuts
+        all_directed_edges = []
+        for pi, path in phase_paths:
+            for i in range(len(path) - 1):
+                all_directed_edges.append((pi, path[i], path[i + 1]))
+
+        for pi, path in phase_paths:
+            vertex_pos = {v: pos for pos, v in enumerate(path)}
+
+            for pj, edge_u, edge_v in all_directed_edges:
+                if pi == pj:
+                    continue
+
+                if edge_u in vertex_pos and edge_v in vertex_pos:
+                    pos_u = vertex_pos[edge_u]
+                    pos_v = vertex_pos[edge_v]
+
+                    if pos_u < pos_v and (pos_v - pos_u) > 1:
+                        phase_issues.append(
+                            f"{phase_name}: edge {edge_u}→{edge_v} (path {pj}) "
+                            f"shorts path {pi} (skips {pos_v - pos_u - 1} vertices)"
+                        )
+
+        return phase_issues
+
+    issues.extend(check_phase_shorts(fwd_paths, "forward"))
+    issues.extend(check_phase_shorts(rev_paths, "reverse"))
+
+    return (len(issues) == 0, issues)
 
 
 def analyze_current_flow(
@@ -1052,6 +1181,148 @@ def solve_exact_cover_paths_bidirectional(
     return None  # No short-circuit-free solution exists
 
 
+def find_bipolar_structure(
+    n: int,
+    edges: List[Edge],
+    adj: Dict[int, Set[int]],
+    verbose: bool = False,
+) -> Optional[Dict[str, Any]]:
+    """
+    Find a valid bipolar structure (not path decomposition).
+
+    A bipolar structure has:
+    - Two poles s and t at distance >= 2
+    - All edges classified as vertical (on shortest paths) or horizontal (same level)
+    - Even counts for vertical edges at each level transition
+    - Even counts for horizontal edges at each level
+    - Horizontal count = 0 or = vertical count from preceding level
+
+    Returns the best bipolar structure found, or None.
+    """
+    from itertools import combinations
+
+    def classify_edges_bipolar(dist_s, dist_t, d_st):
+        """Classify edges into vertical and horizontal."""
+        vertical_by_level = {}  # level -> list of edges
+        horizontal_by_level = {}  # level -> list of edges
+        uncovered = []
+
+        for u, v in edges:
+            lu, lv = dist_s[u], dist_s[v]
+
+            if lu == lv:
+                # Horizontal edge at this level
+                if lu not in horizontal_by_level:
+                    horizontal_by_level[lu] = []
+                horizontal_by_level[lu].append((u, v))
+            elif abs(lu - lv) == 1:
+                # Check if on shortest path
+                on_path = (dist_s[u] + 1 + dist_t[v] == d_st or
+                           dist_s[v] + 1 + dist_t[u] == d_st)
+                if on_path:
+                    level = min(lu, lv)
+                    if level not in vertical_by_level:
+                        vertical_by_level[level] = []
+                    vertical_by_level[level].append((u, v))
+                else:
+                    uncovered.append((u, v))
+            else:
+                uncovered.append((u, v))
+
+        return vertical_by_level, horizontal_by_level, uncovered
+
+    def check_bipolar_valid(s, t):
+        """Check if (s, t) forms a valid bipolar structure."""
+        dist_s = bfs_distances(adj, s, n)
+        dist_t = bfs_distances(adj, t, n)
+        d_st = dist_s[t]
+
+        if d_st < 2:
+            return None
+
+        vertical, horizontal, uncovered = classify_edges_bipolar(dist_s, dist_t, d_st)
+
+        if uncovered:
+            return None
+
+        # Get counts
+        v_counts = [len(vertical.get(l, [])) for l in range(d_st)]
+        h_counts = [len(horizontal.get(l, [])) for l in range(1, d_st)]
+
+        # Check all vertical even
+        if any(c % 2 != 0 for c in v_counts):
+            return None
+
+        # Check all horizontal even
+        if any(c % 2 != 0 for c in h_counts):
+            return None
+
+        # Check H matches V (H[L] == 0 or H[L] == V[L-1])
+        for i, h in enumerate(h_counts):
+            level = i + 1
+            v_preceding = v_counts[level - 1] if level - 1 < len(v_counts) else 0
+            if h != 0 and h != v_preceding:
+                return None
+
+        # Check horizontal edge consistency: edges sharing a vertex must have
+        # consistent polarity (all anodes or all cathodes at that vertex)
+        # For horizontal edges, we need to check if they can be oriented consistently
+        for level, h_edges in horizontal.items():
+            if len(h_edges) < 2:
+                continue
+            # Build graph of horizontal edges at this level
+            # Check if they can be 2-colored (bipartite) for consistent orientation
+            h_vertices = set()
+            for u, v in h_edges:
+                h_vertices.add(u)
+                h_vertices.add(v)
+            h_adj = {v: [] for v in h_vertices}
+            for u, v in h_edges:
+                h_adj[u].append(v)
+                h_adj[v].append(u)
+            # Check bipartiteness (2-colorable)
+            color = {}
+            for start in h_vertices:
+                if start in color:
+                    continue
+                color[start] = 0
+                stack = [start]
+                while stack:
+                    v = stack.pop()
+                    for u in h_adj[v]:
+                        if u not in color:
+                            color[u] = 1 - color[v]
+                            stack.append(u)
+                        elif color[u] == color[v]:
+                            # Odd cycle - not bipartite - can't orient consistently
+                            return None
+
+        # Valid! Build result
+        return {
+            "s": s,
+            "t": t,
+            "distance": d_st,
+            "vertical_counts": v_counts,
+            "horizontal_counts": h_counts,
+            "vertical_edges": {l: list(es) for l, es in vertical.items()},
+            "horizontal_edges": {l: list(es) for l, es in horizontal.items()},
+        }
+
+    # Try all vertex pairs
+    best = None
+    for s, t in combinations(range(n), 2):
+        result = check_bipolar_valid(s, t)
+        if result:
+            if verbose:
+                print(f"  Bipolar: ({s}, {t}) d={result['distance']} "
+                      f"V={result['vertical_counts']} H={result['horizontal_counts']}",
+                      file=sys.stderr)
+            if best is None or result['distance'] < best['distance']:
+                best = result
+
+    return best
+
+
 def find_bidirectional_decomposition(
     n: int,
     edges: List[Edge],
@@ -1177,11 +1448,24 @@ def find_bidirectional_decomposition(
             if solution is not None:
                 result_paths = [valid_paths[i] for i in solution]
                 result_directions = [valid_directions[i] for i in solution]
-                
+
+                # Validate: check for short circuits with directed edges
+                is_valid, short_issues = validate_no_short_circuits(
+                    result_paths, result_directions, adj, n
+                )
+
+                if not is_valid:
+                    if verbose:
+                        print(f"    Rejected ({s}, {t}) L={L}: {len(short_issues)} short circuit(s)",
+                              file=sys.stderr)
+                        for issue in short_issues[:3]:  # Show first 3 issues
+                            print(f"      - {issue}", file=sys.stderr)
+                    continue  # Try next (s, t) pair
+
                 # Count forward vs reverse paths
                 forward_count = sum(1 for d in result_directions if d == 'forward')
                 reverse_count = len(result_directions) - forward_count
-                
+
                 # Build result structure
                 paths_info = []
                 for pi, (p, d) in enumerate(zip(result_paths, result_directions)):
@@ -1192,7 +1476,7 @@ def find_bidirectional_decomposition(
                         "end": p[-1],
                         "directed_edges": path_to_directed_edges(p),
                     })
-                
+
                 result = {
                     "path_length": L,
                     "num_paths": len(result_paths),
@@ -1202,12 +1486,12 @@ def find_bidirectional_decomposition(
                     "is_bidirectional": forward_count > 0 and reverse_count > 0,
                     "paths": paths_info,
                 }
-                
+
                 if verbose:
-                    print(f"    Found: endpoints ({s}, {t}), {forward_count} fwd + {reverse_count} rev", 
+                    print(f"    Found: endpoints ({s}, {t}), {forward_count} fwd + {reverse_count} rev",
                           file=sys.stderr)
-                
-                # Return first solution found (longest L, first valid pair)
+
+                # Return first valid solution found (longest L, first valid pair)
                 return result
     
     return None
@@ -1442,21 +1726,39 @@ def process_model(
                 }
             
             if result is None:
+                # Try bipolar structure as fallback
+                bipolar = find_bipolar_structure(n, edges, adj, verbose=verbose)
+                if bipolar:
+                    return {
+                        "model": name,
+                        "ok": True,
+                        "n_vertices": n,
+                        "n_edges": len(edges),
+                        "vertex_degrees": unique_degrees,
+                        "solution_type": "bipolar",
+                        "endpoint_pair": [bipolar["s"], bipolar["t"]],
+                        "distance": bipolar["distance"],
+                        "vertical_counts": bipolar["vertical_counts"],
+                        "horizontal_counts": bipolar["horizontal_counts"],
+                        "vertical_edges": bipolar["vertical_edges"],
+                        "horizontal_edges": bipolar["horizontal_edges"],
+                    }
                 return {
                     "model": name,
                     "ok": False,
                     "n_vertices": n,
                     "n_edges": len(edges),
                     "vertex_degrees": unique_degrees,
-                    "message": "No bidirectional path decomposition found.",
+                    "message": "No bidirectional path decomposition or bipolar structure found.",
                 }
-            
+
             return {
                 "model": name,
                 "ok": True,
                 "n_vertices": n,
                 "n_edges": len(edges),
                 "vertex_degrees": unique_degrees,
+                "solution_type": "path_decomposition",
                 **result,
             }
     
@@ -1516,11 +1818,15 @@ def main():
 
         if result["ok"]:
             if args.all:
-                print(f"  OK: {result['num_solutions']} solutions ({result['num_bidirectional']} bidirectional)", 
+                print(f"  OK: {result['num_solutions']} solutions ({result['num_bidirectional']} bidirectional)",
+                      file=sys.stderr)
+            elif result.get('solution_type') == 'bipolar':
+                print(f"  OK [BIPOLAR]: endpoints={result['endpoint_pair']}, d={result['distance']}, "
+                      f"V={result['vertical_counts']}, H={result['horizontal_counts']}",
                       file=sys.stderr)
             else:
                 bidir = "bidirectional (AC)" if result.get('is_bidirectional') else "unidirectional (DC)"
-                print(f"  OK: L={result['path_length']}, endpoints={result['endpoint_pair']}, {bidir}", 
+                print(f"  OK [PATH]: L={result['path_length']}, endpoints={result['endpoint_pair']}, {bidir}",
                       file=sys.stderr)
         else:
             print(f"  FAIL: {result.get('message', result.get('error', 'unknown'))}", file=sys.stderr)
