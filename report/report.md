@@ -1,4 +1,3 @@
-
 # Glowing 3D Objects from LED Filaments
 
 *Wireframe polyhedra made entirely from LED filaments, using graph theory to optimize connection and driving strategies.*
@@ -44,7 +43,7 @@ As shown on the right figure, the structure can be represented as a graph: Each 
 
 ### What do we actually want to achieve?
 
-Given a wireframe object made from LED filaments, what do we actually want to achieve? Two obvious objectives are:
+Given a wireframe object made from LED filaments, what do we actually want to achieve? Some straightforward objectives:
 
 1) All edges shall light up.
 2) We want to minimize the number of feeding points $P$, the vertices where we connect the power supply.
@@ -90,7 +89,7 @@ No solution exists for a simple DC driving scheme where bias is applied to only 
   <img src="octahedron_dc_l2_4fp_planar.png" alt="Octahedron Schlegel diagram (L=2, 4 feeding points)" style="max-width: 25%;">
 </div>
 
-### Multiplexed DC Driving
+### Multiplexed DC Driving with 4 feeding points
 
 However, as shown on in the rightmost image, if we allow four feeding points and drive them alternatingly, all edges can be made to light up. The table below shows which circuits are activated by applying a voltage to the vertices. Since vertices 0/1 feed four current paths in parallel, we need to feed in double the current as into 2/3, or keep them on for twice as long.
 
@@ -104,7 +103,7 @@ Path 5: 2 -> 4 -> 3 | 2=A 3=C
 Path 6: 2 -> 5 -> 3 | 2=A 3=C
 ```
 
-### Bipolar Driving 
+### Bipolar Driving with 2 feeding points
 
 Interestingly, there is another solution that allows driving all edges with only two feeding points: Bipolar driving, where we apply an alternating voltage.
 
@@ -138,16 +137,69 @@ Now that we moved beyond simple DC driving schemes, the question arises: How to 
   <img src="octahedron.jpg" alt="Octahedron Schlegel diagram (L=3)" style="max-width: 45%;">
 </div>
 
+## Which other filament objects can we build?
 
-## How to generalize this?
+The examples above were found through intuition and manual exploration. But what about more complex objects? Which are eligible and how to orient edges so that we can optimize the driving scheme?
 
-Assuming we have $E$ edges (filaments) and $V$ vertices (junctions),
-there are $2^E$ possible ways to orient the edges. For each orientation, there are $3^V$ possible combinations to attach feeding points (each vertex can be anode, cathode, or unconnected). Searching through all combinations quickly becomes infeasible for larger objects. Even a simple cube with 12 edges and 8 vertices has $2^{12} = 4096$ possible edge orientations and $3^8 = 6561$ feeding point combinations with a total search space of over 26 million possibilities.
+A [polyhedron](https://en.wikipedia.org/wiki/Polyhedron) (plural: polyhedra) is a three-dimensional solid with flat polygonal faces and straight edges. The simplest examples are the five Platonic solids: tetrahedron, cube, octahedron, dodecahedron, and icosahedron. Beyond these there are hundreds polyhedra that have been catalogues by mathematician. The [Polyhedra Viewer by Nat Alison](https://polyhedra.tessera.li/) provides a nice interactive catalog, and is also a good source of [3D object files](https://github.com/tesseralis/polyhedra-viewer/tree/canon/src/data/polyhedra). 
+
+ For our purposes, each polyhedron defines a filament object: vertices become electrical junctions, edges become LED filaments. 
+ 
+### Finding solutions for any shape - randomized search
+
+Initially, I "vibe coded" a visualizer and solver in python to find solutions for a given object, given constraints and visualize it. You can [find it here](https://github.com/cpldcpu/GlowPoly/tree/master/PythonTool). 
+
+However, I had to learn that a randomized search is not sufficient to find good solutions for larger objects due to an enormous explosion of the search space. Given a polyhedron with $E$ edges and $V$ vertices, there are $2^E$ possible ways to orient the edges (assigning anode/cathode direction to each filament). For each orientation, there are $3^V$ possible feeding point combinations (each vertex can be anode, cathode, or floating). This quickly becomes infeasible, even a simple cube has $2^{12} \cdot 3^8 \approx 26$ million possibilities. 
+
+Instead, it is necessary to reduce the search space by limiting the number of options looked at. I found the most feasible approach was to assume certain driving schemes, as identified in the manual search above, and try to identify eligible objects for it.
+
+Based on the exploration of the Octahedron and Cube above, we can observe three different configurations of filaments that allow driving an entire polyhedron from a few vertices:
+
+1. DC from two feeding points, ignoring brightness variation (as seen in the cube)
+2. Multiplexing several DC paths to achieve constant brightness (as seen in the octahedron)
+3. Bipolar driving of two feeding points with constant brightness (octahedron)
+
+How do we screen for objects that support these driving schemes?
+
+### Case 1: DC driving from two feeding points, Edge-Geodesic Cover
+
+Just to recap: We want to connect a positive terminal (anode) to one vertex and a negative terminal (cathode) to another vertex, so that all filaments (edges) lie on the current path between these two points. For all filaments to light up, every edge must lie on a shortest path between the two feeding points. We then try to identify such pairs of vertices, so that the shortest paths between them cover all edges. Note that this will result in a solution that allows all filaments to light up, but since there can (and will) be branching paths, the current distribution will be uneven.
+
+This (and it took me quite a while to figure this out) is known in graph theory as  **edge-geodesic cover problem**. Specifically, we want to screen polyhedral graphs for the existence of an *edge-geodetic set with an edge geodetic number of 2*. This means that there exist two vertices (s,t) such that every edge in the graph lies on some shortest path between s and t. A necessary precondition for this to be possible is that the graph is [bipartite](https://en.wikipedia.org/wiki/Bipartite_graph), which can be easily tested for. Essentially that states that the graph can be separated layer-by-layer without any dangling edges (filaments) between the layers.
+
+Only 6 out of the 122 polyhedra I analyzed support this property and allow driving all filaments from only two connections. They are listed in the table below.
+
+| Name                         | $V$   | $E$   | $deg(V)$ | $L$ 
+|------------------------------|-----|-----|---------|----------
+| cube                         | 8   | 12  | 3       | 3        
+| hexagonal prism              | 12  | 18  | 3       | 4        
+| octagonal prism              | 16  | 24  | 3       | 5        
+| decagonal prism              | 20  | 30  | 3       | 6        
+| truncated octahedron         | 24  | 36  | 3       | 6        
+| truncated cuboctahedron      | 48  | 72  | 3       | 9        
+| truncated icosidodecahedron  | 120 | 180 | 3       | 15       
+
+I built two of those objects: The hexagonal prism and the truncated octahedron. Below you can see photos of both objects in all their glory.
+
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+  <img src="hexagonal prism 3.JPG" alt="Hexagonal prism" style="max-width: 30%;">
+  <img src="hexagonal prism hand.JPG" alt="Hexagonal prism" style="max-width: 30%;">
+  <img src="truncated octahedron.JPG" alt="Truncated octahedron" style="max-width: 30%;">
+</div>
+
+However, all objects allow solutions where the filaments can be covered by shortest-paths between multiple combinations of feeding point pairs. This allows for DC solutions with multiplexing. I found that many objects require 4 taps, while the most taps needed at 8. You can explore further geodesic cover solutions in the [interactive web viewer](https://cpldcpu.github.io/GlowPoly/).
+
+### Case 2: Eulerian Circuits and Cycle Decomposition
+
+While the previous approach allows finding solutions that can light up all filaments, the current distribution is usually uneven.
 
 
 
+Mind you, while the edge-geodesic cover solutions above allow driving all filaments from two feeding points, the current distribution is uneven. To achieve more uniform brightness, we can explore other driving schemes.
 
-Given this constraint, we usually want to optimize for minimum feeding points, but I found that it often helps to set a target number of feeding points and search for valid configurations that meet this target. Note that this reduces the search space from $3^V$ to $\binom{V}{P} \cdot 2^{P}$, where $P$ is the number of feeding points.
+The second driving scheme is based on the idea of allowing vertices to act as both anode and cathode at different times. This is related to Eulerian paths in graph theory - you're essentially traversing every edge exactly once.
+
+https://en.wikipedia.org/wiki/Euler_characteristic
 
 
 ## Euler circuit
@@ -158,46 +210,11 @@ $\frac{E}{L}=m$ feeding point pairs needed.
 
 L even
 
+**Eulerian** is a classical graph theory concept:
+- An **Eulerian path** visits every edge exactly once
+- Only exists if the graph has exactly 0 or 2 odd-degree vertices
+- Most polyhedra are **NOT Eulerian** (e.g., cube has all vertices of degree 3 = odd)
 
-## path
-
-Conditions
-
-- We have a polyhedral graph
-- We want to check for the following property
-- Do two points s,t exist so that all edges lies on the minimum length path between s,t.
-
-https://en.wikipedia.org/wiki/Exact_cover
-
-## Generalized problem statement
-
-Let (G=(V,E)) be a (connected) polyhedral graph
-
-For vertices (s,t\in V), let
-
-* (d(s,t)) be the graph distance, and
-* (\mathcal{P}_{\min}(s,t)) be the set of **all shortest (minimum-length) paths** from (s) to (t).
-
-
-We say (G) has the property if there exist vertices (s,t) such that
-[
-E_{\min}(s,t) = E.
-]
-In words: **every edge of (G) lies on at least one shortest (s!-!t) path.**
-
-Geodesic Cover (122 models) [taps <= 1]
-=======================================
-  Name                           V    E  Degrees  Path Len  Taps
-  --------------------------------------------------------------
-  cube                           8   12  3               3     2
-  decagonal prism               20   30  3               6     2
-  hexagonal prism               12   18  3               4     2
-  octagonal prism               16   24  3               5     2
-  square                         4    4  2               2     2
-  star_octahedron               10   16  2, 4            4     2
-  truncated cuboctahedron       48   72  3               9     2
-  truncated icosidodecahedron  120  180  3              15     2
-  truncated octahedron          24   36  3               6     2
 
 Bidirectional Path (6 solutions) [taps <= 10]
 =============================================
@@ -206,7 +223,6 @@ Bidirectional Path (6 solutions) [taps <= 10]
   cuboctahedron               12  24  4               6     2
   elongated-square-bipyramid  10  20  4               5     2
   octahedron                   6  12  4               3     2
-  square                       4   4  2               2     2
   square-gyrobicupola         16  32  4               8     2
   star_octahedron             10  16  2, 4            4     2
 
@@ -229,289 +245,10 @@ Cycle Decomposition (12 solutions) [taps <= 10]
 
 [^2]: Flash backs to CO342, arguably the least easy course I took, but also intellectually very rewarding.
 
-## Outline
 
-
-
-
-
-
----
-
-### 5. Solver Algorithms - Finding Solutions
-- Geodesic cover problem formulation
-- Algorithm approaches:
-  - Exhaustive orientation search (for small graphs ≤12 edges)
-  - Sampled random orientations (for large graphs)
-  - Exact cover solver (using Dancing Links / bitmask approach)
-- Constraint functions:
-  - DC-only (no alternating vertices)
-  - Sneak-free (no shorter unintended paths)
-  - Bipolar-only (no tristate driving needed)
-  - Equal current constraints
-- **Batch Solver Pipeline** (`Solver/` directory):
-  - `poly_geodesic_cover.py`: Main solver that processes 120+ polyhedra from polyhedra-viewer
-  - `planar_cycle_decomposition.py`: Cycle analysis for Eulerian decomposition
-  - `geodesic_cover_results.json`: 232KB of pre-computed solutions for all polyhedra
-  - `visualize_geodesic_cover.py`: Visualization output generation
-- Results: Processed all Johnson solids, Platonic/Archimedean solids, prisms, and antiprisms
-
-#### Geodesic Cover vs Eulerian: What's the Difference?
-
-**Geodesic Cover** is the approach this solver uses:
-- Finds a set of **shortest paths (geodesics)** from sources to sinks that cover all edges
-- Goal: Minimize the number of **feeding point pairs** (anode/cathode pairs)
-- Works for **any graph structure** - doesn't require special properties
-
-**Eulerian** is a classical graph theory concept:
-- An **Eulerian path** visits every edge exactly once
-- Only exists if the graph has exactly 0 or 2 odd-degree vertices
-- Most polyhedra are **NOT Eulerian** (e.g., cube has all vertices of degree 3 = odd)
-
-**How they relate:**
-- If a polyhedron has an Eulerian decomposition, you can cover all edges with fewer paths
-- Geodesic cover is a **more general approach** that works even when Eulerian solutions don't exist
-- The "Alternating only" constraint forces vertices to act as both anode and cathode (related to Eulerian properties)
-
-**Important tradeoff:** Some shapes can technically be covered with a single feeding point pair, but the current distribution is **uneven** - edges closer to the feedpoints carry more current than distant edges, causing brightness variation. Using more feeding pairs can achieve better current uniformity.
-
-**Examples:**
-| Shape | Vertices | Edges | Vertex Degrees | Eulerian? | Min Pairs (uneven) | Uniform Current |
-|-------|----------|-------|---------------|-----------|-------------------|-----------------|
-| Square | 4 | 4 | All degree-2 (even) | Yes ✓ | 1 pair | 1 pair |
-| Cube | 8 | 12 | All degree-3 (odd) | No ✗ | 1 pair ⚠️ | Multiple pairs |
-| Octahedron | 6 | 12 | All degree-4 (even) | Yes ✓ | 1 pair | 1-2 pairs |
-| Elongated Octahedron | 10 | 18 | All degree-4 (even) | Yes ✓ | 1 pair | 1-3 pairs |
-| Star Octahedron | 10 | 16 | Mixed (2 & 4, all even) | Yes ✓ | 1 pair | 1-2 pairs |
-| Cuboctahedron | 12 | 24 | All degree-4 (even) | Yes ✓ | 2 pairs | 2-3 pairs |
-| Hexagonal Prism | 12 | 18 | All degree-3 (odd) | No ✗ | 1 pair ⚠️ | Multiple pairs |
-| Truncated Octahedron | 24 | 36 | All degree-3 (odd) | No ✗ | 1 pair ⚠️ | Multiple pairs |
-
----
-
-### 6. Hardware Design - The Driver Board
-- **Requirements:**
-  - Drive up to 12 feedpoints (vertices) on a polyhedron
-  - Each channel configurable as Anode, Cathode, or High-Z
-  - Support voltage up to ~10V (3 filaments in series × 3.3V each)
-- **Components:**
-  - Microcontroller: CH32V003 (RISC-V, ~$0.10 cost)
-  - Power stage: H-bridge motor drivers for bidirectional driving
-  - Power supply: LDO for 5V MCU supply
-- **PCB Design:**
-  - EasyEDA project file included (`ProPrj_GlowPolyDriver_2025-09-27.epro`)
-  - Schematic PDF available (`GlowPoly_Schematic_2025-09-27.pdf`)
-  - Compact form factor, designed to fit inside/beside polyhedra
-- *(Include: PCB 3D render, schematic overview, component list)*
-
----
-
-### 7. Firmware
-- **Framework:** ch32fun (lightweight CH32V003 development)
-- **Architecture:**
-  - GPIO outputs on PC0-PC3 and PC6-PC7 for driving channels
-  - Configurable as push-pull outputs at 10MHz
-  - Simple multiplexing loop with 200µs timing per step
-- **Build System:** Makefile-based, generates .bin/.hex/.elf
-- **Current Implementation:** Basic 4-channel test pattern
-- **Future:** Full pattern sequencing based on solver output
-
----
-
-### 8. Physical Construction / Assembly
-- Building junctions: Soldering multiple filaments at a vertex
-- Structural support: 3D printed jigs or hand assembly?
-- Connecting feed wires: Thin magnet wire to driver board
-- **Challenges:**
-  - Thermal management (filaments get warm)
-  - Mechanical fragility (glass filaments are delicate)
-  - Soldering technique (needs flux, quick touch)
-- *(Include photos: tetrahedron, octahedron, cuboctahedron, star octahedron, hexagonal prism, truncated octahedron)*
-
----
-
-### 9. Software Tools Overview
-- **PythonTool** - Interactive desktop simulator
-  - `glowing_polyhedron_sim.py`: Tkinter GUI with real-time 3D visualization
-  - `poly_solver.py`: Constraint-based optimization solver
-  - `polyhedra.py`: Library of 20+ polyhedron generators (from tetrahedron to stellated octahedron)
-  - Multiple view modes: Isometric, Graph (force-directed 2D), Schlegel diagram
-  - Real-time path animation and current flow visualization
-- **Solver Pipeline** - Batch processing for all polyhedra
-  - Downloads models from tesseralis/polyhedra-viewer
-  - Computes optimal solutions for each shape
-  - Outputs JSON with solution metadata
-
----
-
-### 10. Web Viewer - Interactive Visualization
-- **Technology:** Three.js for 3D rendering, vanilla JavaScript
-- **Live Demo:** https://cpldcpu.github.io/GlowPoly/
-- **Features:**
-  - Browse 120+ convex polyhedra with pre-computed solutions
-  - Filter by number of feeding point pairs: [1] [2] [3] [4+] [None]
-  - Color-coded path visualization with flow animation
-  - Statistics panel: vertex/edge counts, coverage, solution quality
-  - Flow analysis side panel with per-edge current data
-- **Deployment:** GitHub Actions auto-deploys to GitHub Pages
-- **Note:** Webapp mostly coded using Claude Opus 4.5!
-
----
-
-### 11. Results Gallery
-- Photos of completed builds:
-  - Square (the simplest case - 4 edges)
-  - Cube (and the "impossible cube" photo)
-  - Octahedron / Elongated octahedron
-  - Hexagonal prism (multiple photos)
-  - Cuboctahedron (dark/light ambient photos)
-  - Star octahedron
-  - Truncated octahedron
-- Video demonstrations showing multiplexing in action
-
----
-
-### 12. Lessons Learned / Future Work
-- **What worked well:**
-  - Graph theory approach made the problem tractable
-  - CH32V003 is cheap and capable enough
-  - Web viewer makes results accessible to anyone
-- **What was challenging:**
-  - Soldering delicate filaments at junctions
-  - Sneak path issues on complex shapes
-  - Brightness uniformity with parallel paths
-- **Future improvements:**
-  - PWM dimming for brightness control
-  - Multiplexing for complex polyhedra (>12 feedpoints)
-  - Alternative LED filament types (RGB, different sizes)
-  - 3D printed junction connectors
-  - Smartphone app control via BLE
-
----
-
-### 13. Conclusion
-- Summary: From a cool video to a complete optimization + hardware system
-- Open source: GitHub repo with all code, hardware files, and solver results
-- Live demo: Interactive web viewer anyone can use
-- Call to action: Build your own glowing polyhedron!
-
-
-
-# Driving Strategies: Bipolar vs Eulerian
-
-Not all solutions are created equal. Depending on your hardware constraints, you may prefer different approaches to "driving" the polyhedron - that is, how you assign anode (+) and cathode (-) to the vertices.
-
-## Bipolar Driving
-
-The simplest approach: use exactly **2 feeding points** (one anode, one cathode). This is called "bipolar" because you only need two polarities - no need for high-impedance (Hi-Z) states.
-
-**Advantages:**
-- Simple driver hardware (just needs A and C, no tristate switching)
-- Easy to understand and implement
-
-**Disadvantages:**
-- Not all polyhedra can be covered with just 2 feeding points
-- May require longer path lengths (higher voltage)
-
-**Example:** The square is naturally bipolar. With v0 as anode and v3 as cathode, current flows through all 4 edges via two parallel paths.
-
-## Eulerian / Alternating Driving
-
-A more sophisticated approach: allow vertices to act as **both anode AND cathode** at different times. This is related to Eulerian paths in graph theory - you're essentially traversing every edge exactly once.
-
-**Advantages:**
-- Perfect for AC driving (reversing polarity periodically)
-- Can achieve more uniform current distribution
-- Often covers all edges with fewer path problems
-
-**Disadvantages:**
-- Requires more complex driving hardware (must switch polarity)
-- Needs careful timing/sequencing
-
-
-
-## Which to Choose?
-
-| Approach | Feeding Points | Hardware | Best For |
-|----------|---------------|----------|----------|
-| Bipolar | 2 | Simple (A/C only) | Small, simple shapes |
-| Multi-pair | 4+ | Complex (A/C/Z) | Larger polyhedra |
-| Alternating | Varies | AC driver | Uniform brightness, complex shapes |
-
----
-
-# LED Filaments
-
-LED filaments are the building blocks of this project. Understanding their properties is essential.
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1rem 0;">
-  <img src="../media/filaments1.JPG" alt="LED filaments" style="max-width: 45%;">
-  <img src="../media/filaments2.JPG" alt="LED filaments closeup" style="max-width: 45%;">
-</div>
-
-- **Construction:** ~16 LED dies connected in parallel on a phosphor-coated substrate
-- **Electrical:** ~3V forward voltage, light output proportional to current (up to ~150mA)
-- **Behavior:** Current flows only in one direction (diode), voltages add in series, current divides in parallel
-
-For detailed measurement data and I-V characteristics, see the [filaments](../filaments/) folder.
-
----
 
 # Building Polyhedra
 
-
-## The Cube
-
-The cube is a 3-regular graph with 8 vertices and 12 edges. Each junction needs to accommodate three filaments.
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <img src="cube3d.png" alt="Cube 3D view" style="max-width: 30%;">
-  <img src="cube2d.png" alt="Cube 2D graph" style="max-width: 30%;">
-  <img src="../media/impossible_cube.jpg" alt="Impossible cube" style="max-width: 30%;">
-</div>
-
-## The Octahedron
-
-Real builds - note the elongated octahedron is a different shape (regular octahedron with a square prism inserted):
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <figure style="text-align: center; max-width: 55%;">
-    <img src="../media/octahedron.jpg" alt="Octahedron build" style="width: 100%;">
-    <figcaption>Regular Octahedron (6 vertices, all degree-4)</figcaption>
-  </figure>
-  <figure style="text-align: center; max-width: 40%;">
-    <img src="../media/elongated%20octahedron.jpg" alt="Elongated octahedron" style="width: 100%;">
-    <figcaption>Elongated Octahedron (10 vertices, all degree-4)</figcaption>
-  </figure>
-</div>
-
----
-
-# Hardware
-
-## The Driver Board
-
-The GlowPoly driver board controls up to 12 feedpoints using H-bridge motor drivers and a CH32V003 microcontroller.
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-  <img src="../media/driverboard.jpg" alt="GlowPoly driver board" style="max-width: 50%;">
-</div>
-
----
-
-# Results Gallery
-
-## Hexagonal Prism
-
-<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin: 1rem 0;">
-  <img src="../media/hexagonal%20prism%202.JPG" alt="Hexagonal prism" style="max-width: 30%;">
-  <img src="../media/hexagonal%20prism%203.JPG" alt="Hexagonal prism angle 2" style="max-width: 30%;">
-  <img src="../media/hexagonal%20prism%20hand.JPG" alt="Hexagonal prism in hand" style="max-width: 30%;">
-</div>
-
-Uneven brightness demonstration (showing parallel path current distribution):
-
-![Hexagonal prism uneven brightness](../media/hexagonal%20prism%20uneven.JPG)
 
 ## Cuboctahedron
 
@@ -522,7 +259,6 @@ The cuboctahedron (12 vertices, 24 edges) is one of the more complex builds.
   <img src="../media/cuboctahedron_light.jpg" alt="Cuboctahedron light background" style="max-width: 45%;">
 </div>
 
-Hero shot:
 
 ![Cuboctahedron 16:9](../media/cuboctahedron_16_9.jpg)
 
@@ -532,8 +268,4 @@ Hero shot:
   <img src="../media/star%20octahedron%202.JPG" alt="Star octahedron" style="max-width: 45%;">
   <img src="../media/star%20hand.JPG" alt="Star in hand" style="max-width: 45%;">
 </div>
-
-## Truncated Octahedron
-
-![Truncated octahedron](../media/truncated%20octahedron.JPG)
 
