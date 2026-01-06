@@ -246,10 +246,6 @@ Cycle Decomposition (12 solutions) [taps <= 10]
 [^2]: Flash backs to CO342, arguably the least easy course I took, but also intellectually very rewarding.
 
 
-
-# Building Polyhedra
-
-
 ## Cuboctahedron
 
 The cuboctahedron (12 vertices, 24 edges) is one of the more complex builds.
