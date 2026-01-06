@@ -491,6 +491,119 @@ def cycle_decomposition_length_twice_diameter(n_vertices, edges, diameter, dist_
     return solution is not None
 
 
+def edge_geodetic_number(n_vertices, edges, dist_matrix=None):
+    if n_vertices <= 0:
+        return None
+    edge_list = list(filtered_edges(n_vertices, edges))
+    if not edge_list:
+        return 0
+    if dist_matrix is None:
+        dist_matrix = all_pairs_shortest_paths(n_vertices, edges)
+    if dist_matrix is None:
+        return None
+
+    m = len(edge_list)
+    full_mask = (1 << m) - 1
+
+    pair_edges = []
+    pair_edges_bits = []
+    pair_vertex_mask = []
+    pairs_cover = [[] for _ in range(m)]
+
+    for i in range(n_vertices):
+        dist_i = dist_matrix[i]
+        for j in range(i + 1, n_vertices):
+            dij = dist_i[j]
+            if dij < 0:
+                continue
+            dist_j = dist_matrix[j]
+            mask = 0
+            for idx, (u, v) in enumerate(edge_list):
+                if dist_i[u] + 1 + dist_j[v] == dij or dist_i[v] + 1 + dist_j[u] == dij:
+                    mask |= 1 << idx
+            if mask:
+                pi = len(pair_edges)
+                pair_edges.append(mask)
+                pair_edges_bits.append(mask.bit_count())
+                pair_vertex_mask.append((1 << i) | (1 << j))
+                mm = mask
+                while mm:
+                    e = (mm & -mm).bit_length() - 1
+                    pairs_cover[e].append(pi)
+                    mm &= mm - 1
+
+    for e in range(m):
+        if not pairs_cover[e]:
+            return None
+        pairs_cover[e].sort(key=lambda pi: pair_edges_bits[pi], reverse=True)
+
+    # Branch-and-bound over covering pairs, minimizing distinct endpoints.
+    remaining = full_mask
+    used_mask = 0
+    while remaining:
+        best_idx = None
+        best_gain = 0
+        for pi, mask in enumerate(pair_edges):
+            gain = (mask & remaining).bit_count()
+            if gain > best_gain:
+                best_gain = gain
+                best_idx = pi
+        if best_idx is None or best_gain == 0:
+            return None
+        used_mask |= pair_vertex_mask[best_idx]
+        remaining &= ~pair_edges[best_idx]
+    best = used_mask.bit_count()
+
+    memo = {}
+
+    def search(uncovered, used, used_count):
+        nonlocal best
+        if uncovered == 0:
+            if used_count < best:
+                best = used_count
+            return
+        if used_count >= best:
+            return
+        prev = memo.get(uncovered)
+        if prev is not None and used_count >= prev:
+            return
+        memo[uncovered] = used_count
+
+        mm = uncovered
+        chosen = None
+        mincand = None
+        while mm:
+            e = (mm & -mm).bit_length() - 1
+            c = len(pairs_cover[e])
+            if mincand is None or c < mincand:
+                mincand = c
+                chosen = e
+                if c <= 1:
+                    break
+            mm &= mm - 1
+
+        cand = pairs_cover[chosen]
+        for pi in cand:
+            add_mask = pair_vertex_mask[pi] & ~used
+            if add_mask == 0:
+                search(uncovered & ~pair_edges[pi], used, used_count)
+        for pi in cand:
+            add_mask = pair_vertex_mask[pi] & ~used
+            if add_mask != 0 and (add_mask & (add_mask - 1)) == 0:
+                if used_count + 1 >= best:
+                    continue
+                search(uncovered & ~pair_edges[pi], used | add_mask, used_count + 1)
+        for pi in cand:
+            add_mask = pair_vertex_mask[pi] & ~used
+            if add_mask != 0 and (add_mask & (add_mask - 1)) != 0:
+                if used_count + 2 >= best:
+                    continue
+                search(uncovered & ~pair_edges[pi], used | add_mask, used_count + 2)
+
+    search(full_mask, 0, 0)
+    return best
+
+
 def print_table(rows):
     headers = [
         "Name",
@@ -498,6 +611,7 @@ def print_table(rows):
         "E",
         "Degrees",
         "Diameter",
+        "g1(G)",
         "DegreeCounts",
         "Regularity",
         "Bipartite",
@@ -512,6 +626,7 @@ def print_table(rows):
             str(row["edges"]),
             str(row["degrees"]),
             str(row["diameter"]),
+            str(row["g1"]),
             str(row["degree_counts"]),
             str(row["regularity"]),
             str(row["bipartite"]),
@@ -529,6 +644,19 @@ def main():
         type=Path,
         help="Folder containing object files (e.g. Solver/models_test)",
     )
+    parser.add_argument(
+        "--progress",
+        action="store_true",
+        help="Show progress while scanning models",
+    )
+    parser.add_argument(
+        "--edge-geodetic",
+        nargs="?",
+        const=-1,
+        type=int,
+        metavar="N",
+        help="Compute edge geodetic number g1(G); optional N limits to models with at most N edges",
+    )
     args = parser.parse_args()
 
     folder = args.folder
@@ -541,9 +669,28 @@ def main():
     regular_counts = defaultdict(int)
     mixed_count = 0
 
-    for path in sorted(folder.iterdir()):
-        if not path.is_file() or path.suffix.lower() not in SUPPORTED_EXTS:
-            continue
+    model_paths = [
+        path
+        for path in sorted(folder.iterdir())
+        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTS
+    ]
+    total_models = len(model_paths)
+    show_progress = args.progress or sys.stderr.isatty()
+    compute_g1 = args.edge_geodetic is not None
+    max_g1_edges = None if args.edge_geodetic in (None, -1) else args.edge_geodetic
+    last_len = 0
+
+    def update_progress(index, name):
+        nonlocal last_len
+        msg = f"[{index}/{total_models}] {name}"
+        if len(msg) < last_len:
+            msg = msg.ljust(last_len)
+        print(f"\r{msg}", end="", file=sys.stderr, flush=True)
+        last_len = len(msg)
+
+    for idx, path in enumerate(model_paths, start=1):
+        if show_progress:
+            update_progress(idx, path.name)
         try:
             n_vertices, edges, name = load_model(path)
             n_vertices, degrees, degree_set = compute_stats(n_vertices, edges)
@@ -568,6 +715,11 @@ def main():
             dist_matrix = all_pairs_shortest_paths(n_vertices, edges)
             diameter = graph_diameter_from_dist(dist_matrix)
             diameter_str = "-" if diameter is None else str(diameter)
+            if compute_g1 and (max_g1_edges is None or len(edges) <= max_g1_edges):
+                g1 = edge_geodetic_number(n_vertices, edges, dist_matrix)
+                g1_str = "-" if g1 is None else str(g1)
+            else:
+                g1_str = "-"
             cycle_decomp_2d = cycle_decomposition_length_twice_diameter(
                 n_vertices, edges, diameter, dist_matrix
             )
@@ -582,16 +734,20 @@ def main():
                 "bipartite": bipartite_str,
                 "cycle_decomp": cycle_decomp_str,
                 "diameter": diameter_str,
+                "g1": g1_str,
                 "cycle_decomp_2d": cycle_decomp_2d_str,
             })
         except Exception as exc:
             errors.append((path.name, str(exc)))
 
+    if show_progress and model_paths:
+        print(file=sys.stderr)
+
     if rows:
         rows.sort(key=lambda r: r["name"].lower())
         print_table(rows)
     else:
-        print("Name\tV\tE\tDegrees\tDiameter\tDegreeCounts\tRegularity\tBipartite\tCycleDecomp\tCycleDecomp2D")
+        print("Name\tV\tE\tDegrees\tDiameter\tg1(G)\tDegreeCounts\tRegularity\tBipartite\tCycleDecomp\tCycleDecomp2D")
 
     total_objects = len(rows)
     regular_total = sum(regular_counts.values())
