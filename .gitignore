@@ -124,7 +124,7 @@ ehthumbs.db
 Thumbs.db
 
 # Output files
-*.txt
+# *.txt
 *.log
 profile.txt
 
