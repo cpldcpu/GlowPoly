@@ -5,7 +5,7 @@
 ## Overview
 
 
-I used COB (Chip-on-Board) LED strips from Aliexpress for this project. They are similar to those found inside vintage-style bulbs. Each filament has about 16 LED dies wired in parallel on a phosphor-coated ceramic substrate, roughly 38mm long. The come in a number of different colors. Typical prices are $0.10-$0.20 per filament depending on volume, there seem to be a number of different suppliers.
+I used 38mm COB (Chip-on-Board) LED strips from Aliexpress for this project. They are similar to those found inside vintage-style bulbs. Each filament has 16 LED dies wired in parallel on a phosphor-coated ceramic substrate. They come in a number of different colors. Typical prices are $0.10-$0.20 per filament depending on volume. There are a number of different vendors.
 
 <div align="center">
   <img src="filament_close_up.jpg" height="200px">
