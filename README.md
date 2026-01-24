@@ -34,10 +34,10 @@ Interactive simulator with a Tkinter GUI. Visualizes polyhedra, runs solvers, an
 
 ### [Solver/](Solver/)
 Batch solvers for analyzing many polyhedra at once:
-- `poly_geodesic_cover.py` — Edge-geodesic cover solver (DC driving from 2+ points)
-- `equal_cycle_decomp.py` — Cycle decomposition for uniform current distribution
-- `bidirectional_path_decomp.py` — Bipolar/AC driving analysis
-- `model_stats.py` — Statistics across all polyhedra models
+- `poly_geodesic_cover.py`  Edge-geodesic cover solver (DC driving from 2+ points)
+- `equal_cycle_decomp.py`  Cycle decomposition for uniform current distribution
+- `bidirectional_path_decomp.py`  Bipolar/AC driving analysis
+- `model_stats.py`  Statistics across all polyhedra models
 
 ### [webviewer/](webviewer/)
 Three.js-based web viewer for exploring solutions interactively. Shows 3D models with current flow visualization, path highlighting, and VR support. Deployed at [cpldcpu.github.io/GlowPoly](https://cpldcpu.github.io/GlowPoly/).
@@ -46,4 +46,4 @@ Three.js-based web viewer for exploring solutions interactively. Shows 3D models
 CH32V003 firmware for the driver board. Cycles through driving schemes to multiplex current paths. Built on [ch32fun](https://github.com/cnlohr/ch32fun).
 
 ### [media/](media/)
-Photos of built polyhedra—cubes, prisms, octahedra, star shapes, and more.
+Photos of built polyhedra: cubes, prisms, octahedra, star shapes, and more.

@@ -35,9 +35,9 @@ This means that brightness uniformity comes down to current uniformity. Getting 
 
 ## Soldering Tips
 
-Building these polyhedra takes patience. The ceramic carriers are very fragile—never bend or twist the filaments. That said, even if one cracks, it usually still works; you just lose some mechanical strength.
+Building these polyhedra takes patience. The ceramic carriers are very fragile. Never bend or twist the filaments. That said, even if one cracks, it usually still works; you just lose some mechanical strength.
 
-Pre-tin both ends of each filament first. When joining, heat only the joint itself—keep it brief and local to avoid melting nearby connections. Larger object can easily turn into an endurance test of your patience, as soldering one vertex often causes another to come apart. This is normal. 
+Pre-tin both ends of each filament first. When joining, heat only the joint itself. Keep it brief and local to avoid melting nearby connections. Larger object can easily turn into an endurance test of your patience, as soldering one vertex often causes another to come apart. This is normal. 
 
 I found it easiest to start with planar shapes (triangles, squares, etc.) and then join them into 3D structures piece by piece. I did most of my builds by eyeballing angles, but jigs would definitely help ensure accuracy.
 
