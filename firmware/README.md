@@ -45,17 +45,3 @@ make flash
 ```
 
 Or use the WCH-LinkE utility directly.
-
-## Current Implementation
-
-The current firmware implements a simple 4-channel multiplexing test pattern:
-- Cycles through channels 0-3
-- 200µs per step (~1.25kHz refresh rate)
-- Channels 4-5 mirror channels 0-1
-
-## Future Development
-
-- Full pattern sequencing from solver JSON output
-- PWM brightness control
-- USB/UART configuration interface
-- Animation patterns
