@@ -1,4 +1,4 @@
-# GlowPoly
+# Glowing Polyhedrons
 
 Building wireframe polyhedra from LED filaments, using graph theory to find driving strategies.
 
