@@ -3,7 +3,7 @@
 Building wireframe polyhedra from LED filaments, using graph theory to find driving strategies.
 
 <div align="center">
-  <img src="media/featured.jpg" width="700px">
+  <img src="media/featured.jpg">
 </div>
 
 ## About
@@ -16,7 +16,7 @@ This project explores building glowing 3D wireframe objects from LED filaments. 
 **[Try the interactive web viewer](https://cpldcpu.github.io/GlowPoly/)**
 
 <div align="center">
-  <img src="media/webviewer.png" width="700px">
+  <img src="media/webviewer.png" width="600px">
 </div>
 
 ---
